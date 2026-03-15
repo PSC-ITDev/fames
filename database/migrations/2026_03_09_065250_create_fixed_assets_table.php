@@ -28,14 +28,14 @@ return new class extends Migration
             $table->string('location');
             $table->string('other_identifier')->nullable();
 
-            $table->foreignId('classification_id')->constrained(); 
+            $table->foreignId('classification_id'); 
             
             $table->decimal('salvage_value', 15, 2)->default(1); // Value at end of life
             $table->integer('useful_life_years')->default(0); // For depreciation calculations
             
             // Relationships (Convention: singular_table_id)
-            $table->foreignId('category_id')->constrained(); 
-            $table->foreignId('location_id')->constrained();
+            $table->foreignId('category_id'); 
+            $table->foreignId('location_id');
             
             $table->text('notes')->nullable();
             $table->softDeletes(); // Adds deleted_at for archiving assets
