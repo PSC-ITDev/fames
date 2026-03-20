@@ -1,5 +1,5 @@
 <x-app-layout>
-   <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-3">
               <div class="card">
                 <div class="card-body">
                   <div class="d-flex align-items-center">
@@ -124,7 +124,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-7">
+            <div class="col-lg-12">
               <div class="card">
                 <div class="card-body">
                   <h3 class="card-title">Traffic summary</h3>
@@ -132,7 +132,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-5">
+            {{-- <div class="col-lg-5">
               <div class="card">
                 <div class="card-body">
                   <h3 class="card-title">Top countries</h3>
@@ -143,7 +143,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> --}}
             <div class="col-lg-6">
               <div class="row row-cards row-deck">
                 <div class="col-sm-6">
@@ -368,7 +368,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6 col-lg-8">
+            <div class="col-md-12 col-lg-12">
               <div class="card">
                 <div class="card-header">
                   <h4 class="card-title">Most Visited Pages</h4>
@@ -439,11 +439,11 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6 col-lg-4">
+            {{-- <div class="col-md-6 col-lg-4">
               <a href="https://github.com/sponsors/codecalm" class="card card-sponsor" target="_blank" style="background-image: url(./static/sponsor-banner-homepage.svg)">
                 <div class="card-body"></div>
               </a>
-            </div>
+            </div> --}}
             <div class="col-md-6 col-lg-4">
               <div class="card">
                 <div class="card-header">
