@@ -32,6 +32,7 @@
           <img src="{{ asset('static/logo.png') }}"   alt="">
         </div>
         <form class="card card-md" action="." method="get">
+          @csrf
           <div class="card-body"> 
             <h2 class="mb-5 text-center">Login to your account</h2>
 

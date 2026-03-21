@@ -29,7 +29,7 @@ new class extends Component
         <div class=" active navbar-collapse" id="navbar-menu">
           <ul class="navbar-nav pt-lg-3">
             <li class="nav-item">
-              <a class="nav-link" href="#" >
+              <a class="nav-link" href="{{ route('dashboard')  }}" >
                 <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>
                 </span>
                 <span class="nav-link-title">
@@ -48,81 +48,25 @@ new class extends Component
               <ul class="dropdown-menu dropdown-menu-columns  dropdown-menu-columns-2">
                 <li >
                   <a class="dropdown-item" href="#" >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                    Register
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./blank.html" >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
                     List
                   </a>
                 </li>
                 <li >
-                  <a class="dropdown-item" href="./buttons.html" >
-                    Buttons
+                  <a class="dropdown-item" href="{{ route('new-asset') }}" >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Register
                   </a>
                 </li>
                 <li >
-                  <a class="dropdown-item" href="./cards.html" >
-                    Cards
+                  <a class="dropdown-item" href="#" >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 11 12 14 20 6" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>          
+                    Evaluation
                   </a>
                 </li>
-                <li >
-                  <a class="dropdown-item" href="./dropdowns.html" >
-                    Dropdowns
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./icons.html" >
-                    Icons
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./modals.html" >
-                    Modals
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./maps.html" >
-                    Maps
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./maps-vector.html" >
-                    Vector maps
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./navigation.html" >
-                    Navigation
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./charts.html" >
-                    Charts
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./tables.html" >
-                    Tables
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./calendar.html" >
-                    Calendar
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./carousel.html" >
-                    Carousel
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./lists.html" >
-                    Lists
-                  </a>
-                </li>
-                <li class="dropright">
+                     
+                
+                {{-- <li class="dropright">
                   <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-toggle="dropdown" role="button" aria-expanded="false" >
                     Authentication
                   </a>
@@ -146,15 +90,18 @@ new class extends Component
                     <a href="./503.html" class="dropdown-item">503 page</a>
                     <a href="./maintenance.html" class="dropdown-item">Maintenance page</a>
                   </div>
-                </li>
+                </li> --}}
               </ul>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="./form-elements.html" >
-                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 11 12 14 20 6" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><rect x="5" y="3" width="14" height="18" rx="2"></rect><line x1="9" y1="7" x2="15" y2="7"></line><line x1="9" y1="11" x2="15" y2="11"></line><line x1="9" y1="15" x2="13" y2="15"></line></svg>
                 </span>
+                
                 <span class="nav-link-title">
-                  Evaluation
+                  Reports
                 </span>
               </a>
             </li>
