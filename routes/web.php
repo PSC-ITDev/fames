@@ -25,6 +25,9 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/newasset', [AssetController::class, 'newasset'])
         ->name('new-asset');
 
+    Route::post('saveasset',[AssetController::class, 'saveasset'])
+        ->name('saveasset');
+
 });
 
 

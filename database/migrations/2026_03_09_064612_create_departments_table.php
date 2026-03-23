@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('description');            
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->string('code')->unique(); // Unique code for the department
+            $table->string('name'); // Name of the department
+            $table->string('description')->nullable();            // Optional description of the department
+            $table->integer('created_by')->default(1);
+            $table->integer('updated_by')->default(1);
             $table->timestamps();
         });
     }

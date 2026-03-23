@@ -15,13 +15,12 @@ return new class extends Migration
             $table->id();
             $table->integer('item');
             $table->string('asset_no')->unique(); // Unique identifier (e.g., FA-1001)
-            $table->string('serial_number')->nullable();
-           
+            $table->string('serial_number')->nullable();           
+            $table->integer('department');  // Department 
             $table->date('capitalization_date');
             $table->integer('qty');
-            $table->string('bun');            
-            $table->string('asset_description');
-            
+            $table->string('bum'); // Basic Unit of Measure       
+            $table->string('asset_description');            
             $table->decimal('acquired_value', 15, 2);
             $table->decimal('end_book_value', 15, 2);
             $table->string('cost_center');
