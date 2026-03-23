@@ -23,4 +23,4 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 pubic/web.config
-pubic/web.config
+**/web.config
