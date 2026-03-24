@@ -141,11 +141,12 @@
                   </div>
                 </div>
                 </div>
-                    <div class="progress card-progress">
+                    {{-- <div class="progress card-progress">
                       <div class="progress-bar" style="width: 78%" role="progressbar" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100">
                         <span class="sr-only">78% Complete</span>
                       </div>
-                    </div> <!-- /progress card-progress -->
+                    </div>  --}}
+                    <!-- /progress card-progress -->
                 </div>  
                  
               </div> <!-- / row row-cards -->
@@ -181,7 +182,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td>Facebook</td>
+                              <td>LAB</td>
                               <td>1,245</td>
                               <td class="w-50">
                                 <div class="progress progress-xs">
@@ -190,7 +191,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td>Pinterest</td>
+                              <td>HRGA</td>
                               <td>854</td>
                               <td class="w-50">
                                 <div class="progress progress-xs">
@@ -199,7 +200,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td>VK</td>
+                              <td>MECH</td>
                               <td>650</td>
                               <td class="w-50">
                                 <div class="progress progress-xs">
