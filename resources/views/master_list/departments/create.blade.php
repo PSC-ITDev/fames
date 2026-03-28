@@ -3,6 +3,13 @@
     <form action="{{ route('savedepartment') }}" method="post">
     @csrf
     <div class="row" >
+
+        <div class="form-group mb-3 ">
+            <label class="form-label">Code</label>
+            <div >
+                <input name="code" type="text" class="form-control" aria-describedby="Code" placeholder="Code">
+            </div>
+        </div>
               
         <div class="form-group mb-3 ">
             <label class="form-label">Name</label>

@@ -37,7 +37,7 @@ class MasterListController extends Controller
         $asset->asset_description = $request->input('description');
         $asset->classification_id = $request->input('classification');
         $asset->qty = $request->input('quantity');
-        $asset->bun = $request->input('bum');
+        $asset->bum = $request->input('bum');
         $asset->acquired_value = $request->input('acquired_value');
         $asset->end_book_value = $request->input('endbookvalue');
         $asset->salvage_value = $request->input('salvagevalue');
@@ -63,6 +63,7 @@ class MasterListController extends Controller
     
     public function saveDepartment(Request $request){
         $department = new Department();
+        $department->code = $request->input('code');
         $department->name = $request->input('name');
         $department->description = $request->input('description');
         $department->save();

@@ -21,14 +21,16 @@ class EvaluationController extends Controller
     
     public function saveEvaluation(Request $request){
 
-        DD($request);
-        // $asset = new Evaluation();
-        
-        // $asset->save();
+        // DD($request);
+
+        $evaluation = new Evaluation();
+        $evaluation->quarter = $request->input('qrt');
+        $evaluation->year = $request->input('year');
+        $evaluation->save();
 
  
         
-        return redirect()->route('evalutaion');;
+        return redirect()->route('evaluation');;
 
     }
 
