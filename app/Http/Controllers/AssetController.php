@@ -16,24 +16,24 @@ class AssetController extends Controller
                 
     }
 
-    public function saveasset(Request $request)
-    {
-        $asset = new FixedAsset();
-        $asset->description = $request->input('description');
-        $asset->classification = $request->input('classification');
-        $asset->quantity = $request->input('quantity');
-        $asset->bum = $request->input('bum');
-        $asset->acquired_value = $request->input('acquired_value');
-        $asset->endbookvalue = $request->input('endbookvalue');
-        $asset->salvagevalue = $request->input('salvagevalue');
-        $asset->usefullifeyears = $request->input('usefullifeyears');
-        $asset->costcenter = $request->input('costcenter');
-        $asset->save();
 
- 
-        view()->share('pageTitle', 'Asset Enrollment');
-        return view('assets.create');
-
-    }
+//     <!-- item
+// asset_no
+// serial_number
+// capitalization_date
+// qty
+// bun	
+// asset_description	
+// acquired_value	
+// end_book_value	
+// cost_center	
+// location
+// other_identifier	
+// classification_id
+// salvage_value
+// useful_life_years
+// category_id	bigint
+// location_id	bigint
+// notes -->
 
 }

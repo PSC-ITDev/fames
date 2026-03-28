@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class AssetLocation extends Model
 {
-    //
+    protected $guarded = ['id'];
 }

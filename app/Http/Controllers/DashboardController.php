@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\FixedAsset;
+
 class DashboardController extends Controller
 {
-      public function index(Request $request)
+    public function index(Request $request)
     {     
         // return view('assets.index', compact(''));
 
@@ -14,4 +16,11 @@ class DashboardController extends Controller
         return view('dashboard');
                 
     }
+    
+
+
+
+
 }
+
+
