@@ -26,9 +26,7 @@ return new class extends Migration
             $table->string('cost_center');
             $table->string('location');
             $table->string('other_identifier')->nullable();
-
-            $table->foreignId('classification_id'); 
-            
+            $table->foreignId('classification_id');             
             $table->decimal('salvage_value', 15, 2)->default(1); // Value at end of life
             $table->integer('useful_life_years')->default(0); // For depreciation calculations
             
