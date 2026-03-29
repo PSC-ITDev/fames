@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MasterListController;
+use App\Http\Controllers\EvaluationController;
  
 Route::get('/', function () {
     return redirect()->route('login');
@@ -25,8 +27,34 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/newasset', [AssetController::class, 'newasset'])
         ->name('new-asset');
 
-    Route::post('saveasset',[AssetController::class, 'saveasset'])
-        ->name('saveasset');
+
+
+        //Assets 
+        Route::post('/saveasset',[MasterListController::class, 'saveAsset']) ->name('saveasset');
+        Route::get('/asset-list', [MasterListController::class, 'assetList'])->name('asset-list');
+
+        //Departments 
+        Route::post('/savedepartment',[MasterListController::class, 'saveDepartment']) ->name('savedepartment');
+        Route::get('/department-list', [MasterListController::class, 'departmentList'])->name('department-list');
+
+        //Categorys 
+        Route::post('/savecategory',[MasterListController::class, 'saveCategory']) ->name('savecategory');
+        Route::get('/category-list', [MasterListController::class, 'categoryList'])->name('category-list');
+
+        //Classifications 
+        Route::post('/saveclassification',[MasterListController::class, 'saveClassification']) ->name('saveclassification');
+        Route::get('/classification-list', [MasterListController::class, 'classificationList'])->name('classification-list');
+
+        //Locations 
+        Route::post('/savelocation',[MasterListController::class, 'saveLocation']) ->name('savelocation');
+        Route::get('/location-list', [MasterListController::class, 'locationList'])->name('location-list');
+
+        //Fixed Asset 
+        Route::post('/saveevaluation',[EvaluationController::class, 'saveEvaluation']) ->name('saveevaluation');
+        Route::get('/evaluation', [EvaluationController::class, 'evaluation'])->name('evaluation');
+
+
+
 
 });
 
