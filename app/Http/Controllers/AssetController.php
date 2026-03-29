@@ -21,6 +21,7 @@ class AssetController extends Controller
         $asset = new FixedAsset();
         $asset->asset_description = $request->input('description');
         // $asset->classification = $request->input('classification');
+        $asset->classification = $request->input('classification');
         $asset->quantity = $request->input('quantity');
         $asset->bum = $request->input('bum');
         $asset->acquired_value = $request->input('acquired_value');
@@ -61,23 +62,7 @@ class AssetController extends Controller
 
     }
 
-//     <!-- item
-// asset_no
-// serial_number
-// capitalization_date
-// qty
-// bun	
-// asset_description	
-// acquired_value	
-// end_book_value	
-// cost_center	
-// location
-// other_identifier	
-// classification_id
-// salvage_value
-// useful_life_years
-// category_id	bigint
-// location_id	bigint
-// notes -->
+
+    
 
 }

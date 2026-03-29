@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('code')->unique(); // Unique code for the department
             $table->string('name'); // Name of the department
             $table->Integer('division_id')->default(0);
+            $table->Integer('divid')->default(0);
             $table->string('description')->nullable();            // Optional description of the department
             $table->integer('created_by')->default(1);
             $table->integer('updated_by')->default(1);
