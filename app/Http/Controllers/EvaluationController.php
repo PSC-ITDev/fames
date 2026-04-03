@@ -6,16 +6,16 @@ use Illuminate\Http\Request;
 
 use App\Models\FixedAsset;
 use App\Models\AssetEvaluation as Evaluation;
-
+use App\Models\Department;
 class EvaluationController extends Controller
 {
 
     public function evaluation()
     {     
         $assets = FixedAsset::all();
-
+        $departments = Department::all();
         view()->share('pageTitle', 'Evaluation');
-        return view('fixed_assets/evaluation',compact('assets'));
+        return view('fixed_assets/evaluation',compact('assets','departments'));
                 
     }
     
@@ -24,9 +24,7 @@ class EvaluationController extends Controller
         DD($request);
         // $asset = new Evaluation();
         
-        // $asset->save();
-
- 
+        // $asset->save(); 
         
         return redirect()->route('evalutaion');;
 

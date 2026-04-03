@@ -20,14 +20,19 @@
               <select name="year" class="form-select" >
                 <script>
                   let currentYear = new Date().getFullYear();
-                  for (let i = currentYear; i >= 1900; i--) {
+                  for (let i = currentYear; i >= currentYear -3 ; i--) {
                     document.write(`<option value="${i}">${i}</option>`);
                   }
                 </script>
               </select>
             </div>
-            <div class="card-options">
-              Department: _____________________
+            <div class="card-options"> 
+              <label for="departmentSelect" class="form-label">Department</label>
+              <select name="department_id" class="form-select   selectized" >
+                @foreach($departments as $department)
+                  <option value="{{ $department->id }}">{{ $department->description }}</option>
+                @endforeach
+              </select>
             </div>
         </div>
         <div class="card-body">   
@@ -99,10 +104,73 @@
                   </tbody>
                 </table>
             </div>
+            <div class="row">
+              <div class="col-4">
+                <table class="table card-table table-vcenter">
+                  <thead>
+                    <tr>
+                      <th>Prepared By:</th>
+                    </tr>
+                  </thead>
+                  <tbody id="incharge">
+                    <tr>
+                      <td>JD Jabinao / AM Zaragoza</td>
+                    </tr>
+                     <tr>
+                      <td>Name of Department Incharge</td>
+                    </tr>
+                  </tbody>
+           
+                </table>
+
+              </div>
+              <div class="col-4">
+                  <table class="table card-table table-vcenter">
+                  <thead>
+                    <tr>
+                      <th>Confirmed By:</th>
+                    </tr>
+                  </thead>
+                  <tbody id="departmentHead"> 
+                    <tr>
+                      <td>GMO Salvana</td>
+                    </tr>
+                     <tr>
+                      <td>Name of Department Head</td>
+                    </tr>
+                  </tbody>
+           
+                </table>
+              </div>
+              <div class="col-4">
+                  <table class="table card-table table-vcenter">
+                  <thead>
+                    <tr>
+                      <th>Reviewed By:</th>
+                    </tr>
+                  </thead>
+                  <tbody id="auditor"> 
+                    <tr>
+                      <td>HL Madera</td>
+                    </tr>
+                     <tr>
+                      <td>Name of Auditor</td>
+                    </tr>
+                  </tbody>
+           
+                </table>
+              </div>
+            </div>
             <div class="d-flex justify-content-end mt-3">
-              <button type="submit" class="btn btn-primary mt-3">Submit</button>
+             
             </div>
         </div>
+        <div class="card-footer text-right">
+  <div class="d-flex">
+    {{-- <a href="#" class="btn btn-link">Cancel</a> --}}
+    <button type="submit" class="btn btn-primary ml-auto">Submit</button> 
+  </div>
+</div>
       </form>
     </div>
   </div>

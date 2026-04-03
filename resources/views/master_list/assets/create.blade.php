@@ -3,14 +3,16 @@
     <form action="{{ route('saveasset') }}" method="post">
     @csrf
     <div class="row">
-                <div class="form-group mb-3 ">
-                    <label class="form-label">Asset Number</label>
-                    <div >
-                        <input name="asset_no" type="text" class="form-control" aria-describedby="Asset Number" placeholder="Asset Number" required>
-                        {{-- <small class="form-hint">We'll never share your email with anyone else.</small> --}}
-                    </div>
+        <div class="col-6">
+            <div class="form-group mb-3 ">
+                <label class="form-label">Asset Number</label>
+                <div >
+                    <input name="asset_no" type="text" class="form-control" aria-describedby="Asset Number" placeholder="Asset Number" required>
+                    {{-- <small class="form-hint">We'll never share your email with anyone else.</small> --}}
                 </div>
             </div>
+        </div>
+    </div>
     <div class="row" >
         <div class="col-md-6 col-6"> 
             
