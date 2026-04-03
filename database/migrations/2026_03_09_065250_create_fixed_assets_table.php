@@ -56,6 +56,9 @@ return new class extends Migration
             $table->softDeletes(); // Adds deleted_at for archiving assets
             $table->timestamps();
 
+
+            
+
             
 
                         
