@@ -8,9 +8,9 @@ use App\Models\FixedAsset;
 class Department extends Model
 {
     protected $guarded = ['id'];
-    public function asset()
+    public function fixedAssets()
     {
-        return $this->hasOne(FixedAsset::class);
+        return $this->hasMany(FixedAsset::class);
     }   
     
 }
