@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('departments', function (Blueprint $table) {
+        Schema::create('g_l_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // Unique code for the department
-            $table->string('name'); // Name of the department
-            $table->Integer('division_id')->default(0);
+            $table->string('code'); // GL CODE
             $table->string('description')->nullable();            // Optional description of the department
             $table->integer('created_by')->default(1);
             $table->integer('updated_by')->default(1);
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('departments');
+        Schema::dropIfExists('g_l_accounts');
     }
 };

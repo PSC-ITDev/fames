@@ -9,7 +9,7 @@ use App\Models\AssetEvaluation as Evaluation;
 class Department extends Model
 {
     protected $guarded = ['id'];
-    public function asset()
+    public function fixedAssets()
     {
         return $this->hasOne(FixedAsset::class);
     }  
