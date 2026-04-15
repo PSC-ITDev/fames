@@ -22,7 +22,7 @@ new class extends Component
           <span class="navbar-toggler-icon"></span>
         </button>
         <a href="." class="navbar-brand navbar-brand-autodark">
-          <img src="./static/logo.png" alt="Fames" 
+          <img src="../static/logo.png" alt="Fames" 
           class="bg-white">
         </a>
          
@@ -38,7 +38,7 @@ new class extends Component
               </a>
             </li>
             <li class="nav-item  dropdown">
-              <a class="nav-link dropdown-toggle" href="#navbar-base" data-toggle="dropdown" role="button" aria-expanded="false" >
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" >
                 <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
                 </span>
                 <span class="nav-link-title">
@@ -48,7 +48,7 @@ new class extends Component
               <ul class="dropdown-menu dropdown-menu-columns  dropdown-menu-columns-2">
 
                 <li >
-                  <a class="dropdown-item" href="{{ route('evaluation') }}" >
+                  <a class="dropdown-item" href="{{ route('evaluation-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 11 12 14 20 6" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>          
                     Evaluation
                   </a>
@@ -84,7 +84,7 @@ new class extends Component
             </li>
 
             <li class="nav-item  dropdown">
-              <a class="nav-link dropdown-toggle" href="#navbar-base" data-toggle="dropdown" role="button" aria-expanded="false" >
+              <a class="nav-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false" >
                 <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
                 </span>
                 <span class="nav-link-title">

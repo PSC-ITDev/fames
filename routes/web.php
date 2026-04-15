@@ -49,9 +49,13 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         Route::post('/savelocation',[MasterListController::class, 'saveLocation']) ->name('savelocation');
         Route::get('/location-list', [MasterListController::class, 'locationList'])->name('location-list');
 
-        //Fixed Asset 
+        //Evaluation Details
+        // Route::post('/submievaluationdetails',[EvaluationController::class, 'saveEvaluation']) ->name('saveevaluation');
+
+        //Evaluation 
         Route::post('/saveevaluation',[EvaluationController::class, 'saveEvaluation']) ->name('saveevaluation');
-        Route::get('/evaluation', [EvaluationController::class, 'evaluation'])->name('evaluation');
+        Route::get('/evaluationList', [EvaluationController::class, 'evaluationList'])->name('evaluation-list');
+        Route::get('/evaluationdetails/{id}', [EvaluationController::class, 'evaluationDetails'])->name('evaluation-details');
 
 
 

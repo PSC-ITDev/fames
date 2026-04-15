@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\AssetClassification as Classification;
 use App\Models\AssetLocation as Location;
 use App\Models\AssetCategory as Category;
+use App\Models\AssetEvaluationDetail as EvaluationDetail;
 
 class FixedAsset extends Model
 {
@@ -28,4 +29,9 @@ class FixedAsset extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function evaluationDetails()
+    {
+        return $this->hasOne(EvaluationDetail::class, 'asset_id', 'id');
+    }  
 }
