@@ -117,6 +117,7 @@
           </div>
           <div class="row row-deck row-cards">
             <!-- Page Content -->
+			 {{ asset('dist/css/style.css') }}
              
             {{ $slot }}
 

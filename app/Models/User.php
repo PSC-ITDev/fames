@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Role;
+use App\Models\Department;
+use App\Models\ApprovalHierarchy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\AssetEvaluation as Evaluation;
 use App\Models\Role;
