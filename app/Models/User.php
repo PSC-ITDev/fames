@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\AssetEvaluation as Evaluation;
 use App\Models\Role;
+use App\Models\Department;
+use App\Models\ApprovalHierarchy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
@@ -58,4 +60,26 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'deptid','id');
+    }  
+
+    public function hierarchy()
+    {
+        return $this->hasMany(ApprovalHierarchy::class, 'user_id', 'id');
+    }  
+
+    public function approver_user()
+    {
+        return $this->hasMany(ApprovalHierarchy::class, 'user_id', 'id')->where('type',2);
+    }  
+
+    public function confirmer_user()
+    {
+        return $this->hasMany(ApprovalHierarchy::class, 'user_id', 'id')->where('type',3);
+    }  
+
+
 }

@@ -9,6 +9,9 @@ use App\Models\Department;
 use App\Models\AssetClassification as Classification;
 use App\Models\AssetLocation as Location;
 use App\Models\AssetCategory as Category;
+use App\Models\ApprovalHierarchy;
+use App\Models\User;
+
 
 class MasterListController extends Controller
 {
@@ -68,8 +71,16 @@ class MasterListController extends Controller
         $department->description = $request->input('description');
         $department->save();
 
-        return redirect()->route('department-list');;
+        return redirect()->route('department-list');
 
+    }
+
+    public function viewDepartment(Request $request,$deptid){
+        $users = User::all();
+        $department = Department::with(['hierarchy','drafter','approver','confirmer'])->find($deptid);
+
+        view()->share('pageTitle', 'Department '. $department->name);
+        return view('master_list/departments/view', compact('department','users')); 
     }
 
     // LOCATIONS
@@ -133,6 +144,49 @@ class MasterListController extends Controller
         return redirect()->route('category-list');;
 
     }
+
+    // HIERARCHY
+    public function hierarchyList(Request $request)
+    { 
+        $hierarchies = ApprovalHierarchy::with(['user','approver_user','confirmer_user'])->get();
+        $users = User::all();
+        $departments = Department::all();
+
+       view()->share('pageTitle', 'Hierarchy List');
+        return view('master_list/hierarchy/list', compact('hierarchies','users','departments')); 
+    }
+    
+    public function saveHierarchy(Request $request,$deptid){
+        
+        $data = [];
+        foreach($request->hierarchy as $index => $users){
+            foreach($users as $user){
+                $index = trim($index, "'\"");
+                if($user){
+                    $data[] = [
+                        'user_id' => $user,
+                        'type'  => $index == 'approver_user' ? 2 : ($index == 'confirmer_user' ?  3 : 1),
+                        'deptid'   => $deptid,
+                    ];
+                }
+            }
+        }
+
+        $data = collect($data)
+            ->unique(fn ($row) => $row['deptid'].'-'.$row['type'].'-'.$row['user_id'])
+            ->values()
+            ->toArray();
+        // DD($data);
+        ApprovalHierarchy::upsert($data, ['deptid','type','user_id'],[]);
+        
+        return redirect()->route('view-department',$deptid);
+
+    }
+
+
+    
+        // Route::post('/save-hierarchy',[MasterListController::class, 'saveHierarchy']) ->name('savehierarchy');
+        // Route::get('/hierarchy-list', [MasterListController::class, 'hierarchyList'])->name('hierarchy-list');
 
 }
 

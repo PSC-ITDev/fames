@@ -22,7 +22,7 @@
                     </tr>
                 </thead>
                 @foreach($departments as $index => $department)
-                    <tr>
+                    <tr onclick="window.location.href ='{{ route('view-department', $department->id) }}'" style="cursor:pointer;">
                         <td>{{$index + 1}}</td>
                         <td class="text-muted">{{$department->name}}</td>
                         <td class="text-muted">{{$department->description}}</td>

@@ -17,7 +17,7 @@ class FixedAsset extends Model
     protected $guarded = ['id'];
     protected $table = 'fixed_assets';
     protected $fillable = [
-        'asset_no',
+        '',
         'department_id',
         'capitalization_date',
         'qty',
@@ -44,7 +44,7 @@ class FixedAsset extends Model
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => 
-                "{$attributes['asset_number']}-{$attributes['department']}",
+                "{$attributes['asset_number']}-{$attributes['department_id']}",
         );
     }
     protected function netBookValue(): Attribute

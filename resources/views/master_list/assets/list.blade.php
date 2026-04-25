@@ -8,8 +8,8 @@
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
               Add Asset
               </button>
+          </div>
         </div>
-      </div>
       <div class="card-body">   
           <div class="table-responsive">
               <table class="table card-table table-vcenter">
@@ -76,10 +76,9 @@
       </div>
     </div>
   </div>
-<div>
-    
-</div>
 </x-app-layout>
+
+
 
   <!-- item
 // asset_no

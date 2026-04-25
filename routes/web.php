@@ -36,6 +36,8 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         //Departments 
         Route::post('/savedepartment',[MasterListController::class, 'saveDepartment']) ->name('savedepartment');
         Route::get('/department-list', [MasterListController::class, 'departmentList'])->name('department-list');
+        Route::get('/view-department/{deptid}', [MasterListController::class, 'viewDepartment'])->name('view-department');
+        Route::post('/save-hierarchy/{deptid}',[MasterListController::class, 'saveHierarchy']) ->name('savehierarchy');
 
         //Categorys 
         Route::post('/savecategory',[MasterListController::class, 'saveCategory']) ->name('savecategory');
@@ -56,6 +58,11 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         Route::post('/saveevaluation',[EvaluationController::class, 'saveEvaluation']) ->name('saveevaluation');
         Route::get('/evaluationList', [EvaluationController::class, 'evaluationList'])->name('evaluation-list');
         Route::get('/evaluationdetails/{id}', [EvaluationController::class, 'evaluationDetails'])->name('evaluation-details');
+        Route::post('/updateevaluationdetail/{eval_id}',[EvaluationController::class, 'updateEvaluationDetails']) ->name('updateevaluation');
+
+        Route::post('/approve/{eval_id}',[EvaluationController::class, 'approveEvaluation']) ->name('approve-evaluation');
+        Route::post('/confirm/{eval_id}',[EvaluationController::class, 'confirmEvaluation']) ->name('confirm-evaluation');
+        Route::post('/reject/{eval_id}',[EvaluationController::class, 'rejectEvaluation']) ->name('reject-evaluation');
 
 
 

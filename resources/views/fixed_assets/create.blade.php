@@ -6,8 +6,8 @@
         <div class="col-md-6 col-6">
             <div>
               
-              <label for="quarter-select" class="form-label">Quarter</label>
-              <select class="form-select" name="qrt" i>
+              <label  class="form-label">Quarter</label>
+              <select class="form-select"  name="qrt" i>
                 <option value="1st">1st</option>
                 <option value="2nd">2nd</option>
                 <option value="3rd">3rd</option>
@@ -34,12 +34,16 @@
         <div class="form-group ">
             <label class="form-label">Department</label>
             <div >
-                <select name="department" class="form-select">
+                {{$user}}
+                <select name="department" class="form-select" {{$user->department ? "disabled":""}}>
                     @foreach($departments as $department)
-                        <option value="{{$department->id}}">{{$department->name}}</option>
+                        <option value="{{$department->id}}" {{$user->deptid == $department->id ? "selected":""}}>{{$department->name}}</option>
                     @endforeach
                 </select>
             </div>
+            @if($user->department)
+                <input type="hidden" name="department" value="{{$user->deptid}}">
+            @endif
         </div>
     </div>
     <hr />
