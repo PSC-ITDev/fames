@@ -22,6 +22,7 @@
     <link href="{{ asset('dist/css/tabler.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('dist/css/demo.min.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('dist/css/style.css') }}" rel="stylesheet"/>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
       body {
       	display: none;
@@ -61,7 +62,7 @@
               <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-toggle="dropdown">
                 <span class="avatar" style="background-image: url(./static/avatars/000f.jpg)"></span>
                 <div class="d-none d-xl-block pl-2">
-                  <div>Edili Joy</div>
+                  <div>{{auth()->user()->name}}</div>
                   <div class="mt-1 small text-muted">IA - Div. Manager</div>
                 </div>
               </a>
@@ -116,7 +117,6 @@
           </div>
           <div class="row row-deck row-cards">
             <!-- Page Content -->
-			 {{ asset('dist/css/style.css') }}
              
             {{ $slot }}
 

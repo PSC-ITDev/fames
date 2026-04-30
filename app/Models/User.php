@@ -11,11 +11,14 @@ use App\Models\Role;
 use App\Models\Department;
 use App\Models\ApprovalHierarchy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Activity;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+
 
     /**
      * The attributes that are mass assignable.
@@ -51,15 +54,27 @@ class User extends Authenticatable
         ];
     }
 
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+    
+public function scopeWithRole($query, $roleName)
+{
+    return $query->whereHas('role', function ($q) use ($roleName) {
+        $q->where('name', $roleName);
+    });
+}
+
+
+
+    
     public function evaluation()
     {
         return $this->hasOne(Evaluation::class, 'created_by', 'id');
     }   
 
-    public function role(): BelongsTo
-    {
-        return $this->belongsTo(Role::class, 'role_id');
-    }
+
 
     public function department(): BelongsTo
     {
@@ -79,7 +94,40 @@ class User extends Authenticatable
     public function confirmer_user()
     {
         return $this->hasMany(ApprovalHierarchy::class, 'user_id', 'id')->where('type',3);
+    }
+
+    public function approved1()
+    {
+        return $this->hasOne(Evaluation::class, 'approved_by1', 'id');
     }  
+
+    public function approved2()
+    {
+        return $this->hasOne(Evaluation::class, 'approved_by2', 'id');
+    }  
+
+    public function confirm1()
+    {
+        return $this->hasOne(Evaluation::class, 'confirmed_by1', 'id');
+    }  
+
+    public function confirm2()
+    {
+        return $this->hasOne(Evaluation::class, 'confirmed_by2', 'id');
+    }  
+
+    public function drafter2()
+    {
+        return $this->hasOne(Evaluation::class, 'draft_by2', 'id');
+    }  
+
+
+    public function activity()
+    {
+        return $this->hasOne(Activity::class, 'performed_by', 'id');
+    } 
+
+
 
 
 }

@@ -35,5 +35,37 @@ class AssetEvaluation extends Model
     {
         return $this->hasMany(EvaluationDetails::class, 'asset_form_id', 'id')->where('iswrite_off',0);
     }
+    
+    public function approved1()
+    {
+        return $this->belongsTo(User::class, 'approved_by1', 'id');
+    } 
+
+    public function approved2()
+    {
+        return $this->belongsTo(User::class, 'approved_by2', 'id');
+    }  
+
+    public function confirm1()
+    {
+        return $this->belongsTo(User::class, 'confirmed_by1', 'id');
+    }  
+
+    public function confirm2()
+    {
+        return $this->belongsTo(User::class, 'confirmed_by2', 'id');
+    }  
+
+    public function drafter2()
+    {
+        return $this->belongsTo(User::class, 'draft_by2', 'id');
+    }  
+
+    public function activity()
+    {
+        return $this->hasMany(Activity::class, 'type_id', 'id')->where('type','Asset Evaluation');
+    }
+
+
    
 }

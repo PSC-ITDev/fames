@@ -49,22 +49,23 @@
                     <tbody>
                       @php
                           $approval_statuses = [
-                              0 => 'Draft',
-                              1 => 'For Approval',
-                              2 => 'Approved',
-                              3 => 'Confirmed',
-                              4 => 'Rejected'
+                              0 => 'Pending',
+                              10 => 'For Approval',
+                              20 => 'Approved',
+                              30 => 'Confirmed',
+                              50 => 'Rejected'
                           ];
                       @endphp
                       @foreach($evaluations as $index => $evaluation)
-
+                          @php 
+                          $approval_status = $approval_statuses[floor($evaluation->approval_status / 10) * 10]; @endphp
                           <tr onclick="window.location.href ='{{ route('evaluation-details', $evaluation->id) }}'" style="cursor:pointer;">
                               <td>{{$index}}</td>
                               <td>{{$evaluation->department->name
                                 }}</td>
                               <td class="text-muted ">{{$evaluation->year}}</td>
                               <td class="text-muted">{{$evaluation->quarter}}</td>
-                              <td class="text-muted qty"> {{$approval_statuses[$evaluation->approval_status] ?? 'Unknown' }}</td>
+                              <td class="text-muted qty"> {{$approval_status ?? 'Unknown' }}</td>
                               <td class="text-muted bum">{{$evaluation->creator->name ?? ''}}</td>
                               <td class="text-muted">{{$evaluation->confirmed_date}}</td>
                               <td class="text-muted ">{{$evaluation->confirmed_by}}</td>

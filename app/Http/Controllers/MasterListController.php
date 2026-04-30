@@ -176,9 +176,24 @@ class MasterListController extends Controller
             ->unique(fn ($row) => $row['deptid'].'-'.$row['type'].'-'.$row['user_id'])
             ->values()
             ->toArray();
+
+        $newKeys = collect($data)->map(fn ($r) => "{$r['deptid']}-{$r['type']}-{$r['user_id']}");
+
+        ApprovalHierarchy::get()->each(function ($row) use ($newKeys) {
+            $key = "{$row->deptid}-{$row->type}-{$row->user_id}";
+            
+            if (!$newKeys->contains($key)) {
+                ApprovalHierarchy::where('deptid', $row->deptid)
+                    ->where('type', $row->type)
+                    ->where('user_id', $row->user_id)
+                    ->delete();
+            }
+        });
         // DD($data);
         ApprovalHierarchy::upsert($data, ['deptid','type','user_id'],[]);
-        
+
+
+                
         return redirect()->route('view-department',$deptid);
 
     }

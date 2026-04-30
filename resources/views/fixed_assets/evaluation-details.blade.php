@@ -3,21 +3,39 @@
     <div class="card">
 
         @if($is_approver)
-            <form id="myForm" action="{{  route('approve-evaluation',$evaluation->id) }}" method="POST">
+            <form id="{{$can_edit ? '' : 'myForm'}}" action="{{  route('approve-evaluation',$evaluation->id) }}" method="POST">
         @elseif($is_confirmer)
-            <form id="myForm" action="{{  route('confirm-evaluation',$evaluation->id) }}" method="POST">
+            <form id="{{$can_edit ? '' : 'myForm'}}" action="{{  route('confirm-evaluation',$evaluation->id) }}" method="POST">
         @else
-            <form action="{{  route('updateevaluation',$evaluation->id) }}" method="POST">
+            <form id="{{$evaluation->approval_status > 1 ? 'myForm' : ($can_edit ? '' : 'myForm')}}" action="{{  route('updateevaluation',$evaluation->id) }}" method="POST">
         @endif
 
+         @php   
+            $approval_statuses = [
+                0 => 'Pending',
+                10 => 'For Approval',
+                20 => 'Approved',
+                30 => 'Confirmed',
+                50 => 'Rejected'
+            ];
+
+            
+            $approval_status = $approval_statuses[floor($evaluation->approval_status / 10) * 10];
+
+            $current_user = auth()->user();
+        @endphp
 
 
         @csrf
         <div class="card-header">
-            
-           
+           <div>
+                <h3>Department: <b>{{$evaluation->department->name}} </b></h3>
+           </div>
             <div class="card-options">
-              Department: <b>{{$evaluation->department->name}}</b>
+               <b>{{$approval_status}}{{$can_edit ? 'Test' : 'myForm'}}</b>
+            </div>
+            <div class="card-options">
+               <b>{{$approval_status}}</b>
             </div>
         </div>
         <div class="card-body">   
@@ -25,7 +43,7 @@
                 <div>
                   <h5><b>I. Assets On Inventory: </b></h5><br>
                 </div>
-                <div style="max-height: 300px;overflow-y: auto;">
+                <div >
                     <table class="table card-table table-vcenter table-hover" id="table1">
                         <thead>
                             <tr>
@@ -68,6 +86,7 @@
                                 <td class="hidden">
                                     <input type="text" class="hidden " name="remainingAsset[{{$asset->id}}][id]" value="{{$asset->id}}">
                                     <input type="hidden" name="remainingAsset[{{$asset->id}}][iswrite_off]" value="0">
+                                    <input type="text" class="hidden " name="remainingAsset[{{$asset->id}}][asset_id]" value="{{$asset->asset->id}}">
                                 </td>
                             </tr>
                         @endforeach
@@ -102,44 +121,221 @@
                                 <th class="hidden"></th>
                             </tr>
                         </thead>
-                    <tbody>
+                        <tbody>
 
-                        @foreach($evaluation->details_writtenOff as $index => $asset)
+                            @foreach($evaluation->details_writtenOff as $index => $asset)
 
-                            <tr data-id="{{ $asset->id }}" data-info="{{$asset->asset}}">
-                                <td><input class="form-check-input move-check" type="checkbox" checked></td>
-                                <td>{{$asset->asset->asset_number}}</td>
-                                <td><input type="text" class="form-control" value="{{ old('writtenOff[$asset->id][reason_for_writeoff]', $asset->reason_for_writeoff ?? '') }}" name="writtenOff[{{$asset->id}}][reason_for_writeoff]"></td>
-                                <td class="text-muted qty">{{$asset->asset->qty}}</td>
-                                <td>{{$asset->asset->bun}}</td>
-                                <td>{{$asset->asset->asset_description}}</td>
-                                <td><input type="date" class="form-control" name="writtenOff[{{$asset->id}}][turnover_date]"></td>
-                                <td><input type="date" class="form-control" name="writtenOff[{{$asset->id}}][adwf_date]"></td>
-                                <td><input type="text" class="form-control" name="writtenOff[{{$asset->id}}][adwf_docno]" value="{{ old('writtenOff[$asset->id][adwf_docno]', $asset->adwf_docno ?? '') }}"></td>
-                                <td class="hidden">
-                                    <input type="hidden" name="writtenOff[{{$asset->id}}][id]" value="{{$asset->id}}">
-                                    <input type="hidden" name="writtenOff[{{$asset->id}}][iswrite_off]" value="1">
-                                    <input type="hidden" name="writtenOff[{{$asset->id}}][writeoff_qty]" value="{{$asset->asset->qty}}">
-                                </td>
-                            </tr>
-                        @endforeach
+                                <tr data-id="{{ $asset->id }}" data-info="{{$asset->asset}}">
+                                    <td><input class="form-check-input move-check" type="checkbox" checked></td>
+                                    <td>{{$asset->asset->asset_number}}</td>
+                                    <td><input type="text" class="form-control" value="{{ old('writtenOff[$asset->id][reason_for_writeoff]', $asset->reason_for_writeoff ?? '') }}" name="writtenOff[{{$asset->id}}][reason_for_writeoff]"></td>
+                                    <td class="text-muted qty">{{$asset->writeoff_qty}}</td>
+                                    <td>{{$asset->asset->bun}}</td>
+                                    <td>{{$asset->asset->asset_description}}</td>
+                                    <td><input type="date" class="form-control" name="writtenOff[{{$asset->id}}][turnover_date]"></td>
+                                    <td><input type="date" class="form-control" name="writtenOff[{{$asset->id}}][adwf_date]"></td>
+                                    <td><input type="text" class="form-control" name="writtenOff[{{$asset->id}}][adwf_docno]" value="{{ old('writtenOff[$asset->id][adwf_docno]', $asset->adwf_docno ?? '') }}"></td>
+                                    <td class="hidden">
+                                        <input type="hidden" name="writtenOff[{{$asset->id}}][id]" value="{{$asset->id}}">
+                                        <input type="hidden" name="writtenOff[{{$asset->id}}][iswrite_off]" value="1">
+                                        <input type="hidden" name="writtenOff[{{$asset->id}}][writeoff_qty]" value="{{$asset->asset->qty}}">
+                                        <input type="text" class="hidden " name="writtenOff[{{$asset->id}}][asset_id]" value="{{$asset->asset->id}}">
+                                    </td>
+                                </tr>
+                            @endforeach
 
-                    </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
-            <div class="d-flex justify-content-end mt-3">
+
+            <br>
+            <br>
+            <hr>
+            <br>
+
+            <div >
+
+                <table class="table table-vcenter text-center">
+                    <thead>
+                        <tr>
+                            <th>Staff 1</th>
+                            @if($evaluation->drafter2)
+                                <th></th>
+                                <th>Staff 2</th>
+                            @endif
+                            <th></th>
+                            <th>Approver 1</th>
+                            
+                            @if($evaluation->approved2)
+                                <th></th>
+                                <th>Approver 2</th>
+                            @endif
+                            <th></th>
+                            <th>Confirmer 1</th>
+                            
+                            @if($evaluation->confirmed_by2)
+                                <th></th>
+                                <th>Confirmer 2</th>
+                            @endif
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr >
+                            <td>
+                                    <select name="user1" class="form-select text-center" disabled>
+                            
+                                        <option value="" selected></option>
+                                        @foreach ($users->filter(function ($user) {
+                                            return $user->role?->name === 'User';
+                                        }) as $user)
+                                            <option value="{{ $user->id }}" {{$evaluation->creator?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                            </td>
+                            @if($evaluation->drafter2)
+                                <td></td>
+                                <td>
+
+                                    <select name="user2" class="form-select text-center">
+                                
+                                        <option value="" selected></option>
+                                        @foreach ($users->filter(function ($user) {
+                                            return $user->role?->name === 'User';
+                                        }) as $user)
+                                            <option value="{{ $user->id }}" {{$evaluation->drafter2?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                            @endif
+                            <td></td>
+                            <td>
+                                    <select name="approver_user1" class="form-select text-center">
+                            
+                                        <option value="" selected></option>
+                                        @foreach ($users->filter(function ($user) {
+                                            return $user->role?->name === 'Admin';
+                                        }) as $user)
+                                            <option value="{{ $user->id }}" {{$evaluation->approved1?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                            </td>
+                            @if($evaluation->approved2)
+                                <td></td>
+
+                                <td>
+                                    <select name="approver_user2" class="form-select text-center">
+                                
+                                        <option value="" selected></option>
+                                        @foreach ($users->filter(function ($user) {
+                                            return $user->role?->name === 'Admin';
+                                        }) as $user)
+                                            <option value="{{ $user->id }}" {{$evaluation->approved2?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                            @endif
+                            <td></td>
+                            <td>
+                                <select name="confirmer_user1" class="form-select text-center">
+                                
+                                    <option value="" selected></option>
+                                    @foreach ($users->filter(function ($user) {
+                                        return $user->role?->name === 'SuperAdmin';
+                                    }) as $user)
+                                        <option value="{{ $user->id }}" {{$evaluation->confirm1?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            
+                            @if($evaluation->confirm2)
+                                <td></td>
+                                <td>
+                                    <!-- <span class="{{empty($evaluation->confirmed_date2) ? '': 'text-success'}}">
+                                        @if(!empty($evaluation->confirmed_date2))
+                                        <i class="bi bi-check-circle-fill"></i> 
+                                        @endif
+                                        <b>{{$evaluation->confirm2?->name}}</b>
+                                    </span> -->
+
+                                    
+                                    <select name="confirmer_user2" class="form-select text-center">
+                                    
+                                        <option value="" selected></option>
+                                        @foreach ($users->filter(function ($user) {
+                                            return $user->role?->name === 'SuperAdmin';
+                                        }) as $user)
+                                            <option value="{{ $user->id }}" {{$evaluation->confirm2?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                
+                            @endif
+                        </tr>
+
+                    </tbody>
+                </table>
+  
+            </div>
+
+            <div>
                 
-                @if($is_approver || $is_confirmer)
-                    <div  class="mr-3">
-                        <button type="button" class="btn btn-danger mt-3 reject" data-bs-toggle="modal" data-bs-target="#rejectModal">
-                        Reject
-                        </button>
-                    </div>
-                @endif
-                <div>
-                    <button type="submit" class="btn btn-primary mt-3">{{$is_approver ? "Approve" :( $is_confirmer ? "Confirm" : "Submit")}}</button>
+                <br>
+                <hr>
+                <br>
+                <div class="text-center">
+                    <h2>ACTIVITIES</h2>
                 </div>
+                <br>
+                <table class="table table-vcenter text-center">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Activity</th>
+                            <th>Performed By</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach($evaluation->activity as $index => $act)
+                            <tr class="{{(\Illuminate\Support\Str::contains($act->activity, 'Rejected')) ? 'text-danger' : 'text-success' }}">
+                                <td>{{$index}}</td>
+                                <td>{{$act->activity}}</td>
+                                <td>{{$act->performer->name}}</td>
+                                <td>{{$act->created_at}}</td>
+
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+
+
+                    @if((!($evaluation->approval_status >= 50)) && (($is_approver && ($evaluation->approval_status >= 10 && $evaluation->approval_status < 20)) || ($is_confirmer && ($evaluation->approval_status >= 20 && $evaluation->approval_status < 30))))
+                        <div  class="mr-3">
+                            <button type="button" class="btn btn-danger mt-3 reject" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                            Reject
+                            </button>
+                        </div>
+                    
+                        <div>
+                            <button type="submit" class="btn btn-primary mt-3">{{$is_approver ? "Approve" :( $is_confirmer ? "Confirm" : "Submit")}}</button>
+                        </div>
+                    @elseif($evaluation->approval_status < 10 && (($evaluation->draft_by1 == $current_user->id && empty($evaluation->draft_date1)) || ($evaluation->draft_by2 == $current_user->id && empty($evaluation->draft_date2))))
+
+                        <div>
+                            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                        </div>
+                    @endif
+
+                
+                
+
+
             </div>
         </div>
       </form>
@@ -182,12 +378,12 @@
                 </div>
 
                 <div class="modal-body">
-                    <textarea name="description" class="form-control"  data-toggle="autosize" name="example-textarea-input" rows="5" placeholder="Description"> </textarea>
+                    <textarea name="reason" class="form-control"  data-toggle="autosize" name="example-textarea-input" rows="5" placeholder="Reason"> </textarea>
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" >Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" >Confirm</button>
                 </div>
             </form>
 
@@ -205,26 +401,32 @@
 
     const form = document.getElementById("myForm");
 
-    const elements = form.querySelectorAll("input, select, textarea, button");
 
-    elements.forEach(el => {
-        if (el.type !== "submit" && el.type !== "hidden"  &&
-        !el.classList.contains("reject")) {
+    if (form) {
+
+
+        const elements = form.querySelectorAll("input, select, textarea, button");
+
+        elements.forEach(el => {
+            if (el.type !== "submit" && el.type !== "hidden"  &&
+            !el.classList.contains("reject")) {
+                el.disabled = true;
+            }
+        });
+
+        document.querySelectorAll("#myForm input.move-check").forEach(el => {
+            if (!el.name) return; // skip if no name
+
+            const hidden = document.createElement("input");
+            hidden.type = "hidden";
+            hidden.name = el.name;
+            hidden.value = el.checked ? "1" : "0";
+
+            el.after(hidden);
             el.disabled = true;
-        }
-    });
+        });
+    }
 
-    document.querySelectorAll("#myForm input.move-check").forEach(el => {
-        if (!el.name) return; // skip if no name
-
-        const hidden = document.createElement("input");
-        hidden.type = "hidden";
-        hidden.name = el.name;
-        hidden.value = el.checked ? "1" : "0";
-
-        el.after(hidden);
-        el.disabled = true;
-    });
 
   document.addEventListener("DOMContentLoaded", function () {
 
@@ -398,6 +600,7 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
                 <input type="hidden" name="writtenOff[${id}][id]" value="${id}">
                 <input type="hidden" name="writtenOff[${id}][iswrite_off]" value="1">
                 <input type="hidden" name="writtenOff[${id}][writeoff_qty]" value="${qtyToMove}">
+                <input type="hidden" name="writtenOff[${id}][asset_id]" value="${info.id}">
             </td>
         `;
 

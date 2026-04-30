@@ -15,11 +15,13 @@
                 <label class="form-label">Drafter </label>
                 <div class="form-group mb-3 ">
                     <div >
-                        <select name="hierarchy['user'][]" class="form-select" >
+                        <select name="hierarchy['user'][]" class="form-select" disabled>
                             
                             <option value="" selected></option>
-                            @foreach ($users as $user)
-                                <option value="{{ $user->id }}" {{$department->drafter->get(0)?->user_id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                            @foreach ($users->filter(function ($user) {
+                                return $user->role?->name === 'User';
+                            }) as $user)
+                                <option value="{{ $user->id }}" {{auth()->user()?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -29,8 +31,10 @@
                         <select name="hierarchy['user'][]" class="form-select" >
                             
                             <option value="" selected></option>
-                            @foreach ($users as $user)
-                                <option value="{{ $user->id }}" {{$department->drafter->get(1)?->user_id == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
+                            @foreach ($users->filter(function ($user) {
+                                return $user->role?->name === 'User';
+                            }) as $user)
+                                <option value="{{ $user->id }}" {{$department->drafter->get(0)?->user_id == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -44,7 +48,9 @@
                         <select name="hierarchy['approver_user'][]" class="form-select" >
                             
                             <option value="" selected></option>
-                            @foreach ($users as $user)
+                            @foreach ($users->filter(function ($user) {
+                                return $user->role?->name === 'Admin';
+                            }) as $user)
 
                                 <option value="{{ $user->id }}" {{$department->approver->get(0)?->user_id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
                             @endforeach
@@ -56,7 +62,9 @@
                         <select name="hierarchy['approver_user'][]" class="form-select" >
                             
                             <option value="" selected></option>
-                            @foreach ($users as $user)
+                            @foreach ($users->filter(function ($user) {
+                                return $user->role?->name === 'Admin';
+                            }) as $user)
                                 <option value="{{ $user->id }}" {{$department->approver->get(1)?->user_id == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
                         </select>
@@ -72,7 +80,9 @@
                         <select name="hierarchy['confirmer_user'][]" class="form-select" >
                             
                             <option value="" selected></option>
-                            @foreach ($users as $user)
+                            @foreach ($users->filter(function ($user) {
+                                return $user->role?->name === 'SuperAdmin';
+                            }) as $user)
                                 <option value="{{ $user->id }}" {{$department->confirmer->get(0)?->user_id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
                             @endforeach
                         </select>
@@ -83,7 +93,9 @@
                         <select name="hierarchy['confirmer_user'][]" class="form-select" >
                             
                             <option value="" selected></option>
-                            @foreach ($users as $user)
+                            @foreach ($users->filter(function ($user) {
+                                return $user->role?->name === 'SuperAdmin';
+                            }) as $user)
                                 <option value="{{ $user->id }}" {{$department->confirmer->get(1)?->user_id == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
                         </select>

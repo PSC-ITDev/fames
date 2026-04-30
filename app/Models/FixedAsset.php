@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes; 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Department;
+use App\Models\User;
 use App\Models\AssetClassification as Classification;
 use App\Models\AssetCategory as Category;
 use App\Models\AssetLocation as Location;
@@ -112,4 +113,5 @@ class FixedAsset extends Model
     {
         return $this->hasOne(EvaluationDetail::class, 'asset_id', 'id');
     }  
+
 }
