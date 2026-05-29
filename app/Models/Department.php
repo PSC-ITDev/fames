@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\FixedAsset;
 use App\Models\AssetEvaluation as Evaluation;
 use App\Models\User;
+use App\Models\Division;
 
 class Department extends Model
 {
@@ -24,6 +25,11 @@ class Department extends Model
     {
         return $this->hasOne(User::class,'deptid','id');
     }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'division_id','id');
+    }  
 
     public function hierarchy()
     {

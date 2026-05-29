@@ -33,8 +33,8 @@
 
                       <tr>
                           <td>{{$index + 1}}</td>
-                          <td class="text-muted">{{$asset->asset_no}}</td>
-                          <td class="text-muted">{{$asset->capitalization_date}}</td>
+                          <td class="text-muted">{{$asset->asset_number}}</td>
+                          <td class="text-muted">{{$asset->capitalization_date->format('Y-m-d') }}</td>
                           <td class="text-muted">{{$asset->qty}}</td>
                           <td class="text-muted">{{$asset->bum}}</td>
                           <td class="text-muted">{{$asset->asset_description}}</td>

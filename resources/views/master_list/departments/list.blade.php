@@ -18,7 +18,7 @@
                     <tr>
                         <th>Item</th>
                         <th>Name</th>
-                        <th>Description</th>
+                        <th>Description</th> 
                     </tr>
                 </thead>
                 @foreach($departments as $index => $department)

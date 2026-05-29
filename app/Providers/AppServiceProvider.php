@@ -22,5 +22,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Now $siteVersion is available in every Blade file automatically
         View::share('pageTitle', '');
+        View::share('menu', 0);
+        \View::share('sigPath', asset('storage/signatures/RUIZ01.png'));
+        \View::share('dateFmt', 'M d, Y'); // [cite: 38]
     }
 }

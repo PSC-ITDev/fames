@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\FixedAsset;
 use App\Models\AssetEvaluation as Evaluation;
+use App\Models\AssetStatus;
 
 class AssetEvaluationDetail extends Model
 {
@@ -17,5 +18,10 @@ class AssetEvaluationDetail extends Model
     public function evaluation()
     {
         return $this->belongsTo(Evaluation::class, 'asset_form_id', 'id');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(AssetStatus::class);
     }
 }

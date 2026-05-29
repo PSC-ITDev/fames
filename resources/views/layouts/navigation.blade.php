@@ -38,60 +38,33 @@ new class extends Component
               </a>
             </li>
             <li class="nav-item  dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" >
+              <a class="nav-link dropdown-toggle show" data-toggle="dropdown" role="button" aria-expanded="false" >
                 <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
                 </span>
                 <span class="nav-link-title">
                   Fixed Assets
                 </span>
               </a>
-              <ul class="dropdown-menu dropdown-menu-columns  dropdown-menu-columns-2">
+              <ul class="dropdown-menu dropdown-menu-columns  dropdown-menu-columns-2 show">
 
                 <li >
                   <a class="dropdown-item" href="{{ route('evaluation-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 11 12 14 20 6" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>          
                     Evaluation
                   </a>
-                </li>
-                     
-                
-                {{-- <li class="dropright">
-                  <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-toggle="dropdown" role="button" aria-expanded="false" >
-                    Authentication
-                  </a>
-                  <div class="dropdown-menu">
-                    <a href="./sign-in.html" class="dropdown-item">Sign in</a>
-                    <a href="./sign-up.html" class="dropdown-item">Sign up</a>
-                    <a href="./forgot-password.html" class="dropdown-item">Forgot password</a>
-                    <a href="./terms-of-service.html" class="dropdown-item">Terms of service</a>
-                  </div>
-                </li>
-                <li class="dropright">
-                  <a class="dropdown-item dropdown-toggle" href="#sidebar-error" data-toggle="dropdown" role="button" aria-expanded="false" >
-                    Error pages
-                  </a>
-                  <div class="dropdown-menu">
-                    <a href="./400.html" class="dropdown-item">400 page</a>
-                    <a href="./401.html" class="dropdown-item">401 page</a>
-                    <a href="./403.html" class="dropdown-item">403 page</a>
-                    <a href="./404.html" class="dropdown-item">404 page</a>
-                    <a href="./500.html" class="dropdown-item">500 page</a>
-                    <a href="./503.html" class="dropdown-item">503 page</a>
-                    <a href="./maintenance.html" class="dropdown-item">Maintenance page</a>
-                  </div>
-                </li> --}}
+                </li> 
               </ul>
             </li>
 
             <li class="nav-item  dropdown">
-              <a class="nav-link dropdown-toggle"  data-toggle="dropdown" role="button" aria-expanded="false" >
+              <a class="nav-link dropdown-toggle show"  data-toggle="dropdown" role="button" aria-expanded="false" >
                 <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
                 </span>
                 <span class="nav-link-title">
                   Master List
                 </span>
               </a>
-              <ul class="dropdown-menu dropdown-menu-columns  dropdown-menu-columns-2">
+              <ul class="dropdown-menu dropdown-menu-columns  dropdown-menu-columns-2 show">
                   <li >
                   <a class="dropdown-item" href="{{ route('asset-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
@@ -124,31 +97,7 @@ new class extends Component
                 </li>
                      
                 
-                {{-- <li class="dropright">
-                  <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-toggle="dropdown" role="button" aria-expanded="false" >
-                    Authentication
-                  </a>
-                  <div class="dropdown-menu">
-                    <a href="./sign-in.html" class="dropdown-item">Sign in</a>
-                    <a href="./sign-up.html" class="dropdown-item">Sign up</a>
-                    <a href="./forgot-password.html" class="dropdown-item">Forgot password</a>
-                    <a href="./terms-of-service.html" class="dropdown-item">Terms of service</a>
-                  </div>
-                </li>
-                <li class="dropright">
-                  <a class="dropdown-item dropdown-toggle" href="#sidebar-error" data-toggle="dropdown" role="button" aria-expanded="false" >
-                    Error pages
-                  </a>
-                  <div class="dropdown-menu">
-                    <a href="./400.html" class="dropdown-item">400 page</a>
-                    <a href="./401.html" class="dropdown-item">401 page</a>
-                    <a href="./403.html" class="dropdown-item">403 page</a>
-                    <a href="./404.html" class="dropdown-item">404 page</a>
-                    <a href="./500.html" class="dropdown-item">500 page</a>
-                    <a href="./503.html" class="dropdown-item">503 page</a>
-                    <a href="./maintenance.html" class="dropdown-item">Maintenance page</a>
-                  </div>
-                </li> --}}
+               
               </ul>
             </li>
             <li class="nav-item">
@@ -163,7 +112,7 @@ new class extends Component
                 </span>
               </a>
             </li>
-            <li class="nav-item dropdown">
+            {{-- <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#navbar-extra" data-toggle="dropdown" role="button" aria-expanded="false" >
                 <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 17.75l-6.172 3.245 1.179-6.873-4.993-4.867 6.9-1.002L12 2l3.086 6.253 6.9 1.002-4.993 4.867 1.179 6.873z" /></svg>
                 </span>
@@ -218,7 +167,7 @@ new class extends Component
                   </a>
                 </li>
               </ul>
-            </li>
+            </li> --}}
             
           </ul>
         </div>

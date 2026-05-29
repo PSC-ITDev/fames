@@ -41,9 +41,9 @@
                             <th>Year</th>
                             <th>Quarter</th>
                             <th>Approval Status</th>
-                            <th>Created By</th>
-                            <th>Confirmed Date</th>
-                            <th>Confirmed By</th>
+                            {{-- <th>Prepared By</th> --}}
+                            {{-- <th>Confirmed Date</th>
+                            <th>Confirmed By</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -60,15 +60,14 @@
                           @php 
                           $approval_status = $approval_statuses[floor($evaluation->approval_status / 10) * 10]; @endphp
                           <tr onclick="window.location.href ='{{ route('evaluation-details', $evaluation->id) }}'" style="cursor:pointer;">
-                              <td>{{$index}}</td>
-                              <td>{{$evaluation->department->name
-                                }}</td>
-                              <td class="text-muted ">{{$evaluation->year}}</td>
+                              <td>{{ $index + 1 }}</td>
+                              <td>{{ $evaluation->department->name }}</td>
+                              <td class="text-muted ">{{ $evaluation->year }}</td>
                               <td class="text-muted">{{$evaluation->quarter}}</td>
                               <td class="text-muted qty"> {{$approval_status ?? 'Unknown' }}</td>
-                              <td class="text-muted bum">{{$evaluation->creator->name ?? ''}}</td>
-                              <td class="text-muted">{{$evaluation->confirmed_date}}</td>
-                              <td class="text-muted ">{{$evaluation->confirmed_by}}</td>
+                              {{-- <td class="text-muted bum">{{$evaluation->creator->name ?? ''}}</td> --}}
+                              {{-- <td class="text-muted">{{$evaluation->confirmed_date}}</td>
+                              <td class="text-muted ">{{$evaluation->confirmed_by}}</td> --}}
                               
                           </tr>
                       @endforeach

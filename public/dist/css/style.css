@@ -2,3 +2,31 @@
 {
     max-width: 100% !important;
 }
+
+
+
+/* 1. Force the table to distribute space evenly */
+.uniform-table {
+    table-layout: fixed;
+    width: 100%;
+}
+/* 2. Target the main content columns */
+/* Adjust 'width' if you have many columns, e.g., 20% for 5 columns */
+.uniform-table th:not(.spacer), 
+.uniform-table td:not(.spacer) {
+    width: 180px; /* Or use a percentage like 20% */
+    word-wrap: break-word;
+}
+
+/* 3. Style for the empty spacer columns to keep them narrow */
+.spacer {
+    width: 20px !important;
+}
+
+/* Keep signature images from overflowing their uniform container */
+.sig-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}

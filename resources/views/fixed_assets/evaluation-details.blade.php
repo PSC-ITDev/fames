@@ -32,7 +32,9 @@
                 <h3>Department: <b>{{$evaluation->department->name}} </b></h3>
            </div>
             <div class="card-options">
-               <b>{{$approval_status}}{{$can_edit ? 'Test' : 'myForm'}}</b>
+               <b>
+                {{-- {{$approval_status}}{{$can_edit ? ' ' : 'Evaluation'}} --}}
+                </b>
             </div>
             <div class="card-options">
                <b>{{$approval_status}}</b>
@@ -44,20 +46,21 @@
                   <h5><b>I. Assets On Inventory: </b></h5><br>
                 </div>
                 <div >
-                    <table class="table card-table table-vcenter table-hover" id="table1">
+                    <table class="table card-table table-vcenter table-hover table-striped" id="table1">
                         <thead>
                             <tr>
-                                <th></th>
+                                @if(!$notdraft)  
+                                    <th></th>
+                                @endif
                                 <th>Asset No.</th>
                                 <th>Capitalization Date</th>
                                 <th>Qty</th>
                                 <th>BUn</th>
                                 <th>Asset Description</th>
                                 <th>Other Identifiers</th>
-
                                 <th>Status</th>
                                 <th>Corrective Action Taken
-                                <br><small>Unserviceable or Undergoing Repair</small>
+                                    <br><small>Unserviceable or Undergoing Repair</small>
                                 </th>
                                 <th class="hidden"></th>
                             </tr>
@@ -66,23 +69,38 @@
                         @foreach($evaluation->details_remaining as $index => $asset)
 
                             <tr data-id="{{ $asset->id }}" data-info="{{$asset->asset}}">
-                                <td><input class="form-check-input move-check" type="checkbox" id="check{{$asset->id}}"></td>
+                                @if (!$notdraft)
+                                    <td>
+                                        <input class="form-check-input move-check" type="checkbox" id="check{{$asset->id}}">
+                                    </td>    
+                                @endif                                   
+                                
                                 <td class="text-muted asset_no">{{$asset->asset->asset_number ?? ""}}</td>
-                                <td class="text-muted">{{$asset->asset->capitalization_date}}</td>
+                                <td class="text-muted">{{$asset->asset->capitalization_date->format('M d, Y')}}</td>
                                 <td class="text-muted qty">{{$asset->asset->qty}}</td>
                                 <td class="text-muted bum">{{$asset->asset->bun}}</td>
                                 <td class="text-muted asset_description">{{$asset->asset->asset_description}}</td>
-                                <td class="text-muted ">{{$asset->asset->other_identifier}}</td>
-
-                                <td class="text-muted">
-                                    <select name="remainingAsset[{{$asset->id}}][asset_status]" class="form-select" >
-                                        @foreach ($statuses as $status)
-                                            <option value="{{ $status->id }}" {{(int) $asset->asset_status == (int) $status->id ? "selected" : ""}}>{{ $status->name }}</option>
-                                        @endforeach
-                                    </select>
+                                <td class="text-muted ">
+                                    {{$asset->asset->other_identifier}}
                                 </td>
-                                <td class="text-muted"><input type="text" class="form-control" name="remainingAsset[{{$asset->id}}][corrective_actiion_taken]"  value="{{ old('remainingAsset[$asset->id][corrective_actiion_taken]', $asset->corrective_actiion_taken ?? '') }}"></td>
-                                
+                                <td class="text-muted">
+                                    @if ($notdraft)
+                                        {{ $statuses->find($asset->asset_status)->name }}
+                                    @else
+                                        <select name="remainingAsset[{{$asset->id}}][asset_status]" class="form-select" >
+                                            @foreach ($statuses as $status)
+                                                <option value="{{ $status->id }}" {{(int) $asset->asset_status == (int) $status->id ? "selected" : ""}}>{{ $status->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    @endif
+                                </td>
+                                <td class="text-muted">
+                                    @if ($notdraft)
+                                        {{ old('remainingAsset[$asset->id][corrective_actiion_taken]', $asset->corrective_actiion_taken ?? '') }}
+                                    @else
+                                        <input type="text" class="form-control" name="remainingAsset[{{$asset->id}}][corrective_actiion_taken]"  value="{{ old('remainingAsset[$asset->id][corrective_actiion_taken]', $asset->corrective_actiion_taken ?? '') }}">
+                                    @endif
+                                </td>                                
                                 <td class="hidden">
                                     <input type="text" class="hidden " name="remainingAsset[{{$asset->id}}][id]" value="{{$asset->id}}">
                                     <input type="hidden" name="remainingAsset[{{$asset->id}}][iswrite_off]" value="0">
@@ -102,22 +120,21 @@
                 <div>
                   <h5><b>B. Items Written off or Dispose within this quarter. </b></h5><br>
                 </div>
-                <div style="max-height: 300px;overflow-y: auto;">
-                    
-                    <table class="table card-table table-vcenter" id="table2">
+                <div style="max-height: 300px;overflow-y: auto;">                    
+                    <table class="table card-table table-vcenter table-striped " id="table2">
                         <thead>
                             <tr>
-                                <th></th>
+                                @if(!$notdraft)  
+                                    <th></th>
+                                @endif
                                 <th>Asset No.</th>
                                 <th>Reason for Write-off</th>
                                 <th>Qty</th>
                                 <th>BUn</th>
                                 <th>Asset Description</th>
                                 <th>Date of Turn-over to Holding Station</th>
-
                                 <th>Date of ADWF</th>
-                                <th>ADWF Document No.</th>
-                                
+                                <th>ADWF Document No.</th>                                
                                 <th class="hidden"></th>
                             </tr>
                         </thead>
@@ -126,15 +143,48 @@
                             @foreach($evaluation->details_writtenOff as $index => $asset)
 
                                 <tr data-id="{{ $asset->id }}" data-info="{{$asset->asset}}">
-                                    <td><input class="form-check-input move-check" type="checkbox" checked></td>
-                                    <td>{{$asset->asset->asset_number}}</td>
-                                    <td><input type="text" class="form-control" value="{{ old('writtenOff[$asset->id][reason_for_writeoff]', $asset->reason_for_writeoff ?? '') }}" name="writtenOff[{{$asset->id}}][reason_for_writeoff]"></td>
-                                    <td class="text-muted qty">{{$asset->writeoff_qty}}</td>
+                                    @if (!$notdraft)                                                                            
+                                    <td>
+                                        <input class="form-check-input move-check" type="checkbox" checked>
+                                    </td>
+                                    @endif
+                                    <td>
+                                        {{ $asset->asset->asset_number }}
+                                    </td>
+                                    <td>
+                                        @if ($notdraft)
+                                            {{ $asset->reason_for_writeoff   }}
+                                        @else
+                                            <input type="text" class="form-control" value="{{ old('writtenOff[$asset->id][reason_for_writeoff]', $asset->reason_for_writeoff ?? '') }}" name="writtenOff[{{$asset->id}}][reason_for_writeoff]">
+                                        @endif                                        
+                                    </td>
+                                    <td class="text-muted qty">
+                                        {{$asset->writeoff_qty}}
+                                    </td>
                                     <td>{{$asset->asset->bun}}</td>
-                                    <td>{{$asset->asset->asset_description}}</td>
-                                    <td><input type="date" class="form-control" name="writtenOff[{{$asset->id}}][turnover_date]"></td>
-                                    <td><input type="date" class="form-control" name="writtenOff[{{$asset->id}}][adwf_date]"></td>
-                                    <td><input type="text" class="form-control" name="writtenOff[{{$asset->id}}][adwf_docno]" value="{{ old('writtenOff[$asset->id][adwf_docno]', $asset->adwf_docno ?? '') }}"></td>
+                                    <td>{{$asset->asset->asset_description}}</td>                                    
+                                    <td>
+                                        @if($notdraft)
+                                           {{  \Carbon\Carbon::parse($asset->turnover_date)->format('M d, Y') }} 
+                                        @else
+                                            <input type="date" class="form-control" name="writtenOff[{{$asset->id}}][turnover_date]">   
+                                        @endif                                        
+                                    </td>
+                                    <td>
+                                        @if($notdraft)
+                                           {{ \Carbon\Carbon::parse($asset->adwf_date)->format('M d, Y') }}
+                                        @else
+                                            <input type="date" class="form-control" name="writtenOff[{{$asset->id}}][adwf_date]">  
+                                        @endif                                          
+                                    </td>
+                                    <td>
+                                        @if($notdraft)
+                                            {{ $asset->adwf_docno }}
+                                        @else
+                                            <input type="text" class="form-control" name="writtenOff[{{$asset->id}}][adwf_docno]"
+                                                value="{{ old('writtenOff[$asset->id][adwf_docno]', $asset->adwf_docno ?? '') }}">
+                                        @endif                                       
+                                    </td>
                                     <td class="hidden">
                                         <input type="hidden" name="writtenOff[{{$asset->id}}][id]" value="{{$asset->id}}">
                                         <input type="hidden" name="writtenOff[{{$asset->id}}][iswrite_off]" value="1">
@@ -154,129 +204,183 @@
             <hr>
             <br>
 
-            <div >
+            <div>
 
-                <table class="table table-vcenter text-center">
-                    <thead>
-                        <tr>
-                            <th>Staff 1</th>
-                            @if($evaluation->drafter2)
-                                <th></th>
-                                <th>Staff 2</th>
-                            @endif
-                            <th></th>
-                            <th>Approver 1</th>
-                            
-                            @if($evaluation->approved2)
-                                <th></th>
-                                <th>Approver 2</th>
-                            @endif
-                            <th></th>
-                            <th>Confirmer 1</th>
-                            
-                            @if($evaluation->confirmed_by2)
-                                <th></th>
-                                <th>Confirmer 2</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
+//APPROVAL
+<table class="table table-vcenter text-center uniform-table">
+    <thead>
+        <tr>
+            <th>Submitted by:</th>
+            @if($evaluation->drafter2)
+                <th class="spacer"></th>
+                <th></th>
+            @endif
+          
+            <th class="spacer"></th>
+            <th>Confirmed by:</th>
+            
+            @if($evaluation->confirmed_by2)
+                <th class="spacer"></th>
+                <th></th>
+            @endif
+              <th class="spacer"></th>
+            <th>Approved by:</th>
+            
+            @if($evaluation->approved2)
+                <th class="spacer"></th>
+                <th></th>
+            @endif
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="position: relative; height: 100px; vertical-align: middle;">
+                <div style="position: relative; display: inline-block;">
+                    @if( $notdraft && $evaluation->approval_status >=10 )
+                        <img src="{{ @asset('storage/signatures/RUIZ01.png ') }} " 
+                        alt="Signature" 
+                        class="sig-img" 
+                        style="width: 150px; z-index: 1; position: relative;">
+                       <label style="
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        z-index: 2;
+                        white-space: nowrap;
+                        font-weight: bold;
+                        pointer-events: none;
+                        color: rgba(0, 0, 0, 0.7);
+                    ">
+                            {{ $evaluation->creator->name }}
+                        </label>
+                        <small class="d-block">{{ $evaluation->draft_date1 }}</small>
+                    @else
+                        <label>{{ $user->name }}</label>
+                    @endif
+                </div>
+            </td>
 
-                        <tr >
-                            <td>
-                                    <select name="user1" class="form-select text-center" disabled>
-                            
-                                        <option value="" selected></option>
-                                        @foreach ($users->filter(function ($user) {
-                                            return $user->role?->name === 'User';
-                                        }) as $user)
-                                            <option value="{{ $user->id }}" {{$evaluation->creator?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
-                            </td>
-                            @if($evaluation->drafter2)
-                                <td></td>
-                                <td>
+            @if($evaluation->drafter2)
+                <td class="spacer"></td>
+                <td>
+                    <select name="user2" class="form-select text-center">
+                        <option value="" selected></option>
+                        @foreach ($users->filter(fn($u) => $u->role?->name === 'User') as $user)
+                            <option value="{{ $user->id }}" {{$evaluation->drafter2?->id == $user->id ? "selected" : ""}}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </td>
+            @endif
 
-                                    <select name="user2" class="form-select text-center">
-                                
-                                        <option value="" selected></option>
-                                        @foreach ($users->filter(function ($user) {
-                                            return $user->role?->name === 'User';
-                                        }) as $user)
-                                            <option value="{{ $user->id }}" {{$evaluation->drafter2?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                            @endif
-                            <td></td>
-                            <td>
-                                    <select name="approver_user1" class="form-select text-center">
-                            
-                                        <option value="" selected></option>
-                                        @foreach ($users->filter(function ($user) {
-                                            return $user->role?->name === 'Admin';
-                                        }) as $user)
-                                            <option value="{{ $user->id }}" {{$evaluation->approved1?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
-                            </td>
-                            @if($evaluation->approved2)
-                                <td></td>
+            <td class="spacer"></td>
 
-                                <td>
-                                    <select name="approver_user2" class="form-select text-center">
-                                
-                                        <option value="" selected></option>
-                                        @foreach ($users->filter(function ($user) {
-                                            return $user->role?->name === 'Admin';
-                                        }) as $user)
-                                            <option value="{{ $user->id }}" {{$evaluation->approved2?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                            @endif
-                            <td></td>
-                            <td>
-                                <select name="confirmer_user1" class="form-select text-center">
-                                
-                                    <option value="" selected></option>
-                                    @foreach ($users->filter(function ($user) {
-                                        return $user->role?->name === 'SuperAdmin';
-                                    }) as $user)
-                                        <option value="{{ $user->id }}" {{$evaluation->confirm1?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            
-                            @if($evaluation->confirm2)
-                                <td></td>
-                                <td>
-                                    <!-- <span class="{{empty($evaluation->confirmed_date2) ? '': 'text-success'}}">
-                                        @if(!empty($evaluation->confirmed_date2))
-                                        <i class="bi bi-check-circle-fill"></i> 
-                                        @endif
-                                        <b>{{$evaluation->confirm2?->name}}</b>
-                                    </span> -->
+            <td style="vertical-align: middle;height: 100px;">
+                <div style="position: relative; display: inline-block;">
+                @if(!$notdraft)
+                    <select name="confirmer_user1" class="form-select text-center">
+                        <option value="" selected></option>
+                        @foreach ($users->filter(fn($u) => $u->role?->name === 'SuperAdmin') as $user)
+                            <option value="{{ $user->id }}" {{$evaluation->confirm1?->id == $user->id ? "selected" : ""}}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                @elseif ($evaluation->approval_status >=30)
+                     <img src="{{ asset('storage/signatures/mortola02.png') }}" 
+                             alt="Signature" 
+                             class="sig-img"
+                             style="width: 150px; z-index: 1; position: relative;" />
+                        <label style="
+                            position: absolute; 
+                            top: 50%; 
+                            left: 50%; 
+                            transform: translate(-50%, -50%); 
+                            z-index: 2; 
+                            white-space: nowrap;
+                            font-weight: bold;
+                            pointer-events: none;
+                            color: rgba(0, 0, 0, 0.7);
+                        ">
+                          {{ $evaluation->confirm1->name  }}
+                        </label>
+                        <small class="d-block">{{ $evaluation->confirmed_date1  }}</small> 
+                @else
+                    <label>{{ $evaluation->confirm1->name }}</label>
+                @endif
+                </div>
+            </td>
+            @if($evaluation->confirm2)
+                <td class="spacer"></td>
+                <td>
+                    <select name="confirmer_user2" class="form-select text-center">
+                        <option value="" selected></option>
+                        @foreach ($users->filter(fn($u) => $u->role?->name === 'SuperAdmin') as $user)
+                            <option value="{{ $user->id }}" {{$evaluation->confirm2?->id == $user->id ? "selected" : ""}}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </td>
+            @endif
+            <td class="spacer"></td>
 
-                                    
-                                    <select name="confirmer_user2" class="form-select text-center">
-                                    
-                                        <option value="" selected></option>
-                                        @foreach ($users->filter(function ($user) {
-                                            return $user->role?->name === 'SuperAdmin';
-                                        }) as $user)
-                                            <option value="{{ $user->id }}" {{$evaluation->confirm2?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                
-                            @endif
-                        </tr>
+            <td style="vertical-align: middle; position: relative; height: 100px;">
+                @if(!$notdraft) // DRAFT
+                    <select name="approver_user1" class="form-select text-center">
+                        <option value="" selected></option>
+                        @foreach ($users->filter(fn($u) => $u->role?->name === 'Admin') as $user)
+                            <option value="{{ $user->id }}" {{ $evaluation->approved1?->id == $user->id ? "selected" : "" }}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                @elseif ($evaluation->approval_status >=20)
+                     <img src="{{ asset('storage/signatures/almario.png') }}" 
+                             alt="Signature" 
+                             class="sig-img"
+                             style="width: 150px; z-index: 1; position: relative;" />
+                        <label style="
+                            position: absolute; 
+                            top: 50%; 
+                            left: 50%; 
+                            transform: translate(-50%, -50%); 
+                            z-index: 2; 
+                            white-space: nowrap;
+                            font-weight: bold;
+                            pointer-events: none;
+                            color: rgba(0, 0, 0, 0.7);
+                        ">
+                          {{ $evaluation->approved1->name  }}
+                        </label>
+                        <small class="d-block">{{ $evaluation->approved_date1  }}</small>
+                @else
+                    <label>{{ $evaluation->approved1?->name }}</label>
+                @endif
+            </td>
 
-                    </tbody>
-                </table>
-  
+            @if($evaluation->approved2)
+                <td class="spacer"></td>
+                <td>
+                     
+                    <select name="approver_user2" class="form-select text-center">
+                        <option value="" selected></option>
+                        @foreach ($users->filter(fn($u) => $u->role?->name === 'Admin') as $user)
+                            <option value="{{ $user->id }}" {{$evaluation->approved2?->id == $user->id ? "selected" : ""}}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                   
+                </td>
+            @endif
+        </tr>
+    </tbody>
+
+</table>
+                
             </div>
 
             <div>
@@ -291,7 +395,7 @@
                 <table class="table table-vcenter text-center">
                     <thead>
                         <tr>
-                            <th></th>
+                            {{-- <th></th> --}}
                             <th>Activity</th>
                             <th>Performed By</th>
                             <th>Date</th>
@@ -301,11 +405,10 @@
 
                         @foreach($evaluation->activity as $index => $act)
                             <tr class="{{(\Illuminate\Support\Str::contains($act->activity, 'Rejected')) ? 'text-danger' : 'text-success' }}">
-                                <td>{{$index}}</td>
+                                {{-- <td>{{$index + 1 }}</td> --}}
                                 <td>{{$act->activity}}</td>
                                 <td>{{$act->performer->name}}</td>
                                 <td>{{$act->created_at}}</td>
-
                             </tr>
                         @endforeach
                     </tbody>
@@ -497,7 +600,7 @@
 
       let currentQty = parseInt(selectedInfo.qty);
 
-      // 🚨 validate
+      // ðŸš¨ validate
       if (qtyInput > currentQty) {
           alert("Cannot move more than available qty");
           return;
@@ -587,15 +690,25 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
         newRow.setAttribute("data-info", JSON.stringify(info));
 
         newRow.innerHTML = `
-            <td><input class="form-check-input move-check" type="checkbox" checked></td>
-            <td>${info.asset_number}</td>
-            <td><input type="text" class="form-control" name="writtenOff[${id}][schedule_date]"></td>
-            <td class="text-muted qty">${qtyToMove}</td>
-            <td>${info.bun}</td>
+            <td>
+                <input class="form-check-input move-check" type="checkbox" checked>
+            </td>
+            <td>
+                ${info.asset_number}
+            </td>            
+            <td>
+                <input type="text" class="form-control" name="writtenOff[${id}][schedule_date]" required='required'>            
+            </td>
+            <td class="text-muted qty">
+                ${qtyToMove}
+            </td>
+            <td>
+                ${info.bun}
+            </td>
             <td>${info.asset_description}</td>
-            <td><input type="date" class="form-control" name="writtenOff[${id}][turnover_date]"></td>
-            <td><input type="date" class="form-control" name="writtenOff[${id}][adwf_date]"></td>
-            <td><input type="text" class="form-control" name="writtenOff[${id}][adwf_docno]"></td>
+            <td><input type="date" class="form-control" name="writtenOff[${id}][turnover_date]"  required='required'></td>
+            <td><input type="date" class="form-control" name="writtenOff[${id}][adwf_date]"   required='required'></td>            
+            <td><input type="text" class="form-control" name="writtenOff[${id}][adwf_docno]"  required='required'></td>
             <td class="hidden">
                 <input type="hidden" name="writtenOff[${id}][id]" value="${id}">
                 <input type="hidden" name="writtenOff[${id}][iswrite_off]" value="1">
@@ -612,7 +725,7 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
         const index = rows.findIndex(row => Number(row.dataset.id) > newId);
         console.log('index',index);
         if (index === -1) {
-            table2Body.appendChild(newRow); // largest → end
+            table2Body.appendChild(newRow); // largest â†’ end
         } else {
             table2Body.insertBefore(newRow, rows[index]); // insert in order
         }
@@ -681,7 +794,7 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
         const index = rows.findIndex(row => Number(row.dataset.id) > newId);
         console.log('index',index);
         if (index === -1) {
-            table1Body.appendChild(newRow); // largest → end
+            table1Body.appendChild(newRow); // largest â†’ end
         } else {
             table1Body.insertBefore(newRow, rows[index]); 
         }

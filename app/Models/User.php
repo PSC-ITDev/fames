@@ -10,11 +10,7 @@ use App\Models\Role;
 use App\Models\Department;
 use App\Models\ApprovalHierarchy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\AssetEvaluation as Evaluation;
-use App\Models\Role;
-use App\Models\Department;
-use App\Models\ApprovalHierarchy;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\AssetEvaluation as Evaluation;   
 use App\Models\Activity;
 
 class User extends Authenticatable
@@ -63,12 +59,12 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'role_id');
     }
     
-public function scopeWithRole($query, $roleName)
-{
-    return $query->whereHas('role', function ($q) use ($roleName) {
-        $q->where('name', $roleName);
-    });
-}
+    public function scopeWithRole($query, $roleName)
+    {
+        return $query->whereHas('role', function ($q) use ($roleName) {
+            $q->where('name', $roleName);
+        });
+    }
 
 
 
@@ -84,6 +80,8 @@ public function scopeWithRole($query, $roleName)
     {
         return $this->belongsTo(Department::class, 'deptid','id');
     }  
+
+   
 
     public function hierarchy()
     {

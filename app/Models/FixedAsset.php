@@ -10,7 +10,7 @@ use App\Models\AssetClassification as Classification;
 use App\Models\AssetCategory as Category;
 use App\Models\AssetLocation as Location;
 use App\Models\CostCenter as CostCenter;
-use App\Models\GlAccount as GlAccount;       
+use App\Models\GlAccount as GlAccount;        
 use Illuminate\Database\Eloquent\Casts\Attribute;
 class FixedAsset extends Model
 {
@@ -41,6 +41,27 @@ class FixedAsset extends Model
         'notes',
         'ordinary_depreciation_start_date' 
     ];
+    
+    protected $appends = ['serial_number', 'net_book_value'];
+ 
+    protected $casts = [
+        'capitalization_date' => 'date',
+        'ordinary_depreciation_start_date' => 'date',
+        'salvage_value'       => 'decimal:2',
+        'cum_acq_value'       => 'decimal:2',
+        'accum_dep'           => 'decimal:2', 
+        'start_book_val'      => 'decimal:2',
+        'trans_acq_val'       => 'decimal:2',
+        'acquired_value'      => 'decimal:2',
+        'end_book_value'      => 'decimal:2',
+        'qty'                 => 'integer',
+        'useful_life_years'   => 'integer',
+        'turnover_date' => 'date',
+        'adwf_date' => 'date',        
+    ];
+  
+
+
     protected function serialNumber(): Attribute
     {
         return Attribute::make(
@@ -56,21 +77,6 @@ class FixedAsset extends Model
                 abs($attributes['accumulated_depreciation'] ?? 0),
         );
     } 
-    protected $appends = ['serial_number', 'net_book_value'];
- 
-    protected $casts = [
-        'capitalization_date' => 'date',
-        'ordinary_depreciation_start_date' => 'date',
-        'salvage_value'       => 'decimal:2',
-        'cum_acq_value'       => 'decimal:2',
-        'accum_dep'           => 'decimal:2', 
-        'start_book_val'      => 'decimal:2',
-        'trans_acq_val'       => 'decimal:2',
-        'acquired_value'      => 'decimal:2',
-        'end_book_value'      => 'decimal:2',
-        'qty'                 => 'integer',
-        'useful_life_years'   => 'integer',
-    ];
   
     /*
     |--------------------------------------------------------------------------
@@ -101,8 +107,7 @@ class FixedAsset extends Model
     public function glAccount(): BelongsTo
     {
         return $this->belongsTo(GlAccount::class, 'gl_account_id');
-    }
-    
+    }    
 
     public function department()
     {
@@ -113,5 +118,7 @@ class FixedAsset extends Model
     {
         return $this->hasOne(EvaluationDetail::class, 'asset_id', 'id');
     }  
+    
+   
 
 }

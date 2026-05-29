@@ -14,15 +14,15 @@
     <meta name="HandheldFriendly" content="True"/>
     <meta name="MobileOptimized" content="320"/>
     <meta name="robots" content="noindex,nofollow,noarchive"/>
-    <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
+    <link rel="icon" href="{{ asset('./favicon.ico') }}" type="image/x-icon"/>
+    <link rel="shortcut icon" href="{{ asset('./favicon.ico') }}" type="image/x-icon"/>
     <!-- CSS files -->
     
     <link href="{{ asset('dist/libs/jqvmap/dist/jqvmap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('dist/css/tabler.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('dist/css/demo.min.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('dist/css/style.css') }}" rel="stylesheet"/>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+	<link href="{{ asset('dist/css/bootstrap-icons.css') }}" rel="stylesheet">
     <style>
       body {
       	display: none;
@@ -60,10 +60,10 @@
             </div>
             <div class="nav-item dropdown">
               <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-toggle="dropdown">
-                <span class="avatar" style="background-image: url(./static/avatars/000f.jpg)"></span>
+                <span class="avatar" style="background-image: url('{{asset('storage/photos/avatar.png')}}') "></span>
                 <div class="d-none d-xl-block pl-2">
                   <div>{{auth()->user()->name}}</div>
-                  <div class="mt-1 small text-muted">IA - Div. Manager</div>
+                  <div class="mt-1 small text-muted">{{ auth()->user()->department->name   }} - {{ auth()->user()->department->division->name   }}</div>
                 </div>
               </a>
               <div class="dropdown-menu dropdown-menu-right">
@@ -148,13 +148,13 @@
      <!-- Libs JS -->
     <script src="{{ asset('dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{ asset('dist/libs/jquery/dist/jquery.slim.min.js')}}"></script>
-    <script src="{{ asset('dist/libs/apexcharts/dist/apexcharts.min.js')}}"></script>
+    {{-- <script src="{{ asset('dist/libs/apexcharts/dist/apexcharts.min.js')}}"></script> --}}
     <script src="{{ asset('dist/libs/jqvmap/dist/jquery.vmap.min.js')}}"></script>
     <script src="{{ asset('dist/libs/jqvmap/dist/maps/jquery.vmap.world.js')}}"></script>
     <script src="{{ asset('dist/libs/peity/jquery.peity.min.js')}}"></script>
     <!-- Tabler Core -->
     <script src="{{ asset('dist/js/tabler.min.js')}}"></script>
-    <script>
+    {{-- <script>
       // @formatter:off
       document.addEventListener("DOMContentLoaded", function () {
       	window.ApexCharts && (new ApexCharts(document.getElementById('chart-revenue-bg'), {
@@ -215,8 +215,8 @@
       	})).render();
       });
       // @formatter:on
-    </script>
-    <script>
+    </script> --}}
+    {{-- <script>
       // @formatter:off
       document.addEventListener("DOMContentLoaded", function () {
       	window.ApexCharts && (new ApexCharts(document.getElementById('chart-new-clients'), {
@@ -501,7 +501,7 @@
       	})).render();
       });
       // @formatter:on
-    </script>
+    </script> --}}
     
 
     <script>

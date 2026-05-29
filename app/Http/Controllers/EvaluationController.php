@@ -29,7 +29,8 @@ class EvaluationController extends Controller
     
     public function saveEvaluation(Request $request){
 
-        // DD($request);
+        // dd($request);
+
         $user_id = Auth::user()->id;
 
         $evaluation_exist = Evaluation::where([
@@ -37,11 +38,15 @@ class EvaluationController extends Controller
             'year' => $request->input('year'),
             'department_id' => $request->input('department')
         ])->exists();
+
+        $deptid = $request->input('department');
+        $department =  Department::find($deptid);
+
         // DD(!$evaluation_exist);
-        $hierarchy = ApprovalHierarchy::where('deptid',$request->input('department'))->get();
-        $drafters = $hierarchy->where('type',1);
-        $approvers = $hierarchy->where('type',2);
-        $confirmers = $hierarchy->where('type',3);
+        // $hierarchy = ApprovalHierarchy::where('deptid',$request->input('department'))->get();
+        // $drafters = $hierarchy->where('type',1);
+        // $approvers = $hierarchy->where('type',2);
+        // $confirmers = $hierarchy->where('type',3);
 
 
         // DD($approvers,$confirmers);
@@ -53,32 +58,60 @@ class EvaluationController extends Controller
             $evaluation->created_by = $user_id;
             $evaluation->department_id = $request->input('department');
 
-            $evaluation->approved_by1 = $approvers->first()?->user_id;
-            $evaluation->approved_by2 = $approvers->skip(1)->first()?->user_id;
-            $evaluation->confirmed_by1 = $confirmers->first()?->user_id;
-            $evaluation->confirmed_by2 = $confirmers->skip(1)->first()?->user_id;
             $evaluation->draft_by1 = $user_id;
-            $evaluation->draft_by2 = $drafters->first()?->user_id;
-
+            $evaluation->draft_by2 = $department->preparedby2;
+            
+            $evaluation->confirmed_by1 = $department->confirmed1;
+            $evaluation->confirmed_by2 = $department->confirmed2;
+            
+            $evaluation->approved_by1 = $department->approved1;
+            $evaluation->approved_by2 = $department->approved2;
+           
+            
             $evaluation->save();
             
             
-            $details = new EvaluationDetail();
+            // $details = new EvaluationDetail();
+            // $data = [];
+            // $assets = FixedAsset::where('department_id',$evaluation->department_id)->where('qty','>',0)->get();
+            // foreach($assets as $asset){
+            //     $data[] = [
+            //         'asset_form_id' => $evaluation->id,
+            //         'asset_id' => $asset->id,
+            //         'iswrite_off' => 0,
+            //         'writeoff_qty' => 0,
+            //         'asset_status'=>1,
+            //         'created_at' => now(),
+            //         'updated_at' => now(),
+            //     ];
+            // }
+
+            // $details->insert($data);
+
+        ////chunk
+            $assets = FixedAsset::where('department_id', $evaluation->department_id)
+                ->where('qty', '>', 0)
+                ->get();
+
             $data = [];
-            $assets = FixedAsset::where('department_id',$evaluation->department_id)->where('qty','>',0)->get();
-            foreach($assets as $asset){
+            foreach($assets as $asset) {
                 $data[] = [
                     'asset_form_id' => $evaluation->id,
-                    'asset_id' => $asset->id,
-                    'iswrite_off' => 0,
-                    'writeoff_qty' => 0,
-                    'asset_status'=>1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'asset_id'      => $asset->id,
+                    'iswrite_off'   => 0,
+                    'writeoff_qty'  => 0,
+                    'asset_status'  => $asset->asset_status ?? 1, // get the last asset status
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
                 ];
             }
 
-            $details->insert($data);
+            // Break the array into chunks of 200 rows to stay well below the 2100 limit
+            foreach (array_chunk($data, 200) as $chunk) {
+                EvaluationDetail::insert($chunk);
+            }
+        //end chunk
+
 
             $this->loggedActivity("Asset Evaluation",$evaluation->id,"Creation",$user_id);
             
@@ -111,8 +144,10 @@ class EvaluationController extends Controller
     {     
         $users = User::all();
         $statuses = Status::all();
-        $evaluation = Evaluation::with(['details','details.asset','details_writtenOff','details_remaining','creator','approved1','approved2','confirm1','confirm2','drafter2','activity'])->find($id);
+        $evaluation = Evaluation::with(['details','details.asset','details_writtenOff','details_remaining','creator','approved1','approved2','confirm1','confirm2','drafter2','activity' ])->find($id);
+        
         $user = Auth::user();
+        
         $approver_ids = [$evaluation->approved_date1 ? 0 : $evaluation->approved_by1, (empty($evaluation->approved_by1) ?  0 : empty($evaluation->approved_date2)) ? $evaluation->approved_by2 : 0];
         $confirmer_ids = [$evaluation->confirmed_date1 ? 0 :  $evaluation->confirmed_by1,   (empty($evaluation->confirmed_date1) ?  0 : empty($evaluation->confirmed_date2)) ? $evaluation->confirmed_by2 : 0];
         
@@ -120,9 +155,13 @@ class EvaluationController extends Controller
         $is_confirmer = in_array($user->id, $confirmer_ids);
 
         $can_edit = $user->id == (int)$evaluation->created_by;
+        
+        $notdraft = $evaluation->approval_status >= 10 ? true : false; 
+
         // DD($user->id == (int) $evaluation->created_by, $user->id ,(int) $evaluation->created_by);
+
         view()->share('pageTitle', 'Evaluation Details');
-        return view('fixed_assets/evaluation-details',compact('evaluation','statuses','is_approver','is_confirmer','users','can_edit'));
+        return view('fixed_assets/evaluation-details',compact('evaluation','statuses','is_approver','is_confirmer','users','user','can_edit','notdraft'));
                 
     }
 
@@ -138,7 +177,9 @@ class EvaluationController extends Controller
         $user = Auth::user();
 
         $current_writtenOff = $evaluation->details_writtenOff;
-        DD($current_writtenOff);
+        
+        
+        //DD($current_writtenOff);
         // DD($request["remainingAsset"]);
         
 
@@ -223,10 +264,10 @@ class EvaluationController extends Controller
                     $asset->save();
 
                     // Check if qty is now 0
-                    if ($asset->qty != 0) {
+                    if ($asset->qty != 0) 
+                    {
                         $newAsset = $asset_evaluation_details->replicate();
                         $newAsset->save();
-
                     }
                 }
             });
@@ -290,11 +331,11 @@ class EvaluationController extends Controller
         //     ->where('iswrite_off', 1)
         //     ->join('fixed_assets', 'asset_evaluation_details.asset_id', '=', 'fixed_assets.id')
         //     ->sum('fixed_assets.qty');
-
         // DD($assets_written_off,$assets_on_inventory);
 
-         $nextInline  = $this->hasNextInline(1,$user,$eval_id);
+        $nextInline  = $this->hasNextInline(1,$user,$eval_id);
 
+      
         
         $evaluation->update([
             'approval_status' => $nextInline['approval_status'],
@@ -309,7 +350,7 @@ class EvaluationController extends Controller
             ]);
 
 
-        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Submit Draft",$user->id);
+        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Submit for Approval",$user->id);
 
         // DD($writtenOff_data);
 
