@@ -5,7 +5,9 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MasterListController;
 use App\Http\Controllers\EvaluationController;
- 
+
+
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -51,6 +53,9 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         Route::post('/savelocation',[MasterListController::class, 'saveLocation']) ->name('savelocation');
         Route::get('/location-list', [MasterListController::class, 'locationList'])->name('location-list');
 
+        //Users 
+        Route::get('/users-list', [MasterListController::class, 'userList'])->name('user-list');
+
         //Evaluation Details
         // Route::post('/submievaluationdetails',[EvaluationController::class, 'saveEvaluation']) ->name('saveevaluation');
 
@@ -60,6 +65,7 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         Route::get('/evaluationdetails/{id}', [EvaluationController::class, 'evaluationDetails'])->name('evaluation-details');
         Route::post('/updateevaluationdetail/{eval_id}',[EvaluationController::class, 'updateEvaluationDetails']) ->name('updateevaluation');
 
+        Route::post('/check/{eval_id}',[EvaluationController::class, 'checkEvaluation']) ->name('check-evaluation');
         Route::post('/approve/{eval_id}',[EvaluationController::class, 'approveEvaluation']) ->name('approve-evaluation');
         Route::post('/confirm/{eval_id}',[EvaluationController::class, 'confirmEvaluation']) ->name('confirm-evaluation');
         Route::post('/reject/{eval_id}',[EvaluationController::class, 'rejectEvaluation']) ->name('reject-evaluation');
@@ -67,7 +73,11 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
 
 
 
+
+
 });
+
+
 
 
 require __DIR__.'/auth.php';

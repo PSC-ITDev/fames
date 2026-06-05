@@ -15,6 +15,9 @@ use App\Models\ApprovalHierarchy;
 use App\Models\Activity;
 use App\Models\User;
 
+use App\Mail\EvaluationActivityMail;
+use Illuminate\Support\Facades\Mail;
+
 class EvaluationController extends Controller
 {
 
@@ -41,6 +44,7 @@ class EvaluationController extends Controller
 
         $deptid = $request->input('department');
         $department =  Department::find($deptid);
+
 
         // DD(!$evaluation_exist);
         // $hierarchy = ApprovalHierarchy::where('deptid',$request->input('department'))->get();
@@ -113,16 +117,13 @@ class EvaluationController extends Controller
         //end chunk
 
 
-            $this->loggedActivity("Asset Evaluation",$evaluation->id,"Creation",$user_id);
+            $this->loggedActivity("Asset Evaluation",$evaluation->id,"Creation",$user_id,'');
             
             return redirect()->route('evaluation-details',$evaluation->id);
         }else{
 
             return redirect()->route('evaluation-list');
         }
-
-        
-
 
 
     }
@@ -142,26 +143,30 @@ class EvaluationController extends Controller
 
     public function evaluationDetails($id)
     {     
-        $users = User::all();
+        $user = Auth::user();
+        $users = User::whereNot('id',$user->id)->get();
         $statuses = Status::all();
         $evaluation = Evaluation::with(['details','details.asset','details_writtenOff','details_remaining','creator','approved1','approved2','confirm1','confirm2','drafter2','activity' ])->find($id);
         
-        $user = Auth::user();
+
         
         $approver_ids = [$evaluation->approved_date1 ? 0 : $evaluation->approved_by1, (empty($evaluation->approved_by1) ?  0 : empty($evaluation->approved_date2)) ? $evaluation->approved_by2 : 0];
-        $confirmer_ids = [$evaluation->confirmed_date1 ? 0 :  $evaluation->confirmed_by1,   (empty($evaluation->confirmed_date1) ?  0 : empty($evaluation->confirmed_date2)) ? $evaluation->confirmed_by2 : 0];
+        $confirmer_ids = [$evaluation->confirmed_date1 ? 0 :  $evaluation->confirmed_by1,  empty($evaluation->confirmed_date2) ? $evaluation->confirmed_by2 : 0];
         
         $is_approver = in_array($user->id,$approver_ids);
         $is_confirmer = in_array($user->id, $confirmer_ids);
 
         $can_edit = $user->id == (int)$evaluation->created_by;
         
-        $notdraft = $evaluation->approval_status >= 10 ? true : false; 
+        $notdraft = $evaluation->approval_status > 0 ? true : false; 
+        $is_owner = $evaluation->created_by == $user->id ? true : false; 
 
+
+        // DD($is_confirmer,$confirmer_ids,(empty($evaluation->confirmed_date1) ?  0 : empty($evaluation->confirmed_date2)) ? $evaluation->confirmed_by2 : 0);
         // DD($user->id == (int) $evaluation->created_by, $user->id ,(int) $evaluation->created_by);
 
         view()->share('pageTitle', 'Evaluation Details');
-        return view('fixed_assets/evaluation-details',compact('evaluation','statuses','is_approver','is_confirmer','users','user','can_edit','notdraft'));
+        return view('fixed_assets/evaluation-details',compact('evaluation','statuses','is_approver','is_confirmer','users','user','can_edit','notdraft','is_owner'));
                 
     }
 
@@ -169,7 +174,7 @@ class EvaluationController extends Controller
 
     public function updateEvaluationDetails(Request $request,$eval_id)
     {     
-
+    // DD($request);
         
         $evaluation = Evaluation::find($eval_id);
 
@@ -195,21 +200,22 @@ class EvaluationController extends Controller
                 $cases[$col] = "CASE id ";
             }
             foreach ($remainingAsset_data as $row) {
+                if(isset($row['id'])){
+                    $id = (int) $row['id'];
 
-                $id = (int) $row['id'];
+                    foreach ($columns as $col) {
 
-                foreach ($columns as $col) {
+                        $value = $row[$col] ?? null;
 
-                    $value = $row[$col] ?? null;
+                        if (is_null($value)) {
+                            $cases[$col] .= "WHEN $id THEN NULL ";
+                        } else {
 
-                    if (is_null($value)) {
-                        $cases[$col] .= "WHEN $id THEN NULL ";
-                    } else {
+                            // escape string safely
+                            $value = addslashes($value);
 
-                        // escape string safely
-                        $value = addslashes($value);
-
-                        $cases[$col] .= "WHEN $id THEN '$value' ";
+                            $cases[$col] .= "WHEN $id THEN '$value' ";
+                        }
                     }
                 }
             }
@@ -259,7 +265,8 @@ class EvaluationController extends Controller
                     if (!$asset) {
                         continue; // or throw exception
                     }
-
+                    
+                    
                     $asset->qty -= $item['writeoff_qty'];
                     $asset->save();
 
@@ -333,25 +340,40 @@ class EvaluationController extends Controller
         //     ->sum('fixed_assets.qty');
         // DD($assets_written_off,$assets_on_inventory);
 
-        $nextInline  = $this->hasNextInline(1,$user,$eval_id);
 
       
         
         $evaluation->update([
-            'approval_status' => $nextInline['approval_status'],
             'assets_on_inventory' => $assets_on_inventory,
             'assets_written_off' => $assets_written_off,
-            $nextInline['field'] => now(),
             'draft_by2' => $request->user2 ?? null,
             'approved_by1' => $request->approver_user1 ?? null,
             'approved_by2' => $request->approver_user2 ?? null,
             'confirmed_by1' => $request->confirmer_user1 ?? null,
             'confirmed_by2' => $request->confirmer_user2 ?? null
-            ]);
+        ]);
+
+            
+        $nextInline  = $this->hasNextInline(1,$user,$eval_id);
+
+        $evaluation->update([
+            'approval_status' => $nextInline['approval_status'],
+            $nextInline['field'] => now(),
+        ]);
 
 
-        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Submit for Approval",$user->id);
+        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Submit for Approval",$user->id,'');
 
+        $nextInlineUser = User::find($nextInline['approver']);
+        $approverName = $nextInlineUser->name;
+        $email = $nextInlineUser->email;
+        $subject = "Evaluation Submitted";
+        $requestTitle = 'Evaluation '.$evaluation->year .' '.$evaluation->quarter.' Qtr.';
+        $requestorName = $user->name;
+        $url = url('evaluationdetails/'.$eval_id);
+        $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
+
+         
         // DD($writtenOff_data);
 
 
@@ -359,7 +381,32 @@ class EvaluationController extends Controller
                 
     }
 
-    public function approveEvaluation($eval_id){
+    public function checkEvaluation(Request $request,$eval_id){
+        $evaluation = Evaluation::find($eval_id);
+        $user = Auth::user();
+
+        $nextInline = $this->hasNextInline(1,$user,$eval_id);
+        $evaluation->update([
+            'approval_status' => $nextInline['approval_status'],
+            $nextInline['field'] => now()
+        ]);
+        $reason = $request->reason;
+        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Submit for Approval",$user->id,$reason);
+
+        $nextInlineUser = User::find($nextInline['approver']);
+        $approverName = $nextInlineUser->name;
+        $email = $nextInlineUser->email;
+        $subject = "Evaluation for Approval";
+        $requestTitle = $evaluation->year.' Evaluation '.$evaluation->quarter.' Qtr.';
+        $requestorName = $user->name;
+        $url = url('evaluationdetails/'.$eval_id);
+        $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status );
+
+
+        return redirect()->route('evaluation-details',$eval_id);
+    }
+
+    public function approveEvaluation(Request $request,$eval_id){
 
         $evaluation = Evaluation::find($eval_id);
         $user = Auth::user();
@@ -370,13 +417,23 @@ class EvaluationController extends Controller
             'approval_status' => $nextInline['approval_status'],
             $nextInline['field'] => now()
         ]);
+        $reason = $request->reason;
+        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Approved",$user->id,$reason);
+        
+        $nextInlineUser = User::find($nextInline['approver']);
+        $approverName = $nextInlineUser->name;
+        $email = $nextInlineUser->email;
+        $subject = "Evaluation for Approval";
+        $requestTitle = 'Evaluation '.$evaluation->year .' '.$evaluation->quarter.' Qtr.';
+        $requestorName = $user->name;
+        $url = url('evaluationdetails/'.$eval_id);
 
-        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Approved",$user->id);
+        $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
 
         return redirect()->route('evaluation-details',$eval_id);
     }
 
-    public function confirmEvaluation($eval_id){
+    public function confirmEvaluation(Request $request,$eval_id){
         $evaluation = Evaluation::find($eval_id);
         $user = Auth::user();
 
@@ -385,31 +442,62 @@ class EvaluationController extends Controller
         $evaluation->update([
             'approval_status' => $nextInline['approval_status'],
             $nextInline['field'] => now()
-            ]);
+        ]);
 
+        $reason = $request->reason;
             
-        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Confirmed",$user->id);
+        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Confirmed",$user->id,$reason);
+
+        $nextInlineUser = User::find($nextInline['approver']);
+        $approverName = $nextInlineUser->name;
+        $email = $nextInlineUser->email;
+        $subject = "Evaluation to Recieve";
+        $requestTitle = 'Evaluation '.$evaluation->year .' '.$evaluation->quarter.' Qtr.';
+        $requestorName = $user->name;
+        $url = url('evaluationdetails/'.$eval_id);
+        $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
+
+        
 
         return redirect()->route('evaluation-details',$eval_id);
     }
 
     public function rejectEvaluation(Request $request,$eval_id){
-        $reason = "Rejected - ".$request->reason;
+        $reason = $request->reason;
         $evaluation = Evaluation::find($eval_id);
-        $evaluation->update(['approval_status' => 50]);
+        $user = Auth::user();
+        $nextInline = $this->hasNextInline(5,$user,$eval_id);
+        $evaluation->update([
+            'approval_status' => $nextInline['approval_status'],
+            $nextInline['field'] => now()
+        ]);
 
         $user = Auth::user();
-        $this->loggedActivity("Asset Evaluation",$evaluation->id,$reason,$user->id);
+        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Rejected",$user->id,$reason);
+
+        $nextInlineUser = User::find($nextInline['approver']);
+        $approverName = $nextInlineUser->name;
+        $email = $nextInlineUser->email;
+        $subject = "Evaluation Rejected";
+        $requestTitle = 'Evaluation '.$evaluation->year .' '.$evaluation->quarter.' Qtr.';
+        $requestorName = $user->name;
+        $url = url('evaluationdetails/'.$eval_id);
+        $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
 
         return redirect()->route('evaluation-details',$eval_id);
     }
 
-    private function loggedActivity($type,$type_id,$activity,$performed_by){
+
+
+
+
+    private function loggedActivity($type,$type_id,$activity,$performed_by,$reason){
         $log = new Activity();
         $log->type = $type;
         $log->type_id = $type_id;
         $log->activity = $activity;
         $log->performed_by = $performed_by;
+        $log->reason = $reason;
         $log->save();
     }
 
@@ -421,19 +509,22 @@ class EvaluationController extends Controller
             case 1:
                 if(!empty($evaluation->draft_by2)){
 
-
+                    
+                    // DD(!empty($evaluation->draft_by2));
                     if(!empty($evaluation->draft_date1) && $evaluation->draft_by2 == $user->id ){
                         $approval_status = 11;//for approval
                         $field = 'draft_date2';
+                        $approver = $evaluation->approved_by1;
                     }else{
-                        $approval_status = $evaluation->approval_status;//draft
-                        
+                        $approval_status = 1;//draft
                         $field = 'draft_date1';
+                        $approver = $evaluation->draft_by2;
                     }
-
+                
                 }else{
                     $approval_status = 10;//for approval
                     $field = 'draft_date1';
+                    $approver = $evaluation->approved_by1;
                 }
                 break;
 
@@ -444,15 +535,18 @@ class EvaluationController extends Controller
                     if(!empty($evaluation->approved_date1) && $evaluation->approved_by2 == $user->id ){
                         $approval_status = 21;//for approval
                         $field = 'approved_date2';
+                        $approver = $evaluation->confirmed_by1;
                     }else{
                         $approval_status = $evaluation->approval_status;
                         $field = 'approved_date1';
+                        $approver = $evaluation->approved_by2;
                     }
 
                     
                 }else{
                     $approval_status = 20;//for approval
                     $field = 'approved_date1';
+                    $approver = $evaluation->confirmed_by1;
                 }
 
                 break;
@@ -464,33 +558,132 @@ class EvaluationController extends Controller
                     if(!empty($evaluation->confirmed_date1) && $evaluation->confirmed_by2 == $user->id ){
                         $approval_status = 31;//for approval
                         $field = 'confirmed_date2';
+                        $approver = $evaluation->created_by;
                     }else{
                         $approval_status = $evaluation->approval_status;
                         $field = 'confirmed_date1';
+                        $approver = $evaluation->confirmed_by2;
                     }
                 }else{
                     $approval_status = 30;//for approval
                     $field = 'confirmed_date1';
+                    $approver = $evaluation->created_by;
                 }
+
+                break;    
+
+            case 5:
+
+                $matchedColumn = collect($evaluation->getAttributes())
+                ->filter(fn ($value, $key) => in_array($key, [
+                    'approved_by1',
+                    'approved_date1',
+                    'approved_by2',
+                    'approved_date2',
+                    'confirmed_by1',
+                    'confirmed_date1',
+                    'confirmed_by2',
+                    'confirmed_date2',
+                    'draft_by2',
+                    'draft_date2',
+                ]))
+                ->search($user->id);
+
+                switch ($matchedColumn) {
+                    case 'approved_by1':
+                        $field = 'approved_date1';
+
+                        if(!empty($evaluation->approved_by2)){
+                            $approver = $evaluation->approved_by2;
+                        }else{
+                            $approver = $evaluation->confirmed_by1;
+                        }
+                        break;
+                    case 'approved_by2':
+                        $field = 'approved_date2';
+                        $approver = $evaluation->confirmed_by1;
+                        break;
+                    case 'confirmed_by1':
+                        $field = 'confirmed_date1';
+                        if(!empty($evaluation->confirmed_by2)){
+                            $approver = $evaluation->confirmed_by2;
+                        }else{
+                            $approver = $evaluation->draft_by1;
+                        }
+                        break;
+                    case 'confirmed_by2':
+                        $field = 'confirmed_date2';
+                        $approver = $evaluation->draft_by1;
+                        break;
+                    case 'draft_by1':
+                        $field = 'draft_date1';
+                        if(!empty($evaluation->draft_by2)){
+                            $approver = $evaluation->draft_by2;
+                        }else{
+                            $approver = $evaluation->approved_by1;
+                        }
+                        break;
+                    case 'draft_by2':
+                        $field = 'draft_date2';
+                        $approver = $evaluation->approved_by1;
+                        break;
+
+                    default:
+                        $field = 'draft_date1';
+                        $approver = $evaluation->draft_by1;
+                }
+
+
+                $approval_status = 50;
 
                 break;
 
             default:
                 $approval_status = $evaluation->approval_status;
                 $field = 'draft_date1';
+                $approver = $evaluation->draft_by1;
         }
 
         // DD($approval_status);
 
         return [ 
             'approval_status' => $approval_status ,
-            'field' => $field
+            'field' => $field,
+            'approver' => $approver
 
         
         ];
 
     }
 
+    private function sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url ,$owner_email,$approval_status){
+        
+
+        $approval_statuses = [
+            0 => 'Pending',
+            10 => 'For Approval',
+            20 => 'Approved',
+            30 => 'Confirmed',
+            50 => 'Rejected'
+        ];
+
+            
+        $status = $approval_statuses[floor($approval_status / 10) * 10];
+
+        Mail::to($email)
+        ->cc($owner_email)
+        ->send(
+            new EvaluationActivityMail(
+                $subject,
+                $approverName,
+                $requestTitle,
+                $requestorName,
+                $url,
+                $status
+                
+            )
+        );
+    }
 
 
 }

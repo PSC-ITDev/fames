@@ -1,16 +1,7 @@
 <x-app-layout>
   <div class="col-md-12">
     <div class="card">
-
-        @if($is_approver)
-            <form id="{{$can_edit ? '' : 'myForm'}}" action="{{  route('approve-evaluation',$evaluation->id) }}" method="POST">
-        @elseif($is_confirmer)
-            <form id="{{$can_edit ? '' : 'myForm'}}" action="{{  route('confirm-evaluation',$evaluation->id) }}" method="POST">
-        @else
-            <form id="{{$evaluation->approval_status > 1 ? 'myForm' : ($can_edit ? '' : 'myForm')}}" action="{{  route('updateevaluation',$evaluation->id) }}" method="POST">
-        @endif
-
-         @php   
+        @php   
             $approval_statuses = [
                 0 => 'Pending',
                 10 => 'For Approval',
@@ -23,22 +14,60 @@
             $approval_status = $approval_statuses[floor($evaluation->approval_status / 10) * 10];
 
             $current_user = auth()->user();
+
+            if($is_owner){
+                $url = route('updateevaluation',$evaluation->id);
+            }
+                    
+            elseif(isset($evaluation->draft_by2) && empty($evaluation->draft_date2)){
+
+                $url = route('check-evaluation',$evaluation->id);
+            }
+            elseif($is_approver){
+                $url = route('approve-evaluation',$evaluation->id);
+            }
+            elseif($is_confirmer){
+                $url = route('confirm-evaluation',$evaluation->id);
+
+            }
+
         @endphp
+        <div class="ribbon ribbon-top-right
+            @if($approval_status == 'Approved') ribbon-approved
+            @elseif($approval_status == 'Pending') ribbon-pending
+            @elseif($approval_status == 'Rejected') ribbon-rejected
+            @elseif($approval_status == 'Confirmed') ribbon-confirmed
+            @else ribbon-forApproval
+            @endif
+
+        ">
+            <span>{{ $approval_status }}</span>
+        </div>
+        @if($is_owner)
+            <form id="{{$evaluation->approval_status > 1 ? 'myForm' : ($can_edit ? '' : 'myForm')}}" action="{{  route('updateevaluation',$evaluation->id) }}" method="POST">
+                
+        @elseif(isset($evaluation->draft_by2) && empty($evaluation->draft_date2))
+            <form id="myForm" action="{{  route('check-evaluation',$evaluation->id) }}" method="POST">
+        @elseif($is_approver)
+            <form id="{{$can_edit ? '' : 'myForm'}}" action="{{  route('approve-evaluation',$evaluation->id) }}" method="POST">
+        @elseif($is_confirmer)
+            <form id="{{$can_edit ? '' : 'myForm'}}" action="{{  route('confirm-evaluation',$evaluation->id) }}" method="POST">
+        @endif
+
+
 
 
         @csrf
         <div class="card-header">
            <div>
-                <h3>Department: <b>{{$evaluation->department->name}} </b></h3>
+                <h3>Department: <b>{{$evaluation->department->name}} {{$evaluation->quarter}} {{$evaluation->year}} </b> </h3>
            </div>
             <div class="card-options">
                <b>
                 {{-- {{$approval_status}}{{$can_edit ? ' ' : 'Evaluation'}} --}}
                 </b>
             </div>
-            <div class="card-options">
-               <b>{{$approval_status}}</b>
-            </div>
+            
         </div>
         <div class="card-body">   
             <div class="table-responsive">
@@ -49,7 +78,7 @@
                     <table class="table card-table table-vcenter table-hover table-striped" id="table1">
                         <thead>
                             <tr>
-                                @if(!$notdraft)  
+                                @if($is_owner && $evaluation->approval_status < 1 )  
                                     <th></th>
                                 @endif
                                 <th>Asset No.</th>
@@ -69,7 +98,7 @@
                         @foreach($evaluation->details_remaining as $index => $asset)
 
                             <tr data-id="{{ $asset->id }}" data-info="{{$asset->asset}}">
-                                @if (!$notdraft)
+                                @if ($is_owner && $evaluation->approval_status < 1 )
                                     <td>
                                         <input class="form-check-input move-check" type="checkbox" id="check{{$asset->id}}">
                                     </td>    
@@ -84,21 +113,24 @@
                                     {{$asset->asset->other_identifier}}
                                 </td>
                                 <td class="text-muted">
-                                    @if ($notdraft)
-                                        {{ $statuses->find($asset->asset_status)->name }}
-                                    @else
+                                    @if ($is_owner && $evaluation->approval_status < 1 )
                                         <select name="remainingAsset[{{$asset->id}}][asset_status]" class="form-select" >
                                             @foreach ($statuses as $status)
                                                 <option value="{{ $status->id }}" {{(int) $asset->asset_status == (int) $status->id ? "selected" : ""}}>{{ $status->name }}</option>
                                             @endforeach
                                         </select>
+                                        
+                                    @else
+                                        {{ $statuses->find($asset->asset_status)?->name }}
                                     @endif
                                 </td>
                                 <td class="text-muted">
-                                    @if ($notdraft)
-                                        {{ old('remainingAsset[$asset->id][corrective_actiion_taken]', $asset->corrective_actiion_taken ?? '') }}
-                                    @else
+                                    @if ($is_owner  && $evaluation->approval_status < 1 )
                                         <input type="text" class="form-control" name="remainingAsset[{{$asset->id}}][corrective_actiion_taken]"  value="{{ old('remainingAsset[$asset->id][corrective_actiion_taken]', $asset->corrective_actiion_taken ?? '') }}">
+
+                                    @else
+                                        {{ old('remainingAsset[$asset->id][corrective_actiion_taken]', $asset->corrective_actiion_taken ?? '') }}
+
                                     @endif
                                 </td>                                
                                 <td class="hidden">
@@ -124,7 +156,7 @@
                     <table class="table card-table table-vcenter table-striped " id="table2">
                         <thead>
                             <tr>
-                                @if(!$notdraft)  
+                                @if($is_owner && $evaluation->approval_status < 1 )  
                                     <th></th>
                                 @endif
                                 <th>Asset No.</th>
@@ -143,7 +175,7 @@
                             @foreach($evaluation->details_writtenOff as $index => $asset)
 
                                 <tr data-id="{{ $asset->id }}" data-info="{{$asset->asset}}">
-                                    @if (!$notdraft)                                                                            
+                                    @if ($is_owner  && $evaluation->approval_status < 1 )                                                                            
                                     <td>
                                         <input class="form-check-input move-check" type="checkbox" checked>
                                     </td>
@@ -152,10 +184,11 @@
                                         {{ $asset->asset->asset_number }}
                                     </td>
                                     <td>
-                                        @if ($notdraft)
-                                            {{ $asset->reason_for_writeoff   }}
-                                        @else
+                                        
+                                        @if($is_owner && $evaluation->approval_status < 1 )
                                             <input type="text" class="form-control" value="{{ old('writtenOff[$asset->id][reason_for_writeoff]', $asset->reason_for_writeoff ?? '') }}" name="writtenOff[{{$asset->id}}][reason_for_writeoff]">
+                                        @else
+                                            {{ $asset->reason_for_writeoff   }}
                                         @endif                                        
                                     </td>
                                     <td class="text-muted qty">
@@ -164,25 +197,28 @@
                                     <td>{{$asset->asset->bun}}</td>
                                     <td>{{$asset->asset->asset_description}}</td>                                    
                                     <td>
-                                        @if($notdraft)
-                                           {{  \Carbon\Carbon::parse($asset->turnover_date)->format('M d, Y') }} 
+                                        @if($is_owner && $evaluation->approval_status < 1 )
+                                            <input type="date" class="form-control" name="writtenOff[{{$asset->id}}][turnover_date]">
                                         @else
-                                            <input type="date" class="form-control" name="writtenOff[{{$asset->id}}][turnover_date]">   
+                                           {{  \Carbon\Carbon::parse($asset->turnover_date)->format('M d, Y') }} 
                                         @endif                                        
                                     </td>
                                     <td>
-                                        @if($notdraft)
-                                           {{ \Carbon\Carbon::parse($asset->adwf_date)->format('M d, Y') }}
-                                        @else
+                                        @if($is_owner && $evaluation->approval_status < 1 )
+                                        
                                             <input type="date" class="form-control" name="writtenOff[{{$asset->id}}][adwf_date]">  
+                                        @else
+                                            
+                                           {{ \Carbon\Carbon::parse($asset->adwf_date)->format('M d, Y') }}
                                         @endif                                          
                                     </td>
                                     <td>
-                                        @if($notdraft)
-                                            {{ $asset->adwf_docno }}
-                                        @else
-                                            <input type="text" class="form-control" name="writtenOff[{{$asset->id}}][adwf_docno]"
+                                        @if($is_owner && $evaluation->approval_status < 1 )
+                                        <input type="text" class="form-control" name="writtenOff[{{$asset->id}}][adwf_docno]"
                                                 value="{{ old('writtenOff[$asset->id][adwf_docno]', $asset->adwf_docno ?? '') }}">
+                                        @else
+                                            
+                                            {{ $asset->adwf_docno }}
                                         @endif                                       
                                     </td>
                                     <td class="hidden">
@@ -206,181 +242,299 @@
 
             <div>
 
-//APPROVAL
-<table class="table table-vcenter text-center uniform-table">
-    <thead>
-        <tr>
-            <th>Submitted by:</th>
-            @if($evaluation->drafter2)
-                <th class="spacer"></th>
-                <th></th>
-            @endif
-          
-            <th class="spacer"></th>
-            <th>Confirmed by:</th>
-            
-            @if($evaluation->confirmed_by2)
-                <th class="spacer"></th>
-                <th></th>
-            @endif
-              <th class="spacer"></th>
-            <th>Approved by:</th>
-            
-            @if($evaluation->approved2)
-                <th class="spacer"></th>
-                <th></th>
-            @endif
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td style="position: relative; height: 100px; vertical-align: middle;">
-                <div style="position: relative; display: inline-block;">
-                    @if( $notdraft && $evaluation->approval_status >=10 )
-                        <img src="{{ @asset('storage/signatures/RUIZ01.png ') }} " 
-                        alt="Signature" 
-                        class="sig-img" 
-                        style="width: 150px; z-index: 1; position: relative;">
-                       <label style="
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        z-index: 2;
-                        white-space: nowrap;
-                        font-weight: bold;
-                        pointer-events: none;
-                        color: rgba(0, 0, 0, 0.7);
-                    ">
-                            {{ $evaluation->creator->name }}
-                        </label>
-                        <small class="d-block">{{ $evaluation->draft_date1 }}</small>
-                    @else
-                        <label>{{ $user->name }}</label>
-                    @endif
-                </div>
-            </td>
+                //APPROVAL
+                <table class="table table-vcenter text-center uniform-table">
+                    <thead>
+                        <tr>
+                            <th>Submitted by:</th>
+                            @if($evaluation->drafter2)
+                                <th class="spacer"></th>
+                                <th></th>
+                            @endif
+                        
+                            <th class="spacer"></th>
+                            <th>Confirmed by:</th>
+                            
+                            @if($evaluation->approved2 && $evaluation->approved1)
+                                <th class="spacer"></th>
+                                <th></th>
+                            @endif
 
-            @if($evaluation->drafter2)
-                <td class="spacer"></td>
-                <td>
-                    <select name="user2" class="form-select text-center">
-                        <option value="" selected></option>
-                        @foreach ($users->filter(fn($u) => $u->role?->name === 'User') as $user)
-                            <option value="{{ $user->id }}" {{$evaluation->drafter2?->id == $user->id ? "selected" : ""}}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </td>
-            @endif
+                            <th class="spacer"></th>
+                            <th>Recieved by:</th>
+                            @if($evaluation->confirmed_by2 && $evaluation->confirmed_by1)
+                                <th class="spacer"></th>
+                                <th></th>
+                            @endif
+                            
 
-            <td class="spacer"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="position: relative; height: 100px; vertical-align: middle;">
+                                <div style="position: relative; display: inline-block;">
+                                    @if( $evaluation->approval_status >= 1  || $evaluation->approval_status >= 50)
+                                        <img src="{{ @asset('storage/signatures/RUIZ01.png ') }} " 
+                                        alt="Signature" 
+                                        class="sig-img" 
+                                        style="width: 150px; z-index: 1; position: relative;">
+                                        <label style="
+                                            position: absolute;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-50%, -50%);
+                                            z-index: 2;
+                                            white-space: nowrap;
+                                            font-weight: bold;
+                                            pointer-events: none;
+                                            color: rgba(0, 0, 0, 0.7);
+                                        ">
+                                            {{ $evaluation->creator->name }}
+                                        </label>
+                                        <small class="d-block">{{ $evaluation->draft_date1 }}</small>
+                                    @else
+                                        <label>{{ $evaluation->creator?->name }}</label>
+                                    @endif
+                                </div>
+                            </td>
 
-            <td style="vertical-align: middle;height: 100px;">
-                <div style="position: relative; display: inline-block;">
-                @if(!$notdraft)
-                    <select name="confirmer_user1" class="form-select text-center">
-                        <option value="" selected></option>
-                        @foreach ($users->filter(fn($u) => $u->role?->name === 'SuperAdmin') as $user)
-                            <option value="{{ $user->id }}" {{$evaluation->confirm1?->id == $user->id ? "selected" : ""}}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                @elseif ($evaluation->approval_status >=30)
-                     <img src="{{ asset('storage/signatures/mortola02.png') }}" 
-                             alt="Signature" 
-                             class="sig-img"
-                             style="width: 150px; z-index: 1; position: relative;" />
-                        <label style="
-                            position: absolute; 
-                            top: 50%; 
-                            left: 50%; 
-                            transform: translate(-50%, -50%); 
-                            z-index: 2; 
-                            white-space: nowrap;
-                            font-weight: bold;
-                            pointer-events: none;
-                            color: rgba(0, 0, 0, 0.7);
-                        ">
-                          {{ $evaluation->confirm1->name  }}
-                        </label>
-                        <small class="d-block">{{ $evaluation->confirmed_date1  }}</small> 
-                @else
-                    <label>{{ $evaluation->confirm1->name }}</label>
-                @endif
-                </div>
-            </td>
-            @if($evaluation->confirm2)
-                <td class="spacer"></td>
-                <td>
-                    <select name="confirmer_user2" class="form-select text-center">
-                        <option value="" selected></option>
-                        @foreach ($users->filter(fn($u) => $u->role?->name === 'SuperAdmin') as $user)
-                            <option value="{{ $user->id }}" {{$evaluation->confirm2?->id == $user->id ? "selected" : ""}}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </td>
-            @endif
-            <td class="spacer"></td>
+                            @if($evaluation->drafter2)
+                                <td class="spacer"></td>
+                                <td>
+                                
+                                    <div style="position: relative; display: inline-block;">
+                                        @if(!$notdraft) 
+                                            <select name="user2" class="form-select text-center">
+                                                <option value="" selected></option>
+                                                @foreach ($users->filter(fn($u) => $u->role?->name === 'User') as $user)
+                                                    <option value="{{ $user->id }}" {{$evaluation->drafter2?->id == $user->id ? "selected" : ""}}>
+                                                        {{ $user->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @elseif ($evaluation->approval_status >= 10  || $evaluation->approval_status >= 50)
+                                            <img src="{{ asset('storage/signatures/almario.png') }}" 
+                                                    alt="Signature" 
+                                                    class="sig-img"
+                                                    style="width: 150px; z-index: 1; position: relative;" />
+                                                <label style="
+                                                    position: absolute; 
+                                                    top: 50%; 
+                                                    left: 50%; 
+                                                    transform: translate(-50%, -50%); 
+                                                    z-index: 2; 
+                                                    white-space: nowrap;
+                                                    font-weight: bold;
+                                                    pointer-events: none;
+                                                    color: rgba(0, 0, 0, 0.7);
+                                                ">
+                                                {{ $evaluation->drafter2->name  }}
+                                                </label>
+                                                <small class="d-block">{{ $evaluation->draft_date2  }}</small>
+                                        @else
+                                            <label>{{ $evaluation->drafter2?->name }}</label>
+                                        @endif
+                                    </div>
+                                </td>
+                            @endif
 
-            <td style="vertical-align: middle; position: relative; height: 100px;">
-                @if(!$notdraft) // DRAFT
-                    <select name="approver_user1" class="form-select text-center">
-                        <option value="" selected></option>
-                        @foreach ($users->filter(fn($u) => $u->role?->name === 'Admin') as $user)
-                            <option value="{{ $user->id }}" {{ $evaluation->approved1?->id == $user->id ? "selected" : "" }}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                @elseif ($evaluation->approval_status >=20)
-                     <img src="{{ asset('storage/signatures/almario.png') }}" 
-                             alt="Signature" 
-                             class="sig-img"
-                             style="width: 150px; z-index: 1; position: relative;" />
-                        <label style="
-                            position: absolute; 
-                            top: 50%; 
-                            left: 50%; 
-                            transform: translate(-50%, -50%); 
-                            z-index: 2; 
-                            white-space: nowrap;
-                            font-weight: bold;
-                            pointer-events: none;
-                            color: rgba(0, 0, 0, 0.7);
-                        ">
-                          {{ $evaluation->approved1->name  }}
-                        </label>
-                        <small class="d-block">{{ $evaluation->approved_date1  }}</small>
-                @else
-                    <label>{{ $evaluation->approved1?->name }}</label>
-                @endif
-            </td>
+                            <td class="spacer"></td>
 
-            @if($evaluation->approved2)
-                <td class="spacer"></td>
-                <td>
-                     
-                    <select name="approver_user2" class="form-select text-center">
-                        <option value="" selected></option>
-                        @foreach ($users->filter(fn($u) => $u->role?->name === 'Admin') as $user)
-                            <option value="{{ $user->id }}" {{$evaluation->approved2?->id == $user->id ? "selected" : ""}}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                   
-                </td>
-            @endif
-        </tr>
-    </tbody>
+                                
+                            <td style="vertical-align: middle; position: relative; height: 100px;">
+                                
+                                <div style="position: relative; display: inline-block;">
+                                    @if(!$notdraft) 
+                                        <select name="approver_user1" class="form-select text-center">
+                                            <option value="" selected></option>
+                                            @foreach ($users->filter(fn($u) => $u->role?->name === 'Admin') as $user)
+                                                <option value="{{ $user->id }}" {{ $evaluation->approved1?->id == $user->id ? "selected" : "" }}>
+                                                    {{ $user->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    @elseif (($evaluation->approval_status >=20 ) || $evaluation->approval_status >= 50)
+                                        <img src="{{ asset('storage/signatures/almario.png') }}" 
+                                                alt="Signature" 
+                                                class="sig-img"
+                                                style="width: 150px; z-index: 1; position: relative;" />
+                                            <label style="
+                                                position: absolute; 
+                                                top: 50%; 
+                                                left: 50%; 
+                                                transform: translate(-50%, -50%); 
+                                                z-index: 2; 
+                                                white-space: nowrap;
+                                                font-weight: bold;
+                                                pointer-events: none;
+                                                color: rgba(0, 0, 0, 0.7);
+                                            ">
+                                            {{ $evaluation->approved1->name  }}
+                                            </label>
+                                            <small class="d-block">{{ $evaluation->approved_date1  }}</small>
+                                    @else
+                                        <label>{{ $evaluation->approved1?->name }}</label>
+                                    @endif
+                                </div>
+                            </td>
 
-</table>
+                            @if($evaluation->approved2)
+                                <td class="spacer"></td>
+                                <td>
+                                    
+                                    <div style="position: relative; display: inline-block;">
+                                        @if(!$notdraft)
+                                            <select name="approver_user2" class="form-select text-center">
+                                                <option value="" selected></option>
+                                                @foreach ($users->filter(fn($u) => $u->role?->name === 'Admin') as $user)
+                                                    <option value="{{ $user->id }}" {{$evaluation->approved2?->id == $user->id ? "selected" : ""}}>
+                                                        {{ $user->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @elseif (($evaluation->approval_status >=20 ) || $evaluation->approval_status >= 50)
+                                            
+                                            <div style="position: relative; display: inline-block;">
+                                                <img src="{{ asset('storage/signatures/almario.png') }}" 
+                                                    alt="Signature" 
+                                                    class="sig-img"
+                                                    style="width: 150px; z-index: 1; position: relative;" />
+                                                <label style="
+                                                    position: absolute; 
+                                                    top: 50%; 
+                                                    left: 50%; 
+                                                    transform: translate(-50%, -50%); 
+                                                    z-index: 3; 
+                                                    white-space: nowrap;
+                                                    font-weight: bold;
+                                                    pointer-events: none;
+                                                    color: rgba(0, 0, 0, 0.7);
+                                                ">
+                                                {{ $evaluation->approved2->name  }}
+                                                </label>
+                                                <small class="d-block">{{ $evaluation->approved_date2  }}</small>
+                                            </div>
+                                        @else
+                                            <label>{{ $evaluation->approved2?->name }}</label>
+                                        @endif
+                                    </div>
+                                </td>
+                            @endif
+
+
+                            @if($evaluation->confirm1)
+                                <td class="spacer"></td>
+
+                                <td style="vertical-align: middle;height: 100px;">
+                                    <div style="position: relative; display: inline-block;">
+                                        @if(!$notdraft)
+                                            <select name="confirmer_user1" class="form-select text-center">
+                                                <option value="" selected></option>
+                                                @foreach ($users->filter(fn($u) => $u->role?->name === 'SuperAdmin') as $user)
+                                                    <option value="{{ $user->id }}" {{$evaluation->confirm1?->id == $user->id ? "selected" : ""}} {{$evaluation->confirm1}} {{ $user->id}}>
+                                                        {{ $user->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @elseif ($evaluation->confirmed_date1  || $evaluation->approval_status >= 50)
+                                            <img src="{{ asset('storage/signatures/mortola02.png') }}" 
+                                                    alt="Signature" 
+                                                    class="sig-img"
+                                                    style="width: 150px; z-index: 1; position: relative;" />
+                                                <label style="
+                                                    position: absolute; 
+                                                    top: 50%; 
+                                                    left: 50%; 
+                                                    transform: translate(-50%, -50%); 
+                                                    z-index: 2; 
+                                                    white-space: nowrap;
+                                                    font-weight: bold;
+                                                    pointer-events: none;
+                                                    color: rgba(0, 0, 0, 0.7);
+                                                ">
+                                                {{ $evaluation->confirm1?->name  }}
+                                                </label>
+                                                <small class="d-block">{{ $evaluation->confirmed_date1  }}</small> 
+                                        @else
+                                            <label>{{ $evaluation->confirm1?->name }}</label>
+                                        @endif
+                                    </div>
+                                </td>
+                                
+                            @endif
+
+                            @if($evaluation->confirm2)
+                                <td class="spacer"></td>
+                                <td>
+                                    
+                                    <div style="position: relative; display: inline-block;">
+                                        @if(!$notdraft)
+                                            <select name="confirmer_user2" class="form-select text-center">
+                                                <option value="" selected></option>
+                                                @foreach ($users->filter(fn($u) => $u->role?->name === 'SuperAdmin') as $user)
+                                                    <option value="{{ $user->id }}" {{$evaluation->confirm2?->id == $user->id ? "selected" : ""}}>
+                                                        {{ $user->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        
+                                        @elseif ($evaluation->approval_status >=30 || $evaluation->approval_status >= 50)
+                                            <img src="{{ asset('storage/signatures/almario.png') }}" 
+                                                    alt="Signature" 
+                                                    class="sig-img"
+                                                    style="width: 150px; z-index: 1; position: relative;" />
+                                                <label style="
+                                                    position: absolute; 
+                                                    top: 50%; 
+                                                    left: 50%; 
+                                                    transform: translate(-50%, -50%); 
+                                                    z-index: 2; 
+                                                    font-weight: bold;
+                                                    pointer-events: none;
+                                                    color: rgba(0, 0, 0, 0.7);
+                                                ">
+                                                {{ $evaluation->confirm2->name  }}
+                                                </label>
+                                                <small class="d-block">{{ $evaluation->confirmed_date2  }}</small>
+                                        @else
+                                            <label>{{ $evaluation->confirm2?->name }}</label>
+                                        @endif
+                                    </div>
+                                </td>
+                            @endif
+
+                        </tr>
+                    </tbody>
+
+                </table>
                 
+            </div>
+
+            
+            <div class="d-flex justify-content-end mt-3">
+
+                    @if((!($evaluation->approval_status >= 50)) && (($is_approver && ($evaluation->approval_status >= 10 && $evaluation->approval_status < 20)) || ($is_confirmer && ($evaluation->approval_status >= 20 && $evaluation->approval_status < 30)) || ($evaluation->approval_status == 1 && ($evaluation->draft_by2 == $current_user->id))))
+                        <div  class="mr-3">
+                            <button type="button" class="btn btn-danger mt-3 reason" data-url="{{route('reject-evaluation',$evaluation->id)}}" data-bs-toggle="modal" data-bs-target="#reasonModal">
+                            Reject
+                            </button>
+                        </div>
+                    
+                        <div>
+                            <button type="button" class="btn btn-primary mt-3 reason" data-bs-toggle="modal" data-url="{{$url}}"  data-bs-target="#reasonModal">{{$is_approver ? "Approve" :( $is_confirmer ? "Confirm" : "Submit")}}</button>
+                        </div>
+                    @elseif($evaluation->approval_status == 0 && ($evaluation->draft_by1 == $current_user->id && empty($evaluation->draft_date1)))
+
+                        <div>
+                            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                        </div>
+                    @endif
+
+                
+                
+
+
             </div>
 
             <div>
@@ -399,6 +553,7 @@
                             <th>Activity</th>
                             <th>Performed By</th>
                             <th>Date</th>
+                            <th>Reason</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -409,41 +564,19 @@
                                 <td>{{$act->activity}}</td>
                                 <td>{{$act->performer->name}}</td>
                                 <td>{{$act->created_at}}</td>
+                                <td>{{$act->reason}}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
 
-            <div class="d-flex justify-content-end mt-3">
-
-
-                    @if((!($evaluation->approval_status >= 50)) && (($is_approver && ($evaluation->approval_status >= 10 && $evaluation->approval_status < 20)) || ($is_confirmer && ($evaluation->approval_status >= 20 && $evaluation->approval_status < 30))))
-                        <div  class="mr-3">
-                            <button type="button" class="btn btn-danger mt-3 reject" data-bs-toggle="modal" data-bs-target="#rejectModal">
-                            Reject
-                            </button>
-                        </div>
-                    
-                        <div>
-                            <button type="submit" class="btn btn-primary mt-3">{{$is_approver ? "Approve" :( $is_confirmer ? "Confirm" : "Submit")}}</button>
-                        </div>
-                    @elseif($evaluation->approval_status < 10 && (($evaluation->draft_by1 == $current_user->id && empty($evaluation->draft_date1)) || ($evaluation->draft_by2 == $current_user->id && empty($evaluation->draft_date2))))
-
-                        <div>
-                            <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                        </div>
-                    @endif
-
-                
-                
-
-
-            </div>
         </div>
       </form>
     </div>
   </div>
+
+
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1">
@@ -470,10 +603,11 @@
 
 
 <!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1">
+<div class="modal fade" id="reasonModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{  route('reject-evaluation',$evaluation->id) }}" method="POST">
+
+            <form id="approveForm"  method="POST">
             @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Reason</h5>
@@ -481,7 +615,9 @@
                 </div>
 
                 <div class="modal-body">
-                    <textarea name="reason" class="form-control"  data-toggle="autosize" name="example-textarea-input" rows="5" placeholder="Reason"> </textarea>
+                    <textarea name="reason" class="form-control"  data-toggle="autosize" name="example-textarea-input" rows="5" placeholder="Reason"> 
+                        Default Reason Here;
+                    </textarea>
                 </div>
 
                 <div class="modal-footer">
@@ -499,7 +635,14 @@
 
 <script>
 
- 
+
+        document.getElementById('reasonModal').addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const url = button.getAttribute('data-url');
+            const form = this.querySelector('form');
+            form.setAttribute('action', url);
+        });
+    
 
 
     const form = document.getElementById("myForm");
@@ -512,7 +655,7 @@
 
         elements.forEach(el => {
             if (el.type !== "submit" && el.type !== "hidden"  &&
-            !el.classList.contains("reject")) {
+            !el.classList.contains("reason")) {
                 el.disabled = true;
             }
         });
@@ -697,7 +840,7 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
                 ${info.asset_number}
             </td>            
             <td>
-                <input type="text" class="form-control" name="writtenOff[${id}][schedule_date]" required='required'>            
+                <input type="text" class="form-control" name="writtenOff[${id}][reason_for_writeoff]" required='required'>            
             </td>
             <td class="text-muted qty">
                 ${qtyToMove}

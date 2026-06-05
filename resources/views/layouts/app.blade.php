@@ -23,6 +23,7 @@
     <link href="{{ asset('dist/css/demo.min.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('dist/css/style.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('dist/css/bootstrap-icons.css') }}" rel="stylesheet">
+	<link href="{{ asset('dist/css/custom.css') }}" rel="stylesheet">
     <style>
       body {
       	display: none;
@@ -32,7 +33,8 @@
     </head>
 	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
-    <body class="font-sans antialiased">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<body class="font-sans antialiased">
 
    
 	<!-- <livewire:layout.navigation /> -->

@@ -15,7 +15,7 @@
                 <label class="form-label">Drafter </label>
                 <div class="form-group mb-3 ">
                     <div >
-                        <select name="hierarchy['user'][]" class="form-select" disabled>
+                        <select name="hierarchy[user][]" class="form-select" disabled>
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
@@ -28,13 +28,13 @@
                   </div>
                   <div class="form-group mb-3 ">
                     <div >
-                        <select name="hierarchy['user'][]" class="form-select" >
+                        <select name="hierarchy[user][]" class="form-select" >
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
                                 return $user->role?->name === 'User';
                             }) as $user)
-                                <option value="{{ $user->id }}" {{$department->drafter->get(0)?->user_id == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
+                                <option value="{{ $user->id }}" {{$department->preparedby2 == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -45,27 +45,27 @@
                 <label class="form-label">Approver </label>
                 <div class="form-group mb-3 ">
                     <div >
-                        <select name="hierarchy['approver_user'][]" class="form-select" >
+                        <select name="hierarchy[approver_user][]" class="form-select" >
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
                                 return $user->role?->name === 'Admin';
                             }) as $user)
 
-                                <option value="{{ $user->id }}" {{$department->approver->get(0)?->user_id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                                <option value="{{ $user->id }}" {{$department->approved1 == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
                             @endforeach
                         </select>
                     </div>
                   </div>
                   <div class="form-group mb-3 ">
                     <div >
-                        <select name="hierarchy['approver_user'][]" class="form-select" >
+                        <select name="hierarchy[approver_user][]" class="form-select" >
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
                                 return $user->role?->name === 'Admin';
                             }) as $user)
-                                <option value="{{ $user->id }}" {{$department->approver->get(1)?->user_id == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
+                                <option value="{{ $user->id }}" {{$department->approved2 == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -77,26 +77,26 @@
                 <label class="form-label">Confirmer </label>
                 <div class="form-group mb-3 ">
                     <div >
-                        <select name="hierarchy['confirmer_user'][]" class="form-select" >
+                        <select name="hierarchy[confirmer_user][]" class="form-select" >
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
                                 return $user->role?->name === 'SuperAdmin';
                             }) as $user)
-                                <option value="{{ $user->id }}" {{$department->confirmer->get(0)?->user_id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
+                                <option value="{{ $user->id }}" {{$department->confirmed1 == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
                             @endforeach
                         </select>
                     </div>
                   </div>
                   <div class="form-group mb-3 ">
                     <div >
-                        <select name="hierarchy['confirmer_user'][]" class="form-select" >
+                        <select name="hierarchy[confirmer_user][]" class="form-select" >
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
                                 return $user->role?->name === 'SuperAdmin';
                             }) as $user)
-                                <option value="{{ $user->id }}" {{$department->confirmer->get(1)?->user_id == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
+                                <option value="{{ $user->id }}" {{$department->confirmed2 == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
                         </select>
                     </div>

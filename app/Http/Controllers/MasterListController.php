@@ -156,46 +156,73 @@ class MasterListController extends Controller
         return view('master_list/hierarchy/list', compact('hierarchies','users','departments')); 
     }
     
-    public function saveHierarchy(Request $request,$deptid){
+    // public function saveHierarchy(Request $request,$deptid){
         
-        $data = [];
-        foreach($request->hierarchy as $index => $users){
-            foreach($users as $user){
-                $index = trim($index, "'\"");
-                if($user){
-                    $data[] = [
-                        'user_id' => $user,
-                        'type'  => $index == 'approver_user' ? 2 : ($index == 'confirmer_user' ?  3 : 1),
-                        'deptid'   => $deptid,
-                    ];
-                }
-            }
-        }
+    //     $data = [];
+    //     foreach($request->hierarchy as $index => $users){
+    //         foreach($users as $user){
+    //             $index = trim($index, "'\"");
+    //             if($user){
+    //                 $data[] = [
+    //                     'user_id' => $user,
+    //                     'type'  => $index == 'approver_user' ? 2 : ($index == 'confirmer_user' ?  3 : 1),
+    //                     'deptid'   => $deptid,
+    //                 ];
+    //             }
+    //         }
+    //     }
 
-        $data = collect($data)
-            ->unique(fn ($row) => $row['deptid'].'-'.$row['type'].'-'.$row['user_id'])
-            ->values()
-            ->toArray();
+    //     $data = collect($data)
+    //         ->unique(fn ($row) => $row['deptid'].'-'.$row['type'].'-'.$row['user_id'])
+    //         ->values()
+    //         ->toArray();
 
-        $newKeys = collect($data)->map(fn ($r) => "{$r['deptid']}-{$r['type']}-{$r['user_id']}");
+    //     $newKeys = collect($data)->map(fn ($r) => "{$r['deptid']}-{$r['type']}-{$r['user_id']}");
 
-        ApprovalHierarchy::get()->each(function ($row) use ($newKeys) {
-            $key = "{$row->deptid}-{$row->type}-{$row->user_id}";
+    //     ApprovalHierarchy::get()->each(function ($row) use ($newKeys) {
+    //         $key = "{$row->deptid}-{$row->type}-{$row->user_id}";
             
-            if (!$newKeys->contains($key)) {
-                ApprovalHierarchy::where('deptid', $row->deptid)
-                    ->where('type', $row->type)
-                    ->where('user_id', $row->user_id)
-                    ->delete();
-            }
-        });
-        // DD($data);
-        ApprovalHierarchy::upsert($data, ['deptid','type','user_id'],[]);
+    //         if (!$newKeys->contains($key)) {
+    //             ApprovalHierarchy::where('deptid', $row->deptid)
+    //                 ->where('type', $row->type)
+    //                 ->where('user_id', $row->user_id)
+    //                 ->delete();
+    //         }
+    //     });
+    //     // DD($data);
+    //     ApprovalHierarchy::upsert($data, ['deptid','type','user_id'],[]);
 
 
                 
+    //     return redirect()->route('view-department',$deptid);
+
+    // }
+
+
+    public function saveHierarchy(Request $request,$deptid){
+        
+        $data = [];
+        $department = Department::find($deptid);
+
+
+        $department->update([
+            'preparedby2' => $request->hierarchy['user'][0],
+            'confirmed1' => $request->hierarchy['confirmer_user'][0],
+            'confirmed2' => $request->hierarchy['confirmer_user'][1],
+            'approved1' => $request->hierarchy['approver_user'][0],
+            'approved2' => $request->hierarchy['approver_user'][1],
+        ]);
+                
         return redirect()->route('view-department',$deptid);
 
+    }
+
+
+    public function userList(Request $request){
+        $users = User::all();
+
+       view()->share('pageTitle', 'User List');
+        return view('master_list/users/list', compact('users')); 
     }
 
 
