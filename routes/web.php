@@ -5,6 +5,8 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MasterListController;
 use App\Http\Controllers\EvaluationController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+
 
 
 
