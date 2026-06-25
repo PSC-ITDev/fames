@@ -11,6 +11,12 @@ use App\Models\AssetLocation as Location;
 use App\Models\AssetCategory as Category;
 use App\Models\ApprovalHierarchy;
 use App\Models\User;
+use App\Models\Role;
+
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
 
 class MasterListController extends Controller
@@ -21,36 +27,39 @@ class MasterListController extends Controller
         $assets = FixedAsset::with(['department','classification'])->get();
         $departments = Department::all();
         $classifications = Classification::all();
+        $categories = Category::all();
+        $locations = Location::all();
 
        view()->share('pageTitle', 'Asset List');
-        return view('master_list/assets/list', compact(['assets','departments','classifications'])); 
+        return view('master_list/assets/list', compact(['assets','departments','classifications','categories','locations'])); 
     }
     
     public function saveAsset(Request $request){
         $asset = new FixedAsset();
-        $asset->asset_no = $request->input('asset_no');
-        $asset->item = $request->input('item');
-        $asset->serial_number = $request->input('serial_number');
+        $asset->asset_number = $request->input('asset_no');
+        // $asset->item = $request->input('item');
+        // $asset->serial_number = $request->input('serial_number');
         $asset->capitalization_date = $request->input('capitalization_date');
-        $asset->location = $request->input('location');
+        // $asset->location = $request->input('location');
         $asset->other_identifier = $request->input('other_identifier');
         $asset->category_id = $request->input('category_id');
         $asset->location_id = $request->input('location_id');
         $asset->department_id = $request->input('department');
-        $asset->asset_description = $request->input('description');
+        $asset->asset_description = $request->input('asset_description');
         $asset->classification_id = $request->input('classification');
         $asset->qty = $request->input('quantity');
-        $asset->bum = $request->input('bum');
-        $asset->acquired_value = $request->input('acquired_value');
-        $asset->end_book_value = $request->input('endbookvalue');
+        $asset->bun = $request->input('bum');
+        // $asset->acquired_value = $request->input('acquired_value');
+        $asset->end_book_val = $request->input('endbookvalue');
         $asset->salvage_value = $request->input('salvagevalue');
         $asset->useful_life_years = $request->input('usefullifeyears');
-        $asset->cost_center = $request->input('costcenter');
+        $asset->cost_center_id = $request->input('costcenter');
+        $asset->ordinary_depreciation_start_date = $request->input('ordinary_depreciation_start_date');
         $asset->save();
 
  
         
-        return redirect()->route('asset-list');;
+        return redirect()->route('asset-list');
 
     }
 
@@ -98,7 +107,7 @@ class MasterListController extends Controller
         $location->description = $request->input('description');
         $location->save();
         
-        return redirect()->route('location-list');;
+        return redirect()->route('location-list');
 
     }
 
@@ -119,7 +128,7 @@ class MasterListController extends Controller
         $classification->description = $request->input('description');
         $classification->save();
         
-        return redirect()->route('classification-list');;
+        return redirect()->route('classification-list');
 
     }
 
@@ -141,7 +150,7 @@ class MasterListController extends Controller
         $category->description = $request->input('description');
         $category->save();
         
-        return redirect()->route('category-list');;
+        return redirect()->route('category-list');
 
     }
 
@@ -217,18 +226,64 @@ class MasterListController extends Controller
 
     }
 
-
+    //USERS
     public function userList(Request $request){
         $users = User::all();
+        $roles = Role::all();
+        $departments = Department::all();
 
        view()->share('pageTitle', 'User List');
-        return view('master_list/users/list', compact('users')); 
+        return view('master_list/users/list', compact('users','roles','departments')); 
     }
 
+    public function saveUser(Request $request){
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'deptid' => ['required', 'string'],
+            'role_id' => ['required', 'string'],
+        ]);
 
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'deptid' => $request->deptid,
+            'role_id' => $request->role_id,
+        ]);
+
+        // event(new Registered($user));
+
+        // Auth::login($user);
+
+       return redirect()->route('user-list');
+
+    }
+    public function updateUser(Request $request){
+
+    }
     
-        // Route::post('/save-hierarchy',[MasterListController::class, 'saveHierarchy']) ->name('savehierarchy');
-        // Route::get('/hierarchy-list', [MasterListController::class, 'hierarchyList'])->name('hierarchy-list');
+
+    // ROLE
+    public function roleList(Request $request)
+    { 
+        $roles = Role::all();
+
+       view()->share('pageTitle', 'Role List');
+        return view('master_list/role/list', compact('roles')); 
+    }
+    
+    public function saveRole(Request $request){
+        $role = new Role();
+ 
+        $role->name = $request->input('name');
+        $role->description = $request->input('description');
+        $role->save();
+        
+        return redirect()->route('role-list');
+
+    }
 
 }
 

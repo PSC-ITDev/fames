@@ -2,30 +2,14 @@
   <div class="col-md-12">
     <div class="card">
         <div class="card-header">
-            <div class="mx-2">
-              
-              <label  class="form-label">Quarter</label>
-              <select class="form-select" name="qrt" i>
-                <option value="1st">1st</option>
-                <option value="2nd">2nd</option>
-                <option value="3rd">3rd</option>
-                <option value="4th">4th</option>
-              </select>
-              
-            </div>
-            <div>
-              <label class="form-label">Select Year</label>
-              <select name="year" class="form-select" >
-                @foreach ($years as $year)
-                    <option value="{{ $year }}">{{ $year }}</option>
-                @endforeach
-              </select>
-            </div>
+            
             <div class="card-options">
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                  New Evaluation
-                </button>
+                @if(strtolower($user->role->name) == 'user' )
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEvalModal">
+                    New Evaluation
+                  </button>
+                @endif
             </div>
         </div>
         <div class="card-body">   
@@ -81,12 +65,12 @@
     </div>
   </div>
     <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="newEvalModal" tabindex="-1" aria-labelledby="newEvalModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Register New Evaluation </h5>
+          <h5 class="modal-title" id="newEvalModalLabel">Register New Evaluation </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         
@@ -96,10 +80,58 @@
           
         </div>
 
+
+
       </div>
     </div>
   </div>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById('newEvalModal').addEventListener('show.bs.modal', function (event) {
+          check_duplicate();
+      });
+
+      $('select[name="year"], select[name="qrt"], select[name="department"]').on('change', function () {
+          check_duplicate();
+      });
+
+      function check_duplicate(){
+        let formData = {};
+
+        $('#evalForm')
+          .serializeArray()
+          .filter(field => field.name !== '_token')
+          .forEach(field => {
+              formData[field.name] = field.value;
+        });
+
+        console.log(formData);
+
+        let evaluations = @json($evaluations);
+
+        console.log(evaluations);
+
+        const result = evaluations.find(item =>
+            item.department_id == formData.department &&
+            item.quarter === formData.qrt &&
+            item.year === formData.year
+        );
+
+        console.log(result);
+            
+        if(result){
+          $('#duplicate').show();
+          $('#submitEval').prop('disabled', true);
+        }else{
+          $('#duplicate').hide();
+          $('#submitEval').prop('disabled', false);
+        }
+
+      }
+    });
+
+  </script>
 
 
 

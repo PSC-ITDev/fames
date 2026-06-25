@@ -63,3 +63,51 @@ text-shadow: 0 1px 2px rgba(0,0,0,.25);
     color: #fbbf24;
     font-size: 25px; 
 }
+
+.rejected span{
+    background-color: #dc3545 !important; 
+    color: white !important;
+    padding: 2px;
+    border-radius: 5px; /* smooth corners */
+    display: inline-block;
+}
+
+.approved span{
+    background-color: #16a34a !important;
+    color: white !important;
+    padding: 2px;
+    border-radius: 5px; /* smooth corners */
+    display: inline-block;
+}
+
+.confirmed span{
+    background-color: #14b8a6 !important;
+    color: white !important;
+    padding: 2px;
+    border-radius: 5px; /* smooth corners */
+    display: inline-block;
+}
+
+.forApproval span,.submit-for-approval span{
+    background-color: #60a5fa; 
+    color: white;
+    padding: 2px;
+    border-radius: 5px; /* smooth corners */
+    display: inline-block;
+}
+
+.pending span,.creation span,.submit-draft span{
+    background-color: #fbbf24;
+    color: white;
+    padding: 2px;
+    border-radius: 5px; /* smooth corners */
+    display: inline-block;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #0d6efd;
+}
+
+.dropdown-menu .dropdown-item.nav {
+    color: #fff; /* blue */
+}

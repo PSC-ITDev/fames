@@ -13,7 +13,7 @@
     <div class="card-body">   
 
         <div class="table-responsive">
-            <table class="table card-table table-vcenter">
+            <table id="userTable" class="table card-table table-vcenter">
                 <thead>
                     <tr>
                         <th>Item</th>
@@ -58,4 +58,14 @@
 <div>
     
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    $('#userTable').DataTable({
+        searching: false,
+        paging: true,
+        pageLength: 20,
+        lengthChange: false
+    });
+  });
+</script>
 </x-app-layout>

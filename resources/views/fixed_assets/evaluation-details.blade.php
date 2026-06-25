@@ -64,7 +64,7 @@
            </div>
             <div class="card-options">
                <b>
-                {{-- {{$approval_status}}{{$can_edit ? ' ' : 'Evaluation'}} --}}
+                {{-- {{$approval_status}}{{$can_edit ? ' ' : 'Evaluation'}} --}}  
                 </b>
             </div>
             
@@ -106,23 +106,20 @@
                                 
                                 <td class="text-muted asset_no">{{$asset->asset->asset_number ?? ""}}</td>
                                 <td class="text-muted">{{$asset->asset->capitalization_date->format('M d, Y')}}</td>
-                                <td class="text-muted qty">{{$asset->asset->qty}}</td>
+                                <td class="text-muted qty">{{$asset->qty}}</td>
                                 <td class="text-muted bum">{{$asset->asset->bun}}</td>
                                 <td class="text-muted asset_description">{{$asset->asset->asset_description}}</td>
                                 <td class="text-muted ">
                                     {{$asset->asset->other_identifier}}
                                 </td>
                                 <td class="text-muted">
-                                    @if ($is_owner && $evaluation->approval_status < 1 )
-                                        <select name="remainingAsset[{{$asset->id}}][asset_status]" class="form-select" >
-                                            @foreach ($statuses as $status)
-                                                <option value="{{ $status->id }}" {{(int) $asset->asset_status == (int) $status->id ? "selected" : ""}}>{{ $status->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        
-                                    @else
+                                    <a
+                                        @if(($evaluation->approval_status == 0 && ($evaluation->draft_by1 == $current_user->id && empty($evaluation->draft_date1))))
+                                            data-bs-toggle="modal" data-bs-target="#splitStatus" data-url="{{route('split-status',$asset->id)}}" data-assetName="{{$asset->asset->asset_description}}" data-maxQty="{{$asset->qty}}"
+                                        @endif
+                                    >
                                         {{ $statuses->find($asset->asset_status)?->name }}
-                                    @endif
+                                    </a>
                                 </td>
                                 <td class="text-muted">
                                     @if ($is_owner  && $evaluation->approval_status < 1 )
@@ -137,6 +134,7 @@
                                     <input type="text" class="hidden " name="remainingAsset[{{$asset->id}}][id]" value="{{$asset->id}}">
                                     <input type="hidden" name="remainingAsset[{{$asset->id}}][iswrite_off]" value="0">
                                     <input type="text" class="hidden " name="remainingAsset[{{$asset->id}}][asset_id]" value="{{$asset->asset->id}}">
+                                    <input type="text" class="hidden " name="remainingAsset[{{$asset->id}}][asset_status]" value="{{$asset->asset_status}}">
                                 </td>
                             </tr>
                         @endforeach
@@ -242,7 +240,7 @@
 
             <div>
 
-                //APPROVAL
+                
                 <table class="table table-vcenter text-center uniform-table">
                     <thead>
                         <tr>
@@ -307,7 +305,7 @@
                                         @if(!$notdraft) 
                                             <select name="user2" class="form-select text-center">
                                                 <option value="" selected></option>
-                                                @foreach ($users->filter(fn($u) => $u->role?->name === 'User') as $user)
+                                                @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'user') as $user)
                                                     <option value="{{ $user->id }}" {{$evaluation->drafter2?->id == $user->id ? "selected" : ""}}>
                                                         {{ $user->name }}
                                                     </option>
@@ -348,7 +346,7 @@
                                     @if(!$notdraft) 
                                         <select name="approver_user1" class="form-select text-center">
                                             <option value="" selected></option>
-                                            @foreach ($users->filter(fn($u) => $u->role?->name === 'Admin') as $user)
+                                            @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'approver') as $user)
                                                 <option value="{{ $user->id }}" {{ $evaluation->approved1?->id == $user->id ? "selected" : "" }}>
                                                     {{ $user->name }}
                                                 </option>
@@ -387,7 +385,7 @@
                                         @if(!$notdraft)
                                             <select name="approver_user2" class="form-select text-center">
                                                 <option value="" selected></option>
-                                                @foreach ($users->filter(fn($u) => $u->role?->name === 'Admin') as $user)
+                                                @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'approver') as $user)
                                                     <option value="{{ $user->id }}" {{$evaluation->approved2?->id == $user->id ? "selected" : ""}}>
                                                         {{ $user->name }}
                                                     </option>
@@ -431,13 +429,13 @@
                                         @if(!$notdraft)
                                             <select name="confirmer_user1" class="form-select text-center">
                                                 <option value="" selected></option>
-                                                @foreach ($users->filter(fn($u) => $u->role?->name === 'SuperAdmin') as $user)
+                                                @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'auditor') as $user)
                                                     <option value="{{ $user->id }}" {{$evaluation->confirm1?->id == $user->id ? "selected" : ""}} {{$evaluation->confirm1}} {{ $user->id}}>
                                                         {{ $user->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
-                                        @elseif ($evaluation->confirmed_date1  || $evaluation->approval_status >= 50)
+                                        @elseif ($evaluation->confirmed_date1  || $evaluation->approval_status > 50)
                                             <img src="{{ asset('storage/signatures/mortola02.png') }}" 
                                                     alt="Signature" 
                                                     class="sig-img"
@@ -472,14 +470,14 @@
                                         @if(!$notdraft)
                                             <select name="confirmer_user2" class="form-select text-center">
                                                 <option value="" selected></option>
-                                                @foreach ($users->filter(fn($u) => $u->role?->name === 'SuperAdmin') as $user)
+                                                @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'auditor') as $user)
                                                     <option value="{{ $user->id }}" {{$evaluation->confirm2?->id == $user->id ? "selected" : ""}}>
                                                         {{ $user->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                         
-                                        @elseif ($evaluation->approval_status >=30 || $evaluation->approval_status >= 50)
+                                        @elseif ($evaluation->approval_status >=30 || $evaluation->approval_status > 50)
                                             <img src="{{ asset('storage/signatures/almario.png') }}" 
                                                     alt="Signature" 
                                                     class="sig-img"
@@ -524,10 +522,15 @@
                         <div>
                             <button type="button" class="btn btn-primary mt-3 reason" data-bs-toggle="modal" data-url="{{$url}}"  data-bs-target="#reasonModal">{{$is_approver ? "Approve" :( $is_confirmer ? "Confirm" : "Submit")}}</button>
                         </div>
-                    @elseif($evaluation->approval_status == 0 && ($evaluation->draft_by1 == $current_user->id && empty($evaluation->draft_date1)))
+                    @elseif(($evaluation->approval_status == 0 && ($evaluation->draft_by1 == $current_user->id && empty($evaluation->draft_date1))))
 
                         <div>
                             <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                        </div>
+
+                    @elseif( $evaluation->approval_status == 50 && $evaluation->draft_by1 == $current_user->id)
+                        <div>
+                            <button type="button" onclick="window.location.href='{{  route('edit-evaluation',$evaluation->id) }}'" class="btn btn-primary mt-3">Edit</button>
                         </div>
                     @endif
 
@@ -550,7 +553,7 @@
                     <thead>
                         <tr>
                             {{-- <th></th> --}}
-                            <th>Activity</th>
+                            <th>Activity {{$evaluation->approval_status}}</th>
                             <th>Performed By</th>
                             <th>Date</th>
                             <th>Reason</th>
@@ -615,9 +618,7 @@
                 </div>
 
                 <div class="modal-body">
-                    <textarea name="reason" class="form-control"  data-toggle="autosize" name="example-textarea-input" rows="5" placeholder="Reason"> 
-                        Default Reason Here;
-                    </textarea>
+                    <textarea name="reason" class="form-control" data-toggle="autosize" rows="5" placeholder="Reason" required>Default Reason Here</textarea>
                 </div>
 
                 <div class="modal-footer">
@@ -630,32 +631,145 @@
     </div>
 </div>
 
+<!-- split status modal -->
+<div class="modal fade" id="splitStatus" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+            <form id="splitStatusForm"   method="POST">
+                @csrf
+                <div class="mb-3">
+                    Remaining: <span id="remaining"></span>
+                </div>
+                @foreach ($statuses as $status)
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-md-7">
+                            <label for="{{ strtolower(str_replace(' ', '-', $status->name))}}" class="form-label mb-0">
+                                {{$status->name}}
+                            </label>
+                        </div>
+
+                        <div class="col-md-5">
+                            <input
+                                type="number"
+                                id="{{ strtolower(str_replace(' ', '-', $status->name))}}"
+                                name="status[{{$status->id}}]"
+                                class="form-control"
+                            >
+                        </div>
+                    </div>
+                    <hr>
+                    <br>
+                @endforeach
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" >Confirm</button>
+                </div>
+            </form>
+       
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 
 <script>
 
 
-        document.getElementById('reasonModal').addEventListener('show.bs.modal', function (event) {
+document.getElementById('reasonModal').addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
             const url = button.getAttribute('data-url');
             const form = this.querySelector('form');
             form.setAttribute('action', url);
         });
+
+let maxTotal = 0;
+
+document.getElementById('splitStatus').addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const url = button.getAttribute('data-url');
+    const maxQty = parseInt(button.getAttribute('data-maxQty')) || 0;
+    const assetName = button.getAttribute('data-assetName');
+    const form = this.querySelector('form');
+    form.setAttribute('action', url);
+
+    maxTotal = maxQty;
+
+    const remaining = document.getElementById('remaining');
+    remaining.textContent = maxQty;
+
+    const modalTitle = document.getElementById('modal-title');
+    modalTitle.textContent = assetName;
+
+    // Disable if remaining is not 0
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = parseInt(remaining.textContent) !== 0;
     
 
+ 
+});
 
+document.addEventListener('DOMContentLoaded', function () {
+    const inputs = document.querySelectorAll('input[name^="status["]');
+    const remaining = document.getElementById('remaining');
+    const submitBtn = document.querySelector('#splitStatus button[type="submit"]');
+
+    function updateTotals() {
+        let total = 0;
+
+        inputs.forEach(input => {
+            total += parseInt(input.value) || 0;
+        });
+
+        const remainingQty = Math.max(0, maxTotal - total);
+        remaining.textContent = remainingQty;
+
+        // Enable only when remaining is 0
+        submitBtn.disabled = remainingQty !== 0;
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener('input', function () {
+            let total = 0;
+
+            inputs.forEach(i => {
+                total += parseInt(i.value) || 0;
+            });
+
+            if (total > maxTotal) {
+                const currentValue = parseInt(this.value) || 0;
+                const excess = total - maxTotal;
+
+                this.value = Math.max(0, currentValue - excess);
+
+                alert(`Total quantity cannot exceed ${maxTotal}.`);
+            }
+
+            updateTotals();
+        });
+    });
+
+    // Initial state
+    updateTotals();
+});
+
+
+
+    //disable buttons and inputs
     const form = document.getElementById("myForm");
-
-
     if (form) {
 
 
         const elements = form.querySelectorAll("input, select, textarea, button");
 
         elements.forEach(el => {
-            if (el.type !== "submit" && el.type !== "hidden"  &&
-            !el.classList.contains("reason")) {
+            if (el.type !== "submit" && el.type !== "hidden"  && el.type !== "button" && !el.classList.contains("reason")) {
                 el.disabled = true;
             }
         });

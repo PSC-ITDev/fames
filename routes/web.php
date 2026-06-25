@@ -55,6 +55,12 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
 
         //Users 
         Route::get('/users-list', [MasterListController::class, 'userList'])->name('user-list');
+        Route::post('/saveuser',[MasterListController::class, 'saveUser']) ->name('saveuser');
+        Route::post('/updateuser',[MasterListController::class, 'updateUser']) ->name('updateuser');
+
+        //Role
+        Route::post('/saverole',[MasterListController::class, 'saveRole']) ->name('saverole');
+        Route::get('/role-list', [MasterListController::class, 'roleList'])->name('role-list');
 
         //Evaluation Details
         // Route::post('/submievaluationdetails',[EvaluationController::class, 'saveEvaluation']) ->name('saveevaluation');
@@ -64,11 +70,13 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         Route::get('/evaluationList', [EvaluationController::class, 'evaluationList'])->name('evaluation-list');
         Route::get('/evaluationdetails/{id}', [EvaluationController::class, 'evaluationDetails'])->name('evaluation-details');
         Route::post('/updateevaluationdetail/{eval_id}',[EvaluationController::class, 'updateEvaluationDetails']) ->name('updateevaluation');
+        Route::post('/splitstatus/{eval_detail_id}', [EvaluationController::class, 'splitStatus'])->name('split-status');
 
         Route::post('/check/{eval_id}',[EvaluationController::class, 'checkEvaluation']) ->name('check-evaluation');
         Route::post('/approve/{eval_id}',[EvaluationController::class, 'approveEvaluation']) ->name('approve-evaluation');
         Route::post('/confirm/{eval_id}',[EvaluationController::class, 'confirmEvaluation']) ->name('confirm-evaluation');
         Route::post('/reject/{eval_id}',[EvaluationController::class, 'rejectEvaluation']) ->name('reject-evaluation');
+        Route::get('/edit/{eval_id}',[EvaluationController::class, 'editEvaluation']) ->name('edit-evaluation');
 
 
 

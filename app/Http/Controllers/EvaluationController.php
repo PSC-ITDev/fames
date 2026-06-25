@@ -32,6 +32,35 @@ class EvaluationController extends Controller
     
     public function saveEvaluation(Request $request){
 
+        $qMap = [
+            '1st' => 1,
+            '2nd' => 2,
+            '3rd' => 3,
+            '4th' => 4,
+        ];
+
+        $reverseMap = [
+            1 => '1st',
+            2 => '2nd',
+            3 => '3rd',
+            4 => '4th',
+        ];
+
+        $currentQtr = $qMap[$request->input('qrt')] ?? null;
+
+        $prevQtr = $currentQtr === 1 ? 4 : $currentQtr - 1;
+
+        $prevQtrLabel = $reverseMap[$prevQtr];
+
+        
+        $prev_eval = Evaluation::where([
+            'quarter' => $prevQtrLabel,
+            'year' => (string) ($prevQtr == 4 ? ((int)$request->input('year') - 1) : $request->input('year')),
+            'department_id' => $request->input('department')
+        ])->first();
+
+        
+        
         // dd($request);
 
         $user_id = Auth::user()->id;
@@ -44,6 +73,7 @@ class EvaluationController extends Controller
 
         $deptid = $request->input('department');
         $department =  Department::find($deptid);
+        $default_status = Status::where('name','Operational In Good Condition')->first()->id;
 
 
         // DD(!$evaluation_exist);
@@ -73,41 +103,59 @@ class EvaluationController extends Controller
            
             
             $evaluation->save();
-            
-            
-            // $details = new EvaluationDetail();
-            // $data = [];
-            // $assets = FixedAsset::where('department_id',$evaluation->department_id)->where('qty','>',0)->get();
-            // foreach($assets as $asset){
-            //     $data[] = [
-            //         'asset_form_id' => $evaluation->id,
-            //         'asset_id' => $asset->id,
-            //         'iswrite_off' => 0,
-            //         'writeoff_qty' => 0,
-            //         'asset_status'=>1,
-            //         'created_at' => now(),
-            //         'updated_at' => now(),
-            //     ];
-            // }
-
-            // $details->insert($data);
 
         ////chunk
-            $assets = FixedAsset::where('department_id', $evaluation->department_id)
+            if($prev_eval){
+                $assets = $prev_eval->details->where('qty', '>', 0)->where('iswrite_off',0);
+
+                //new_assets created before the evaluation creation
+                $new_assets = FixedAsset::where('department_id', $evaluation->department_id)
+                    ->where('qty', '>', 0)
+                    ->where(function ($query) use ($evaluation,$prev_eval) {
+                        $query->where('created_at','<=',$evaluation->created_at)
+                            ->where('created_at','>=',$prev_eval->created_at);
+                    })
+                    ->get();
+            }else{
+
+                $assets = FixedAsset::where('department_id', $evaluation->department_id)
                 ->where('qty', '>', 0)
                 ->get();
 
+                $new_assets = null;
+            }
+
             $data = [];
             foreach($assets as $asset) {
+                if($asset->qty == 0){continue;}
                 $data[] = [
                     'asset_form_id' => $evaluation->id,
-                    'asset_id'      => $asset->id,
-                    'iswrite_off'   => 0,
-                    'writeoff_qty'  => 0,
-                    'asset_status'  => $asset->asset_status ?? 1, // get the last asset status
+                    'asset_id'      => $prev_eval ? $asset->asset_id : $asset->id,
+                    'iswrite_off'   => $asset->iswrite_off ?? 0,
+                    'writeoff_qty'  => $asset->writeoff_qty ?? 0,
+                    'asset_status'  => $asset->asset_status ?? $default_status, // get the last asset status
                     'created_at'    => now(),
                     'updated_at'    => now(),
+                    'qty'           => $asset->qty
+                    
                 ];
+            }
+
+            if($new_assets){
+                foreach($new_assets as $asset) {
+                    if($asset->qty == 0){continue;}
+                    $data[] = [
+                        'asset_form_id' => $evaluation->id,
+                        'asset_id'      => $asset->id,
+                        'iswrite_off'   => 0,
+                        'writeoff_qty'  => 0,
+                        'asset_status'  => $default_status, // get the last asset status
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
+                        'qty'           => $asset->qty
+                        
+                    ];
+                }
             }
 
             // Break the array into chunks of 200 rows to stay well below the 2100 limit
@@ -129,11 +177,15 @@ class EvaluationController extends Controller
     }
 
     public function evaluationList()
-    {     
-        $evaluations = Evaluation::all();
+    {    
+        $user = Auth::user();
+        if(in_array(strtolower($user->role->name),['user','approver'])){
+            $evaluations = Evaluation::orderBy('created_at', 'desc')->where('department_id',$user->deptid)->get();
+        }else{
+            $evaluations = Evaluation::orderBy('created_at', 'desc')->where('approval_status','>=',10)->get();
+        }
         $departments = Department::all();
         $years = range(now()->year, 1900);
-        $user = Auth::user();
         $user->load('department');
 
         view()->share('pageTitle', 'Evaluation');
@@ -485,6 +537,71 @@ class EvaluationController extends Controller
         $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
 
         return redirect()->route('evaluation-details',$eval_id);
+    }
+
+    public function editEvaluation(Request $request,$eval_id){
+        $evaluation = Evaluation::find($eval_id);
+
+        $evaluation->update([
+            'confirmed_date1' => null,
+            'confirmed_date2' => null,
+            'approved_date1' => null,
+            'approved_date2' => null,
+            'draft_date1' => null,
+            'draft_date2' => null,
+            'approval_status'=> 0,
+        ]);  
+
+        return redirect()->route('evaluation-details',$eval_id);
+
+    }
+
+
+
+
+
+    public function splitStatus(Request $request,$eval_detail_id){
+        $eval_detail = EvaluationDetail::find($eval_detail_id);
+        $statuses = $request->status;
+        $detail_records = EvaluationDetail::where(['asset_form_id' => $eval_detail->asset_form_id,'asset_id'=> $eval_detail->asset_id])->get();
+
+        $data = [];
+            foreach($statuses as $key => $status) {
+                $detail = $detail_records->where('asset_status',$key)->first();
+                // DD($key,$status,$detail);
+                if($detail){
+                    $diff = $detail->qty - (int)$status;
+                    if($diff < 0 ||($detail->id === $eval_detail->id && is_null($status))){
+                        $detail->delete();
+                    }else{
+                        if(!(is_null($status))){
+                            $detail->increment('qty',(int)$status); 
+                            
+                        }
+                        if(($detail->id === $eval_detail->id)){
+                            
+                            $detail->update(['qty' => (int)$status]);
+                        }
+                    }
+                }else{
+                    if(!(is_null($status))){
+
+                        $data[] = [
+                            'asset_form_id' => $eval_detail->asset_form_id,
+                            'asset_id'      => $eval_detail->asset_id,
+                            'iswrite_off'   => $eval_detail->iswrite_off,
+                            'writeoff_qty'  => $eval_detail->writeoff_qty,
+                            'asset_status'  => $key, // get the last asset status
+                            'created_at'    => now(),
+                            'updated_at'    => now(),
+                            'qty' => $status ?? 1
+                        ];
+                    }
+                }
+            }
+        EvaluationDetail::insert($data);
+
+        return redirect()->route('evaluation-details',$eval_detail->asset_form_id);
     }
 
 

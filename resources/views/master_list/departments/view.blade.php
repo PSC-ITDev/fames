@@ -19,7 +19,7 @@
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
-                                return $user->role?->name === 'User';
+                                return strtolower($user->role?->name) == 'user';
                             }) as $user)
                                 <option value="{{ $user->id }}" {{auth()->user()?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
                             @endforeach
@@ -32,7 +32,7 @@
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
-                                return $user->role?->name === 'User';
+                                return strtolower($user->role?->name)  == 'user';
                             }) as $user)
                                 <option value="{{ $user->id }}" {{$department->preparedby2 == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
@@ -49,7 +49,7 @@
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
-                                return $user->role?->name === 'Admin';
+                                return strtolower($user->role?->name)  == 'approver';
                             }) as $user)
 
                                 <option value="{{ $user->id }}" {{$department->approved1 == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
@@ -63,7 +63,7 @@
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
-                                return $user->role?->name === 'Admin';
+                                return strtolower($user->role?->name)  == 'approver';
                             }) as $user)
                                 <option value="{{ $user->id }}" {{$department->approved2 == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
@@ -81,7 +81,7 @@
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
-                                return $user->role?->name === 'SuperAdmin';
+                                return strtolower($user->role?->name)  == 'auditor';
                             }) as $user)
                                 <option value="{{ $user->id }}" {{$department->confirmed1 == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
                             @endforeach
@@ -94,7 +94,7 @@
                             
                             <option value="" selected></option>
                             @foreach ($users->filter(function ($user) {
-                                return $user->role?->name === 'SuperAdmin';
+                                return  strtolower($user->role?->name)  == 'auditor';
                             }) as $user)
                                 <option value="{{ $user->id }}" {{$department->confirmed2 == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach

@@ -48,7 +48,7 @@ new class extends Component
               <ul class="dropdown-menu dropdown-menu-columns  dropdown-menu-columns-2 show">
 
                 <li >
-                  <a class="dropdown-item" href="{{ route('evaluation-list') }}" >
+                  <a class="dropdown-item nav" href="{{ route('evaluation-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 11 12 14 20 6" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>          
                     Evaluation
                   </a>
@@ -66,37 +66,43 @@ new class extends Component
               </a>
               <ul class="dropdown-menu dropdown-menu-columns  dropdown-menu-columns-2 show">
                   <li >
-                  <a class="dropdown-item" href="{{ route('asset-list') }}" >
+                  <a class="dropdown-item nav" href="{{ route('asset-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
                     Asset
                   </a>
                 </li>
                 <li >
-                  <a class="dropdown-item" href="{{ route('department-list') }}" >
+                  <a class="dropdown-item nav" href="{{ route('department-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
                     Department
                   </a>
                 </li>
                 <li >
-                  <a class="dropdown-item" href="{{ route('location-list') }}" >
+                  <a class="dropdown-item nav" href="{{ route('location-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
                     Location
                   </a>
                 </li>
                 <li >
-                  <a class="dropdown-item" href="{{ route('classification-list') }}" >
+                  <a class="dropdown-item nav" href="{{ route('classification-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
                     Classification
                   </a>
                 </li>
                 <li >
-                  <a class="dropdown-item" href="{{ route('category-list') }}" >
+                  <a class="dropdown-item nav" href="{{ route('category-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
                     Category
                   </a>
                 </li>
                 <li >
-                  <a class="dropdown-item" href="{{ route('user-list') }}" >
+                  <a class="dropdown-item nav" href="{{ route('role-list') }}" >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
+                    Role
+                  </a>
+                </li>
+                <li >
+                  <a class="dropdown-item nav" href="{{ route('user-list') }}" >
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><line x1="5" y1="6" x2="5" y2="6.01"></line><line x1="5" y1="12" x2="5" y2="12.01"></line><line x1="5" y1="18" x2="5" y2="18.01"></line></svg>
                     User
                   </a>
@@ -118,62 +124,6 @@ new class extends Component
                 </span>
               </a>
             </li>
-            {{-- <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#navbar-extra" data-toggle="dropdown" role="button" aria-expanded="false" >
-                <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 17.75l-6.172 3.245 1.179-6.873-4.993-4.867 6.9-1.002L12 2l3.086 6.253 6.9 1.002-4.993 4.867 1.179 6.873z" /></svg>
-                </span>
-                <span class="nav-link-title">
-                  Downloads
-                </span>
-              </a>
-              <ul class="dropdown-menu">
-                <li >
-                  <a class="dropdown-item" href="./invoice.html" >
-                    Invoice
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./blog.html" >
-                    Blog cards
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./snippets.html" >
-                    Snippets
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./search-results.html" >
-                    Search results
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./pricing.html" >
-                    Pricing cards
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./users.html" >
-                    Users
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./gallery.html" >
-                    Gallery
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./profile.html" >
-                    Profile
-                  </a>
-                </li>
-                <li >
-                  <a class="dropdown-item" href="./music.html" >
-                    Music
-                  </a>
-                </li>
-              </ul>
-            </li> --}}
             
           </ul>
         </div>

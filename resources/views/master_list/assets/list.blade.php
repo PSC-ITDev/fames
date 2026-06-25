@@ -5,14 +5,14 @@
           <h3 class="card-title">Register a PSC Asset </h3>
           <div class="card-options">
               <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerAssetModal">
               Add Asset
               </button>
           </div>
         </div>
       <div class="card-body">   
           <div class="table-responsive">
-              <table class="table card-table table-vcenter">
+              <table id="assetTable" class="table card-table table-vcenter">
                   <thead>
                       <tr>
                           <th>Item</th>
@@ -41,7 +41,7 @@
                           <td class="text-muted">{{$asset->acquired_value}}</td>
                           <td class="text-muted">{{$asset->end_book_value}}</td>
                           <td class="text-muted">{{$asset->cost_center}}</td>
-                          <td class="text-muted">{{$asset->location_id}}</td>
+                          <td class="text-muted">{{$asset->location->name}}</td>
                           <td class="text-muted">{{$asset->classification->name ?? ''}}</td>
                           <td class="text-muted">{{$asset->department->name ?? ''}}</td>
                           
@@ -81,6 +81,16 @@ aria-labelledby="registerAssetModalLabel" aria-hidden="true">
       </div>
     </div>
   </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      $('#assetTable').DataTable({
+          searching: false,
+          paging: true,
+          pageLength: 20,
+          lengthChange: false
+      });
+    });
+  </script>
 </x-app-layout>
 
 

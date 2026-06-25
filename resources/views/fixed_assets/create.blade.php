@@ -1,6 +1,6 @@
 
 
-    <form action="{{ route('saveevaluation') }}" method="post">
+    <form action="{{ route('saveevaluation') }}" id="evalForm" method="post">
     @csrf
     <div class="row">
         <div class="col-md-6 col-6">
@@ -35,8 +35,8 @@
             <label class="form-label">Department</label>
             <div >
                 {{-- {{$user}} --}}
-                <select name="department" class="form-select">
-                    {{-- {{$user->department ? "disabled":""}} --}}
+                <select name="department" class="form-select"  {{$user->department ? "disabled":""}} >
+                     
                     
                     @foreach($departments as $department)
                         <option value="{{$department->id}}" {{$user->deptid == $department->id ? "selected":""}}>
@@ -45,15 +45,20 @@
                     @endforeach
                 </select>
             </div>
-            {{-- @if($user->department)
+            @if($user->department)
                 <input type="hidden" name="department" value="{{$user->deptid}}">
-            @endif --}}
+            @endif 
         </div>
     </div>
     <hr />
     <div class="form-footer text-right">
-        <button type="submit" class="btn btn-primary">
+        
+        
+        <button type="submit" id="submitEval" class="btn btn-primary">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2"></path><circle cx="12" cy="14" r="2"></circle><polyline points="14 4 14 8 8 8 8 4"></polyline></svg>
         Submit</button>
+        <div class="text-danger pl-2">
+          <small id="duplicate">Evaluation Exist!</small>
+        </div>
     </div>
     </form>

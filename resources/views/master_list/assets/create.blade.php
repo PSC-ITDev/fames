@@ -1,6 +1,6 @@
 
 
-    <form action="{{ route('saveasset') }}" method="post">
+<form action="{{ route('saveasset') }}" method="post">
     @csrf
     <div class="row">
         <div class="col-6">
@@ -18,10 +18,16 @@
             
             <div class="row">
             
-                <div class="">
-                    <div class="mb-3">
+                <div class="col-md-4 col-4">
+                    <div class="form-group mb-3 ">
                         <label class="form-label">Capitalization Date</label>
                         <input name="capitalization_date" id="calendar-simple" type="date" value="2020-06-20" class="form-control mb-2" placeholder="Select a date" />                     
+                    </div>
+                </div>
+                <div class="col-md-4 col-4">
+                    <div class="form-group mb-3 ">
+                        <label class="form-label"><small>Ordinary Depreciation Start Date</small></label>
+                        <input name="ordinary_depreciation_start_date" id="calendar-simple" type="date" value="2020-06-20" class="form-control mb-2" placeholder="Select a date" />                     
                     </div>
                 </div>
             </div>
@@ -44,7 +50,20 @@
                     </div>
                     
                 </div>
-                <div class="col-md-8 col-8">
+                <div class="col-md-4 col-4">
+                    <div class="form-group mb-3 ">
+                        <label class="form-label">Location</label>
+                        <div >
+                            <select name="location_id" class="form-select">
+                                @foreach($locations as $location)
+                                    <option value="{{$location->id}}">{{$location->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="col-md-4 col-4">
                     <div class="form-group mb-3 ">
                         <label class="form-label">Classification</label>
                         <div >
@@ -132,8 +151,35 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-6 col-6">
+                    <div class="form-group mb-3 ">
+                        <label class="form-label">Category</label>
+                        <div >
+
+                            <select name="category_id" class="form-select">
+                                @foreach($categories as $category)
+                                    <option value="{{$category->id}}">{{$category->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-6">
+                    <div class="form-group mb-3 ">
+                        <label class="form-label">Cost Center</label>
+                        <div >
+                            <select name="costcenter" class="form-select">
+                                <option>17000</option>
+                                <option>43000</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             
-            <div class="form-group mb-3 ">
+        {{-- <div class="form-group mb-3 ">
                 <label class="form-label">Cost Center</label>
                 <div >
                     <select name="costcenter" class="form-select">
@@ -143,7 +189,7 @@
                 </div>
             </div>
             
-            {{-- <div class="form-group mb-3">
+            <div class="form-group mb-3">
                 <label class="form-label">Checkboxes</label>
                 <div >
                     <label class="form-check">
