@@ -96,8 +96,11 @@
                         </thead>
                         <tbody>
                         @foreach($evaluation->details_remaining as $index => $asset)
-
-                            <tr data-id="{{ $asset->id }}" data-info="{{$asset->asset}}">
+                            @php
+                                $asset->asset->asset_status = $asset->asset_status;
+                                $asset->asset->eval_detail_qty = $asset->qty;
+                            @endphp
+                            <tr data-id="{{ $asset->id }}" data-info="{{$asset->asset}}" >
                                 @if ($is_owner && $evaluation->approval_status < 1 )
                                     <td>
                                         <input class="form-check-input move-check" type="checkbox" id="check{{$asset->id}}">
@@ -588,7 +591,7 @@
 
             <div class="modal-header">
                 <h5 class="modal-title">Enter Quantity</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -596,7 +599,7 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelQty" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-secondary" id="cancelQty" data-dismiss="modal">Cancel</button>
                 <button class="btn btn-primary" id="confirmQty">Confirm</button>
             </div>
 
@@ -810,13 +813,13 @@ document.addEventListener('DOMContentLoaded', function () {
         let row = checkbox.closest("tr");
         let id = row.dataset.id;
         let info = JSON.parse(row.dataset.info);
-
+        console.log('info',info);
 
         if (row.closest("#table1")) {
 
             if (!checkbox.checked) return;
 
-            if (info.qty > 1) {
+            if (info.eval_detail_qty > 1) {
 
                 // store for modal use
                 selectedRow = row;
@@ -825,12 +828,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 selectedId = id;
 
                 document.getElementById('modalQty').value = 1;
-                document.getElementById('modalQty').max = info.qty;
+                document.getElementById('modalQty').max = info.eval_detail_qty;
 
                 modal.show();
 
             } else {
-                moveToTable2(row, checkbox, id, info, table1Body, table2Body, info.qty);
+                moveToTable2(row, checkbox, id, info, table1Body, table2Body, info.eval_detail_qty);
             }
         }
 
@@ -971,6 +974,7 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
                 <input type="hidden" name="writtenOff[${id}][iswrite_off]" value="1">
                 <input type="hidden" name="writtenOff[${id}][writeoff_qty]" value="${qtyToMove}">
                 <input type="hidden" name="writtenOff[${id}][asset_id]" value="${info.id}">
+                <input type="hidden" name="writtenOff[${id}][asset_status]" value="${info.asset_status}">
             </td>
         `;
 
@@ -1002,7 +1006,7 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
         
         let qtyEl = existingRow.querySelector('.qty');
         let existingQty = parseInt(qtyEl.textContent);
-        let newQty = existingQty + parseInt(info.qty);
+        let newQty = existingQty + parseInt(info.eval_detail_qty);
 
         qtyEl.textContent = newQty;
         
@@ -1019,29 +1023,39 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
 
         newRow.setAttribute("data-id", id);
         newRow.setAttribute("data-info", JSON.stringify(info));
+        const assetStatus =  statuses.find(status => status.id == info.asset_status); 
         const options = statuses.map(status => 
             `<option value="${status.id}" ${info.asset_status == status.id ? "selected" : ""}>${status.name}</option>`
         ).join('');
         console.log('info',info);
+        console.log(assetStatus)
 
         newRow.innerHTML = `
             <td><input class="form-check-input move-check" type="checkbox"></td>
             <td class="text-muted">${info.asset_number}</td>
             <td class="text-muted">${formatDate(info.capitalization_date) ?? ''}</td>
-            <td class="text-muted qty">${info.qty}</td>
+            <td class="text-muted qty">${info.eval_detail_qty}</td>
             <td class="text-muted">${info.bun ?? ''}</td>
             <td class="text-muted">${info.asset_description ?? ''}</td>
             <td class="text-muted">${info.other_identifier ?? ''}</td>
-            <td>
-                <select name="remainingAsset[${id}][asset_status]" class="form-select" >
-                    ${options}
-                </select></td>
+            <td class="text-muted">
+                <a
+                    @if(($evaluation->approval_status == 0 && ($evaluation->draft_by1 == $current_user->id && empty($evaluation->draft_date1))))
+                        data-bs-toggle="modal" data-bs-target="#splitStatus" data-url="{{route('split-status',$asset->id)}}" data-assetName="{{$asset->asset->asset_description}}" data-maxQty="${info.qty}"
+                    @endif
+                >
+                    ${assetStatus.name ?? ''}
+                </a>
+            </td>
             <td><input type="text" class="form-control" name="remainingAsset[${id}][corrective_action_taken]"></td>
             <td class="hidden">
                 <input type="hidden" name="remainingAsset[${id}][id]" value="${id}">
                 <input type="hidden" name="remainingAsset[${id}][iswrite_off]" value="0">
+                <input type="text" class="hidden " name="remainingAsset[${id}][asset_id]" value="${info.id}">
+                <input type="text" class="hidden " name="remainingAsset[${id}][asset_status]" value="${info.asset_status}">
             </td>
         `;
+
 
         // table1Body.appendChild(newRow);
         const rows = Array.from(table1Body.querySelectorAll("tr"));
@@ -1059,9 +1073,13 @@ function moveToTable2(row, checkbox, id, info, table1Body, table2Body, qtyToMove
 }
 
 function formatDate(str) {
-    const safeDate = new Date("2004-05-04T00:00:00Z");
+    const date = new Date(str);
 
-    return safeDate.toISOString().slice(0, 19).replace('T', ' ');
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
 }
 </script>
 

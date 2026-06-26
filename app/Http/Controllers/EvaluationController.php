@@ -325,8 +325,14 @@ class EvaluationController extends Controller
                     // Check if qty is now 0
                     if ($asset->qty != 0) 
                     {
-                        $newAsset = $asset_evaluation_details->replicate();
-                        $newAsset->save();
+                        $check_qty = $asset_evaluation_details->qty - $item['writeoff_qty'];
+                        if($check_qty != 0){
+                            $newAsset = $asset_evaluation_details->replicate();
+                            $newAsset->save();
+                            $asset_evaluation_details->update(['qty' => $check_qty]);
+                        }else{
+                            $asset_evaluation_details->update(['iswrite_off'=>true]);
+                        }
                     }
                 }
             });
