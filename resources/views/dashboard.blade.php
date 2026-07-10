@@ -94,10 +94,6 @@
         });
       renderCharts();
     });
-<<<<<<< Updated upstream
-    // document.addEventListener("DOMContentLoaded", renderCharts);
-=======
->>>>>>> Stashed changes
     document.addEventListener("livewire:navigated", renderCharts);
       
       function renderCharts() {
@@ -111,13 +107,8 @@
           const unserviceable = barData.map(item => item.statusData['Unserviceable']);
           const writeOff = barData.map(item => item.statusData['Write Off']);
 
-<<<<<<< Updated upstream
-
-          const ctx = document.getElementById('barChart').getContext('2d');
-=======
         console.log('barData:', barData);
         const ctx = document.getElementById('barChart').getContext('2d');
->>>>>>> Stashed changes
 
           new Chart(ctx, {
               type: 'bar',

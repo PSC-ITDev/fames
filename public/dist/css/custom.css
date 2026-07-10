@@ -1,7 +1,7 @@
 .card {
     position: relative;
     overflow: hidden;
-    background-color:#D5D2DD ;
+    /* background-color:#D5D2DD ;  */
 }
 
 /* Ribbon Container (bigger) */
@@ -14,8 +14,8 @@
     text-align: center;
     transform: rotate(45deg);
     height: 60px;
-    background: #8EC5FC;
-    border-color: #8EC5FC;
+    background-color: transparent; /* Pastel Coral */
+    border-color: transparent !important;
 }
 
 /* Remove corner decorations */
@@ -33,10 +33,10 @@
     line-height: 55px;
     text-transform: uppercase;
 
-    color: #198754;
+    color: #fff;
 
 
-text-shadow: 0 1px 2px rgba(0,0,0,.25);
+    text-shadow: 0 1px 2px rgba(0,0,0,.25);
 
 }
 
@@ -45,27 +45,32 @@ text-shadow: 0 1px 2px rgba(0,0,0,.25);
 /* Pastel Status Colors */
 
 .ribbon-rejected span {
-    color: #FFB4A2; /* Pastel Coral */
+    background-color: #9C2A29; /* Pastel Coral */
+    border-color: #9C2A29;
     font-size: 25px;
 }
 
 .ribbon-approved span {
-    color: #B9FBC0; /* Pastel Green */
+    background-color: #6FC9AB; /* Pastel Green */
+    border-color: #6FC9AB;
     font-size: 25px;
 }
 
 .ribbon-confirmed span {
-    color: #A8E6CF ; /* Pastel Mint */
+    background-color: #62b99c ; /* Pastel Mint */
+    border-color: #62b99c;
     font-size: 23px;
 }
 
 .ribbon-forApproval span {
-    color: #A5D8FF; /* Pastel Blue */
+    background-color: #292B68; /* Pastel Blue */
+    border-color: #292B68;
     font-size: 20px;
 }
 
 .ribbon-pending span {
-    color: #FFE5A5; /* Pastel Yellow */
+    background-color: #F9DF80; /* Pastel Yellow */
+    border-color: #F9DF80;
     font-size: 25px;
 }
 
@@ -165,4 +170,21 @@ text-shadow: 0 1px 2px rgba(0,0,0,.25);
 }
 .navbar .container {
     background-color: #292B68;
+
+}
+
+.btn-primary:disabled {
+    background-color: #D6ECFF;
+    border-color: #D6ECFF;
+    color: #94A3B8;
+}
+
+.btn-primary:disabled {
+    background-color: #D6ECFF;
+    border-color: #D6ECFF;
+    color: #94A3B8;
+}
+
+.table thead th, .table tbody td {
+  color: black !important;
 }
