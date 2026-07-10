@@ -78,9 +78,7 @@ class AssetSeeder extends Seeder
                 ['code' => 'HRGA', 'division_id'=> '3','name' => 'Sinter Plant Human Resource', 'description' => 'Sinter Plant Human Resource Department'],
                 ['code' => 'IA', 'division_id'=> '5','name' => 'Internal Audit', 'description' => 'Internal Audit Department'],
                 ['code' => 'LAB', 'division_id'=> '6','name' => 'Laboratory and Environment', 'description' => 'Laboratory and Environment Department'],
-                ['code' => 'ITG', 'division_id'=> '6','name' => 'Information Technology', 'description' => 'Information Technology Department'],
-                ['code' => 'WRH', 'division_id'=> '6','name' => 'Warehouse', 'description' => 'Warehouse'],
-                ['code' => 'HR', 'division_id'=> '6','name' => 'Human Resources', 'description' => 'Human Resources']
+                ['code' => 'ITG', 'division_id'=> '6','name' => 'Information Technology', 'description' => 'Information Technology Department']
             ], ['code']);
 
 
@@ -176,7 +174,7 @@ class AssetSeeder extends Seeder
 
 
         // 2. CSV Import Logic
-        $file = fopen(database_path('data/2024-asset.csv'), 'r');
+        $file = fopen(database_path('data/assets.csv'), 'r');
         fgetcsv($file); // Skip header
         $line = 0;
         while (($row = fgetcsv($file)) !== FALSE) {
@@ -186,53 +184,51 @@ class AssetSeeder extends Seeder
                 continue;
             }
             // Match 'description' from CSV to the 'description' in your database
-            // $category = Category::firstOrCreate(
-            //     ['description' => $row[12]], 
-            //     ['name' => '' . substr($row[12], 0, 3)] 
-            // );
+            $category = Category::firstOrCreate(
+                ['description' => $row[12]], 
+                ['name' => '' . substr($row[12], 0, 3)] 
+            );
 
-            // $location = Location::firstOrCreate(['name' => $row[16]]);
-            // $classification = Classification::firstOrCreate(['name' => $row[11]], ['description' => 'Classification for ' . $row[11]]);     
+            $location = Location::firstOrCreate(['name' => $row[16]]);
+            $classification = Classification::firstOrCreate(['name' => $row[11]], ['description' => 'Classification for ' . $row[11]]);     
             // Find the actual ID for CostCenter and GLAccount
-            // $costCenter = CostCenter::where('code', $row[13])->first();
-            // $glAccount = GLAccount::where('code', $row[17])->first();
+            $costCenter = CostCenter::where('code', $row[13])->first();
+            $glAccount = GLAccount::where('code', $row[17])->first();
 
             // Map Life (005/000)
-            // $usefulLifeYears = isset($row[10]) ? (int) explode('/', $row[10])[0] : 0;
+            $usefulLifeYears = isset($row[10]) ? (int) explode('/', $row[10])[0] : 0;
             
             // 1. Clean the description (removes the problematic characters)
-            $description = mb_convert_encoding($row[6], 'UTF-8', 'UTF-8');
+            $description = mb_convert_encoding($row[5], 'UTF-8', 'UTF-8');
             $description = str_replace('', '-', $description); // Optional: Replace the 'broken' char with a dash
             
-            // $department = Department::firstOrCreate(
-            //                 ['code' => $row[15]], // Search criteria
-            //                 ['description' => 'New Department: ' . $row[15]] // Attributes to set if creating
-            //             );
+            $department = Department::firstOrCreate(
+                            ['code' => $row[15]], // Search criteria
+                            ['description' => 'New Department: ' . $row[15]] // Attributes to set if creating
+                        );
 
-            $department = Department::where('name',$row[1])->first();
-            
             Asset::create([
                 'asset_number'                  => $row[0],
                 'capitalization_date'           => $row[2],
                 'qty'                           => (int) $row[3],
-                'bun'                           => $row[5],
+                'bun'                           => $row[4],
                 'asset_description'             => $description,
                 'useful_life_years'             => $usefulLifeYears,
                 'department_id'                 => $department->id, 
                 'other_identifier'              => '', // Placeholder if you have another identifier
-                // 'ordinary_depreciation_start_date' => $row[6],   
-                // 'cumulative_acquisition_value'  => (float) $row[8], 
-                // 'accumulated_depreciation'      =>  (float) $row[9] , 
+                'ordinary_depreciation_start_date' => $row[6],   
+                'cumulative_acquisition_value'  => (float) $row[8], 
+                'accumulated_depreciation'      =>  (float) $row[9] , 
                 'salvage_value'                 =>  1.00,
                 'transfer_acquisition_value'    => 0.00,
-                // 'start_book_val'              => (float) $row[7], // Assuming acquisition value is the start book value
-                // 'end_book_val'                => (float) $row[9], // Initial end book value same as acquisition, will be updated after depreciation calculations
+                'start_book_val'              => (float) $row[7], // Assuming acquisition value is the start book value
+                'end_book_val'                => (float) $row[9], // Initial end book value same as acquisition, will be updated after depreciation calculations
                 // Use ->id to ensure foreign key integrity
-                // 'cost_center_id'                => $costCenter?->id,
-                // 'gl_account_id'                 => $glAccount?->id,
-                // 'category_id'                   => $category->id,
-                // 'location_id'                   => $location->id,
-                // 'classification_id'             => $classification->id, // Reusing classification logic
+                'cost_center_id'                => $costCenter?->id,
+                'gl_account_id'                 => $glAccount?->id,
+                'category_id'                   => $category->id,
+                'location_id'                   => $location->id,
+                'classification_id'             => $classification->id, // Reusing classification logic
             ]);
         } catch (\Exception $e) {
         dump("Error on CSV line {$line}: " . $e->getMessage());

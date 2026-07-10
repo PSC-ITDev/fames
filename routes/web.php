@@ -78,6 +78,9 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         Route::post('/reject/{eval_id}',[EvaluationController::class, 'rejectEvaluation']) ->name('reject-evaluation');
         Route::get('/edit/{eval_id}',[EvaluationController::class, 'editEvaluation']) ->name('edit-evaluation');
 
+        Route::post('/file/upload', [EvaluationController::class, 'upload'])->name('file-upload');
+        Route::delete('/file/remove/{file_id}', [EvaluationController::class, 'remove_file'])->name('remove-upload');
+        Route::get('/file-list/{eval_id}', [EvaluationController::class, 'fileList'])->name('file-list');
 
 
 

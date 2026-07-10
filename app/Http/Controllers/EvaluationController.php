@@ -14,9 +14,11 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ApprovalHierarchy;
 use App\Models\Activity;
 use App\Models\User;
+use App\Models\Attachment;
 
 use App\Mail\EvaluationActivityMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class EvaluationController extends Controller
 {
@@ -180,9 +182,18 @@ class EvaluationController extends Controller
     {    
         $user = Auth::user();
         if(in_array(strtolower($user->role->name),['user','approver'])){
-            $evaluations = Evaluation::orderBy('created_at', 'desc')->where('department_id',$user->deptid)->get();
+            $evaluations = Evaluation::withSum('details', 'qty')->orderBy('created_at', 'desc')->where('department_id',$user->deptid)->get();
+        }elseif(strtolower($user->role->name) == 'accounting'){
+            $evaluations = Evaluation::withSum('details', 'qty')
+            ->orderBy('created_at', 'desc')
+            ->where('department_id',$user->deptid)
+            ->whereHas('details', function ($query) {
+                $query->where('iswrite_off',1);
+            }, '>=', 1)
+            ->get();
+
         }else{
-            $evaluations = Evaluation::orderBy('created_at', 'desc')->where('approval_status','>=',10)->get();
+            $evaluations = Evaluation::withSum('details', 'qty')->orderBy('created_at', 'desc')->where('approval_status','>=',10)->get();
         }
         $departments = Department::all();
         $years = range(now()->year, 1900);
@@ -207,18 +218,21 @@ class EvaluationController extends Controller
         
         $is_approver = in_array($user->id,$approver_ids);
         $is_confirmer = in_array($user->id, $confirmer_ids);
+        $is_accounting = strtolower($user->role->name) == "accounting";
 
         $can_edit = $user->id == (int)$evaluation->created_by;
         
         $notdraft = $evaluation->approval_status > 0 ? true : false; 
         $is_owner = $evaluation->created_by == $user->id ? true : false; 
 
+        $asset_count = $evaluation->details->sum('qty');
 
+        // DD($asset_count);
         // DD($is_confirmer,$confirmer_ids,(empty($evaluation->confirmed_date1) ?  0 : empty($evaluation->confirmed_date2)) ? $evaluation->confirmed_by2 : 0);
         // DD($user->id == (int) $evaluation->created_by, $user->id ,(int) $evaluation->created_by);
 
         view()->share('pageTitle', 'Evaluation Details');
-        return view('fixed_assets/evaluation-details',compact('evaluation','statuses','is_approver','is_confirmer','users','user','can_edit','notdraft','is_owner'));
+        return view('fixed_assets/evaluation-details',compact('evaluation','statuses','is_approver','is_confirmer','users','user','can_edit','notdraft','is_owner','asset_count','is_accounting'));
                 
     }
 
@@ -226,7 +240,7 @@ class EvaluationController extends Controller
 
     public function updateEvaluationDetails(Request $request,$eval_id)
     {     
-    // DD($request);
+        // DD($request);
         
         $evaluation = Evaluation::find($eval_id);
 
@@ -327,9 +341,10 @@ class EvaluationController extends Controller
                     {
                         $check_qty = $asset_evaluation_details->qty - $item['writeoff_qty'];
                         if($check_qty != 0){
+                            
+                            $asset_evaluation_details->update(['qty' => $check_qty]);
                             $newAsset = $asset_evaluation_details->replicate();
                             $newAsset->save();
-                            $asset_evaluation_details->update(['qty' => $check_qty]);
                         }else{
                             $asset_evaluation_details->update(['iswrite_off'=>true]);
                         }
@@ -408,7 +423,7 @@ class EvaluationController extends Controller
             'approved_by1' => $request->approver_user1 ?? null,
             'approved_by2' => $request->approver_user2 ?? null,
             'confirmed_by1' => $request->confirmer_user1 ?? null,
-            'confirmed_by2' => $request->confirmer_user2 ?? null
+            'confirmed_by2' => $request->confirmer_user2 ?? null,
         ]);
 
             
@@ -432,8 +447,6 @@ class EvaluationController extends Controller
         $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
 
          
-        // DD($writtenOff_data);
-
 
         return redirect()->route('evaluation-details',$eval_id);
                 
@@ -468,26 +481,48 @@ class EvaluationController extends Controller
 
         $evaluation = Evaluation::find($eval_id);
         $user = Auth::user();
-
-        $nextInline = $this->hasNextInline(2,$user,$eval_id);
-
-        $evaluation->update([
-            'approval_status' => $nextInline['approval_status'],
-            $nextInline['field'] => now()
-        ]);
-        $reason = $request->reason;
-        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Approved",$user->id,$reason);
-        
-        $nextInlineUser = User::find($nextInline['approver']);
-        $approverName = $nextInlineUser->name;
-        $email = $nextInlineUser->email;
-        $subject = "Evaluation for Approval";
-        $requestTitle = 'Evaluation '.$evaluation->year .' '.$evaluation->quarter.' Qtr.';
-        $requestorName = $user->name;
         $url = url('evaluationdetails/'.$eval_id);
+        $requestorName = $user->name;
+        $requestTitle = 'Evaluation '.$evaluation->year .' '.$evaluation->quarter.' Qtr.';
+        $subject = "Evaluation for Approval";
 
-        $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
 
+        if($request->reviewer){
+            $evaluation->update([
+                'review_date' => now(),
+                'review_by' => $user->id
+            ]);
+
+            $reason = $request->reason;
+            $this->loggedActivity("Asset Evaluation",$evaluation->id,"Accounting Approved",$user->id,$reason);
+
+            $nextInline = $this->hasNextInline(6,$user,$eval_id);
+            $nextInlineUser = User::find($nextInline['approver']);
+            $approverName = $nextInlineUser->name;
+            $email = $nextInlineUser->email;
+
+            $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
+
+        }else{
+
+            $nextInline = $this->hasNextInline(2,$user,$eval_id);
+
+            $evaluation->update([
+                'approval_status' => $nextInline['approval_status'],
+                $nextInline['field'] => now()
+            ]);
+
+            $reason = $request->reason;
+            $this->loggedActivity("Asset Evaluation",$evaluation->id,"Approved",$user->id,$reason);
+            
+            $nextInlineUser = User::find($nextInline['approver']);
+            $approverName = $nextInlineUser->name;
+            $email = $nextInlineUser->email;
+
+            $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
+
+            
+        }
         return redirect()->route('evaluation-details',$eval_id);
     }
 
@@ -524,24 +559,54 @@ class EvaluationController extends Controller
         $reason = $request->reason;
         $evaluation = Evaluation::find($eval_id);
         $user = Auth::user();
-        $nextInline = $this->hasNextInline(5,$user,$eval_id);
-        $evaluation->update([
-            'approval_status' => $nextInline['approval_status'],
-            $nextInline['field'] => now()
-        ]);
-
-        $user = Auth::user();
-        $this->loggedActivity("Asset Evaluation",$evaluation->id,"Rejected",$user->id,$reason);
-
-        $nextInlineUser = User::find($nextInline['approver']);
-        $approverName = $nextInlineUser->name;
-        $email = $nextInlineUser->email;
         $subject = "Evaluation Rejected";
         $requestTitle = 'Evaluation '.$evaluation->year .' '.$evaluation->quarter.' Qtr.';
         $requestorName = $user->name;
         $url = url('evaluationdetails/'.$eval_id);
-        $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status  );
 
+        $toCC = Activity::where('type_id',$evaluation->id)
+            ->where('performed_by', '!=', $user->id)
+            ->where('activity', 'like', '%Approved%')
+            ->distinct()
+            ->get()
+            ->pluck('performer.email')
+            ->unique();
+
+        if($request->reviewer){
+            $evaluation->update([
+                'review_date' => now(),
+                'review_by' => $user->id
+            ]);
+
+            $reason = $request->reason;
+            $this->loggedActivity("Asset Evaluation",$evaluation->id,"Rejected by Accounting",$user->id,$reason);
+
+            $nextInline = $this->hasNextInline(6,$user,$eval_id);
+            $nextInlineUser = User::find($nextInline['approver']);
+            $approverName = $nextInlineUser->name;
+            $email = $nextInlineUser->email;
+
+            $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status, $toCC  );
+
+
+        }else{
+            $nextInline = $this->hasNextInline(5,$user,$eval_id);
+            $evaluation->update([
+                'approval_status' => $nextInline['approval_status'],
+                $nextInline['field'] => now()
+            ]);
+
+            $this->loggedActivity("Asset Evaluation",$evaluation->id,"Rejected",$user->id,$reason);
+
+            $nextInlineUser = User::find($nextInline['approver']);
+            $approverName = $nextInlineUser->name;
+            $email = $nextInlineUser->email;
+
+
+            $this->sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url, $evaluation->creator->email,$evaluation->approval_status, $toCC );
+
+
+        }
         return redirect()->route('evaluation-details',$eval_id);
     }
 
@@ -761,6 +826,11 @@ class EvaluationController extends Controller
 
                 break;
 
+            case 6:
+                    $approval_status = $evaluation->approval_status;//for approval
+                    $field = '';
+                    $approver = $evaluation->confirmed_by1;
+                break;
             default:
                 $approval_status = $evaluation->approval_status;
                 $field = 'draft_date1';
@@ -779,7 +849,7 @@ class EvaluationController extends Controller
 
     }
 
-    private function sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url ,$owner_email,$approval_status){
+    private function sendMail($email,$subject, $approverName,$requestTitle,$requestorName,$url ,$owner_email,$approval_status,$toCC=[]){
         
 
         $approval_statuses = [
@@ -792,9 +862,15 @@ class EvaluationController extends Controller
 
             
         $status = $approval_statuses[floor($approval_status / 10) * 10];
-
+        $ccEmails = collect([$owner_email, $toCC])
+            ->flatten()
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+            
         Mail::to($email)
-        ->cc($owner_email)
+        ->cc($ccEmails)
         ->send(
             new EvaluationActivityMail(
                 $subject,
@@ -809,6 +885,118 @@ class EvaluationController extends Controller
     }
 
 
+
+
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'evaluation_id' => 'required|integer',
+            'file' => 'required|file|max:10240',
+        ]);
+
+        $evaluation = Evaluation::findOrFail($request->evaluation_id);
+
+        $file = $request->file('file');
+
+        if (!$file || !$file->isValid()) {
+            return response()->json(['message' => 'Invalid file'], 422);
+        }
+
+        $fileHash = md5_file($file->getPathname());
+
+        $exists = Attachment::where('attachable_id', $evaluation->id)
+        ->where('file_hash', $fileHash)->first();
+
+        if ($exists) {
+            if($request->replace){
+                
+                // delete old physical file
+                Storage::disk('public')->delete($exists->file_path);
+
+                // overwrite DB record instead of creating new one
+                $filename = $file->getClientOriginalName();
+
+                $path = $file->storeAs(
+                    "uploads/evaluations/{$evaluation->id}",
+                    $filename,
+                    'public'
+                );
+
+                $exists->update([
+                    'file_name' => $filename,
+                    'file_path' => $path,
+                    'file_type' => $file->getClientMimeType(),
+                    'file_size' => $file->getSize(),
+                    'file_hash' => $fileHash,
+                ]);
+
+                return response()->json([
+                    'status' => 'replaced',
+                    'message' => 'File replaced successfully',
+                    'data' => $exists
+                ]);
+
+            }
+
+        
+
+            return response()->json([
+                'status' => 'duplicate',
+                'message' => 'File already exists',
+                'existing' => $exists
+            ]);
+        }
+
+        if (!$evaluation->id) {
+            return response()->json(['message' => 'Invalid evaluation ID'], 422);
+        }
+
+        $directory = 'uploads/evaluations/' . (int) $evaluation->id . '/';
+
+        $filename = $file->getClientOriginalName();
+
+        $path = $file->storeAs($directory, $filename, 'public');
+
+        // Save to database
+        $attachment = $evaluation->attachments()->create([
+            'file_name' => $filename,
+            'file_path' => $path,
+            'file_type' => $file->getClientMimeType(),
+            'file_size' => $file->getSize(),
+            'file_hash' => $fileHash,
+        ]);
+
+        return response()->json([
+            'status' => 'uploaded',
+            'message' => 'Uploaded successfully',
+            'attachment' => $attachment
+        ]);
+    }
+
+    public function remove_file(Request $request,$file_id){
+
+        $exists = Attachment::findOrFail($file_id);
+            
+        if($exists){
+            // delete old physical file
+            Storage::disk('public')->delete($exists->file_path);
+
+            $exists->delete();
+
+            return response()->json([
+                'status' => 'deleted',
+                'message' => 'File Deleted successfully'
+            ]);
+        }
+       
+    }
+    
+    public function fileList(Request $request,$eval_id)
+    {
+        $evaluation = Evaluation::findOrFail($eval_id);
+        return response()->json([
+            'status' => 'Success',
+            'data' => $evaluation->attachments,
+        ]);
+    }
 }
-
-

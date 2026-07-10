@@ -59,13 +59,21 @@ class AssetEvaluation extends Model
     public function drafter2()
     {
         return $this->belongsTo(User::class, 'draft_by2', 'id');
-    }  
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'review_by', 'id');
+    } 
 
     public function activity()
     {
         return $this->hasMany(Activity::class, 'type_id', 'id')->where('type','Asset Evaluation');
     }
 
-
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
    
 }

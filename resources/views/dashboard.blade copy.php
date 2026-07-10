@@ -127,7 +127,7 @@
                         <div class="card-header">
                           <h4 class="card-title"> Assets Per Department</h4>
                         </div>
-                        <table class="table card-table table-vcenter">
+                        <table class="table card-table table-vcenter table-sm">
                           <thead>
                             <tr>
                               <th>Department</th>
@@ -243,7 +243,7 @@
                   <div class="card">
                     <div id="chart-development-activity" class="mt-4"></div>
                     <div class="table-responsive">
-                      <table class="table card-table table-vcenter">
+                      <table class="table card-table table-vcenter table-sm">
                         <thead>
                           <tr>
                             <th>User</th>
@@ -318,7 +318,7 @@
                       <h4 class="card-title">Most Visited Pages</h4>
                     </div>
                     <div class="table-responsive">
-                      <table class="table card-table table-vcenter">
+                      <table class="table card-table table-vcenter table-sm">
                         <thead>
                           <tr>
                             <th>Page name</th>

@@ -1,6 +1,7 @@
 .card {
     position: relative;
     overflow: hidden;
+    background-color:#D5D2DD ;
 }
 
 /* Ribbon Container (bigger) */
@@ -13,6 +14,8 @@
     text-align: center;
     transform: rotate(45deg);
     height: 60px;
+    background: #8EC5FC;
+    border-color: #8EC5FC;
 }
 
 /* Remove corner decorations */
@@ -39,75 +42,127 @@ text-shadow: 0 1px 2px rgba(0,0,0,.25);
 
 
 /* Status Colors */
+/* Pastel Status Colors */
+
 .ribbon-rejected span {
-    color: #dc3545; 
-    font-size: 25px; 
+    color: #FFB4A2; /* Pastel Coral */
+    font-size: 25px;
 }
 
 .ribbon-approved span {
-    color: #16a34a; 
-    font-size: 25px; 
+    color: #B9FBC0; /* Pastel Green */
+    font-size: 25px;
 }
 
 .ribbon-confirmed span {
-    color: #14b8a6; 
+    color: #A8E6CF ; /* Pastel Mint */
     font-size: 23px;
 }
 
 .ribbon-forApproval span {
-    color: #60a5fa; 
-    font-size: 20px; 
+    color: #A5D8FF; /* Pastel Blue */
+    font-size: 20px;
 }
 
 .ribbon-pending span {
-    color: #fbbf24;
-    font-size: 25px; 
+    color: #FFE5A5; /* Pastel Yellow */
+    font-size: 25px;
 }
 
-.rejected span{
-    background-color: #dc3545 !important; 
-    color: white !important;
-    padding: 2px;
-    border-radius: 5px; /* smooth corners */
+/* Pastel Status Badges */
+
+.rejected span {
+    background-color: #9C2A29 !important;
+    color: #FFFFFF !important;
+    padding: 2px 6px;
+    border-radius: 5px;
     display: inline-block;
 }
 
-.approved span{
-    background-color: #16a34a !important;
-    color: white !important;
-    padding: 2px;
-    border-radius: 5px; /* smooth corners */
+.approved span {
+    background-color: #67C0A2 !important;
+    color: #FFFFFF !important;
+    padding: 2px 6px;
+    border-radius: 5px;
     display: inline-block;
 }
 
-.confirmed span{
-    background-color: #14b8a6 !important;
-    color: white !important;
-    padding: 2px;
-    border-radius: 5px; /* smooth corners */
+.confirmed span {
+    background-color: #6FC9AB !important;
+    color: #FFFFFF !important;
+    padding: 2px 6px;
+    border-radius: 5px;
     display: inline-block;
 }
 
-.forApproval span,.submit-for-approval span{
-    background-color: #60a5fa; 
-    color: white;
-    padding: 2px;
-    border-radius: 5px; /* smooth corners */
+.forApproval span,
+.submit-for-approval span {
+    background-color: #292B68 !important;
+    color: #FFFFFF !important;
+    padding: 2px 6px;
+    border-radius: 5px;
     display: inline-block;
 }
 
-.pending span,.creation span,.submit-draft span{
-    background-color: #fbbf24;
-    color: white;
-    padding: 2px;
-    border-radius: 5px; /* smooth corners */
+.pending span,
+.creation span,
+.submit-draft span {
+    background-color: #F9DF80 !important;
+    color: #FFFFFF !important;
+    padding: 2px 6px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.accounting-approved span {
+    
+    background-color: #ACC3E5 !important;
+    color: #FFFFFF !important;
+    padding: 2px 6px;
+    border-radius: 5px;
     display: inline-block;
 }
 
 .dropdown-menu .dropdown-item:hover {
-    background-color: #0d6efd;
+    background-color: #8EC5FC;
 }
 
 .dropdown-menu .dropdown-item.nav {
     color: #fff; /* blue */
+}
+
+#dropZone {
+    display: block;
+    visibility: visible;
+    min-height: 100px;
+    border: 2px dashed #ccc;
+}
+
+.btn-primary {
+    background-color: #A5D8FF;
+    border-color: #A5D8FF;
+    color: #1E3A8A;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #8EC5FC;
+    border-color: #8EC5FC;
+    color: #1E3A8A;
+}
+
+.btn-primary:active,
+.btn-primary.active {
+    background-color: #74B9FF;
+    border-color: #74B9FF;
+    color: #FFFFFF;
+}
+
+.btn-primary:disabled {
+    background-color: #D6ECFF;
+    border-color: #D6ECFF;
+    color: #94A3B8;
+}
+.navbar .container {
+    background-color: #292B68;
 }

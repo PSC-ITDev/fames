@@ -30,8 +30,16 @@ class MasterListController extends Controller
         $categories = Category::all();
         $locations = Location::all();
 
+
+        $grouped = $assets->groupBy('category_id')
+                ->map(fn ($items) => $items->count());
+        $assetData = collect($categories->pluck('name','id'))->mapWithKeys(function ($label, $key) use ($grouped) {
+            return [
+                $label => $grouped[$key] ?? 0
+            ];
+        })->toArray();
        view()->share('pageTitle', 'Asset List');
-        return view('master_list/assets/list', compact(['assets','departments','classifications','categories','locations'])); 
+        return view('master_list/assets/list', compact(['assets','departments','classifications','categories','locations','assetData'])); 
     }
     
     public function saveAsset(Request $request){

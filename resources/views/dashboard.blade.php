@@ -7,7 +7,7 @@
             <h4 class="card-title"> <i class="bi bi-clock-history"></i> System Activity</h4>
           </div>
           <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-            <table id="systemActTable" class="table table-striped table-hover">
+            <table id="systemActTable" class="table table-striped table-hover table-sm">
               <thead>
                 <tr>
                     <th></th>
@@ -89,106 +89,107 @@
             searching: false,
             paging: true,
             pageLength: 20,
-            lengthChange: false
+            lengthChange: false,
+            order: [[2, 'desc']] 
         });
 
     });
-    document.addEventListener("DOMContentLoaded", renderCharts);
+    // document.addEventListener("DOMContentLoaded", renderCharts);
     document.addEventListener("livewire:navigated", renderCharts);
       
       function renderCharts() {
         const barData = @json($barData);
 
+        if(barData){
+          const labels = barData.map(item => item.name);
+          const goodCondition = barData.map(item => item.statusData['Operational In Good Condition']);
+          const underRepair = barData.map(item => item.statusData['Undergoing Repair']);
+          const spareUnit = barData.map(item => item.statusData['Operational Spare Unit']);
+          const unserviceable = barData.map(item => item.statusData['Unserviceable']);
+          const writeOff = barData.map(item => item.statusData['Write Off']);
 
-        const labels = barData.map(item => item.name);
-        const goodCondition = barData.map(item => item.statusData['Operational In Good Condition']);
-        const underRepair = barData.map(item => item.statusData['Undergoing Repair']);
-        const spareUnit = barData.map(item => item.statusData['Operational Spare Unit']);
-        const unserviceable = barData.map(item => item.statusData['Unserviceable']);
 
+          const ctx = document.getElementById('barChart').getContext('2d');
 
-        const ctx = document.getElementById('barChart').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                  
+          new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: labels,
+                  datasets: [
                     {
-                        label: 'Operational In Good Condition',
+                        label: 'Operational - Good Condition',
                         data: goodCondition,
-                        backgroundColor: '#198754'
+                        backgroundColor: '#6FC9AB' // Pastel Green
+                    },
+                    {
+                        label: 'Operational - Spare Unit',
+                        data: spareUnit, // Changed from underRepair
+                        backgroundColor: '#ACC3E5' // Pastel Blue
                     },
                     {
                         label: 'Undergoing Repair',
                         data: underRepair,
-                        backgroundColor: '#ffc107'
-                    },
-                    {
-                        label: 'Operational Spare Unit',
-                        data: underRepair,
-                        backgroundColor: '#0d6efd'
+                        backgroundColor: '#F9DF80' // Soft Pastel Yellow
                     },
                     {
                         label: 'Unserviceable',
                         data: unserviceable,
-                        backgroundColor: '#dc3545'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        stacked: false
+                        backgroundColor: '#292B68' // Soft Lavender
                     },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 5
-                        }
+                    {
+                        label: 'Write Off',
+                        data: writeOff,
+                        backgroundColor: '#9C2A29' // Pastel Coral
                     }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                          generateLabels: function(chart) {
-                              const datasets = chart.data.datasets;
-
-                              return datasets.map((dataset, i) => {
-                                  // sum all values in dataset
-                                  const total = dataset.data.reduce((a, b) => a + b, 0);
-
-                                  return {
-                                      text: ` (${total}) ${dataset.label}`,
-                                      fillStyle: dataset.backgroundColor,
-                                      strokeStyle: dataset.backgroundColor,
-                                      hidden: !chart.isDatasetVisible(i),
-                                      datasetIndex: i
-                                  };
-                              });
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                      x: {
+                          stacked: false
+                      },
+                      y: {
+                          beginAtZero: true,
+                          ticks: {
+                              stepSize: 5
                           }
                       }
-                    }
-                }
-            }
-        });
+                  },
+                  plugins: {
+                      legend: {
+                          position: 'top',
+                          
+                      }
+                  }
+              }
+          });
+        } else {
+          document.getElementById('barChart').parentElement.innerHTML =
+            '<div class="text-center text-muted py-5">No data available</div>';
+        }
 
+        const data = @json($doughnutData);
+        const doughnutData = Object.values(data || {});
+        const doughnutLabels = Object.keys(data || {});
 
-        const doughnutData = Object.values(@json($doughnutData));
-        const doughnutLabels = Object.keys(@json($doughnutData));
-        console.log(doughnutData);
-        if (doughnutData) {
+        if (data) {
           new Chart(document.getElementById('doughnutChart'), {
             type: 'doughnut',
             data: {
                 labels: doughnutLabels,
                 datasets: [{
                     data: doughnutData,
-                    backgroundColor: ['#198754', '#ffc107','#0d6efd', '#dc3545']
+                    backgroundColor: [
+                        '#6FC9AB', // Pastel Green
+                        '#F9DF80', // Pastel Yellow
+                        '#ACC3E5', // Pastel Blue
+                        '#9C2A29', // Pastel Coral
+                        '#292B68'  // Pastel Lavender
+                    ],
+                    borderColor: '#e5e7eb',   // Outline color
+                    borderWidth: 2            // Outline thickness
                 }]
             },
             options: {

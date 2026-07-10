@@ -17,7 +17,7 @@
                 <div>
                   <h5><b>Evaluation List </b></h5><br>
                 </div>
-                <table class="table card-table table-vcenter table-hover" id="table1">
+                <table class="table card-table table-vcenter table-hover table-sm" id="table1">
                     <thead>
                         <tr>
                             <th></th>
@@ -25,9 +25,7 @@
                             <th>Year</th>
                             <th>Quarter</th>
                             <th>Approval Status</th>
-                            {{-- <th>Prepared By</th> --}}
-                            {{-- <th>Confirmed Date</th>
-                            <th>Confirmed By</th> --}}
+                            <th>Asset Count</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,9 +47,7 @@
                               <td class="text-muted ">{{ $evaluation->year }}</td>
                               <td class="text-muted">{{$evaluation->quarter}}</td>
                               <td class="text-muted qty"> {{$approval_status ?? 'Unknown' }}</td>
-                              {{-- <td class="text-muted bum">{{$evaluation->creator->name ?? ''}}</td> --}}
-                              {{-- <td class="text-muted">{{$evaluation->confirmed_date}}</td>
-                              <td class="text-muted ">{{$evaluation->confirmed_by}}</td> --}}
+                              <td class="text-muted qty"> {{$evaluation->details_sum_qty}}</td>
                               
                           </tr>
                       @endforeach
