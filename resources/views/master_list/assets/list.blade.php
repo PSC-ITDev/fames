@@ -15,7 +15,11 @@
         </div>
       <div class="card-body">   
           <div class="table-responsive">
+<<<<<<< Updated upstream
               <table id="assetTable" class="table card-table table-vcenter table-sm">
+=======
+              <table id="" class="table card-table table-vcenter">
+>>>>>>> Stashed changes
                   <thead>
                       <tr>
                           <th>Item</th>

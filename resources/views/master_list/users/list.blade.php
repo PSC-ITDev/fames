@@ -18,12 +18,18 @@
                     <tr>
                         <th>Item</th>
                         <th>Name</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Email</th>
                     </tr>
                 </thead>
                 @foreach($users as $index => $user)
                     <tr>
                         <td>{{$index + 1}}</td>
                         <td class="text-muted">{{$user->name}}</td>
+                        <td class="text-muted">{{$user->department?->name}}</td>
+                        <td class="text-muted">{{$user->role?->name}}</td>
+                        <td class="text-muted">{{$user->email}}</td>
                     </tr>
                 @endforeach
 

@@ -18,8 +18,8 @@
                         <select name="hierarchy[user][]" class="form-select" disabled>
                             
                             <option value="" selected></option>
-                            @foreach ($users->filter(function ($user) {
-                                return strtolower($user->role?->name) == 'user';
+                            @foreach ($users->filter(function ($user) use($department) {
+                                return strtolower($user->role?->name) == 'user' && $user->deptid == $department->id;
                             }) as $user)
                                 <option value="{{ $user->id }}" {{auth()->user()?->id == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
                             @endforeach
@@ -31,8 +31,8 @@
                         <select name="hierarchy[user][]" class="form-select" >
                             
                             <option value="" selected></option>
-                            @foreach ($users->filter(function ($user) {
-                                return strtolower($user->role?->name)  == 'user';
+                            @foreach ($users->filter(function ($user) use($department) {
+                                return strtolower($user->role?->name)  == 'user' && $user->deptid == $department->id;
                             }) as $user)
                                 <option value="{{ $user->id }}" {{$department->preparedby2 == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach
@@ -48,8 +48,8 @@
                         <select name="hierarchy[approver_user][]" class="form-select" >
                             
                             <option value="" selected></option>
-                            @foreach ($users->filter(function ($user) {
-                                return strtolower($user->role?->name)  == 'approver';
+                            @foreach ($users->filter(function ($user) use($department) {
+                                return strtolower($user->role?->name)  == 'approver' && $user->deptid == $department->id;
                             }) as $user)
 
                                 <option value="{{ $user->id }}" {{$department->approved1 == $user->id ? "selected" : ""}} >{{ $user->name }}</option>
@@ -62,8 +62,8 @@
                         <select name="hierarchy[approver_user][]" class="form-select" >
                             
                             <option value="" selected></option>
-                            @foreach ($users->filter(function ($user) {
-                                return strtolower($user->role?->name)  == 'approver';
+                            @foreach ($users->filter(function ($user) use($department) {
+                                return strtolower($user->role?->name)  == 'approver' && $user->deptid == $department->id;
                             }) as $user)
                                 <option value="{{ $user->id }}" {{$department->approved2 == $user->id ? "selected" : ""}}>{{ $user->name }}</option>
                             @endforeach

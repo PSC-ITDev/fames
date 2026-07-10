@@ -275,7 +275,20 @@
                         <div class="col-5" >
                             <div class="row text-center " >
                                     <div style="position: relative; display: inline-block;">
+<<<<<<< Updated upstream
                                         @if ($evaluation->review_date )
+=======
+                                        @if(!$notdraft) 
+                                            <select name="user2" class="form-select text-center" required>
+                                                <option value="" selected></option>
+                                                @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'user' && $u->deptid == $evaluation->department_id) as $user)
+                                                    <option value="{{ $user->id }}" {{$evaluation->drafter2?->id == $user->id ? "selected" : ""}}>
+                                                        {{ $user->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @elseif ($evaluation->approval_status >= 10  || $evaluation->approval_status >= 50)
+>>>>>>> Stashed changes
                                             <img src="{{ asset('storage/signatures/almario.png') }}" 
                                                     alt="Signature" 
                                                     class="sig-img"
@@ -349,6 +362,7 @@
                                     <th></th>
                                 @endif
                                 
+<<<<<<< Updated upstream
 
                             </tr>
                         </thead>
@@ -361,6 +375,23 @@
                                             alt="Signature" 
                                             class="sig-img" 
                                             style="width: 150px; z-index: 1; position: relative;">
+=======
+                                <div style="position: relative; display: inline-block;">
+                                    @if(!$notdraft) 
+                                        <select name="approver_user1" class="form-select text-center" required>
+                                            <option value="" selected></option>
+                                            @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'approver' && $u->deptid == $evaluation->department_id) as $user)
+                                                <option value="{{ $user->id }}" {{ $evaluation->approved1?->id == $user->id ? "selected" : "" }}>
+                                                    {{ $user->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    @elseif (($evaluation->approval_status >=20 ) || $evaluation->approval_status >= 50)
+                                        <img src="{{ asset('storage/signatures/almario.png') }}" 
+                                                alt="Signature" 
+                                                class="sig-img"
+                                                style="width: 150px; z-index: 1; position: relative;" />
+>>>>>>> Stashed changes
                                             <label style="
                                                 position: absolute;
                                                 top: 50%;
@@ -427,16 +458,114 @@
                                 <td style="vertical-align: middle; position: relative; height: 100px;">
                                     
                                     <div style="position: relative; display: inline-block;">
+<<<<<<< Updated upstream
                                         @if(!$notdraft) 
                                             <select name="approver_user1" class="form-select text-center" required>
                                                 <option value="" selected></option>
                                                 @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'approver') as $user)
                                                     <option value="{{ $user->id }}" {{ $evaluation->approved1?->id == $user->id ? "selected" : "" }}>
+=======
+                                        @if(!$notdraft)
+                                            <select name="approver_user2" class="form-select text-center" required>
+                                                <option value="" selected></option>
+                                                @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'approver' && $u->deptid == $evaluation->department_id) as $user)
+                                                    <option value="{{ $user->id }}" {{$evaluation->approved2?->id == $user->id ? "selected" : ""}}>
+>>>>>>> Stashed changes
                                                         {{ $user->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
+<<<<<<< Updated upstream
                                         @elseif (($evaluation->approval_status >=20 ) && $evaluation->approval_status != 50)
+=======
+                                        @elseif (($evaluation->approval_status >=20 ) || $evaluation->approval_status >= 50)
+                                            
+                                            <div style="position: relative; display: inline-block;">
+                                                <img src="{{ asset('storage/signatures/almario.png') }}" 
+                                                    alt="Signature" 
+                                                    class="sig-img"
+                                                    style="width: 150px; z-index: 1; position: relative;" />
+                                                <label style="
+                                                    position: absolute; 
+                                                    top: 50%; 
+                                                    left: 50%; 
+                                                    transform: translate(-50%, -50%); 
+                                                    z-index: 3; 
+                                                    white-space: nowrap;
+                                                    font-weight: bold;
+                                                    pointer-events: none;
+                                                    color: rgba(0, 0, 0, 0.7);
+                                                ">
+                                                {{ $evaluation->approved2->name  }}
+                                                </label>
+                                                <small class="d-block">{{ $evaluation->approved_date2  }}</small>
+                                            </div>
+                                        @else
+                                            <label>{{ $evaluation->approved2?->name }}</label>
+                                        @endif
+                                    </div>
+                                </td>
+                            @endif
+
+
+                            @if($evaluation->confirm1)
+                                <td class="spacer"></td>
+
+                                <td style="vertical-align: middle;height: 100px;">
+                                    <div style="position: relative; display: inline-block;">
+                                        @if(!$notdraft)
+                                            <select name="confirmer_user1" class="form-select text-center" required>
+                                                <option value="" selected></option>
+                                                @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'auditor') as $user)
+                                                    <option value="{{ $user->id }}" {{$evaluation->confirm1?->id == $user->id ? "selected" : ""}} {{$evaluation->confirm1}} {{ $user->id}}>
+                                                        {{ $user->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @elseif ($evaluation->confirmed_date1  || $evaluation->approval_status > 50)
+                                            <img src="{{ asset('storage/signatures/mortola02.png') }}" 
+                                                    alt="Signature" 
+                                                    class="sig-img"
+                                                    style="width: 150px; z-index: 1; position: relative;" />
+                                                <label style="
+                                                    position: absolute; 
+                                                    top: 50%; 
+                                                    left: 50%; 
+                                                    transform: translate(-50%, -50%); 
+                                                    z-index: 2; 
+                                                    white-space: nowrap;
+                                                    font-weight: bold;
+                                                    pointer-events: none;
+                                                    color: rgba(0, 0, 0, 0.7);
+                                                ">
+                                                {{ $evaluation->confirm1?->name  }}
+                                                </label>
+                                                <small class="d-block">{{ $evaluation->confirmed_date1  }}</small> 
+                                        @else
+                                            <label>{{ $evaluation->confirm1?->name }}</label>
+                                        @endif
+                                    </div>
+                                </td>
+                                
+                            @endif
+
+                            @if($evaluation->confirm2)
+                                <td class="spacer"></td>
+                                <td>
+                                    
+                                    <div style="position: relative; display: inline-block;">
+                                        @if(!$notdraft)
+                                            <select name="confirmer_user2" class="form-select text-center" required>
+                                                <option value="" selected></option>
+                                                @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'auditor') as $user)
+                                                    <option value="{{ $user->id }}" {{$evaluation->confirm2?->id == $user->id ? "selected" : ""}}>
+                                                        {{ $user->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        
+                                        @elseif ($evaluation->approval_status >=30 || $evaluation->approval_status > 50)
+>>>>>>> Stashed changes
                                             <img src="{{ asset('storage/signatures/almario.png') }}" 
                                                     alt="Signature" 
                                                     class="sig-img"

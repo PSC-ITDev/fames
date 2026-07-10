@@ -345,6 +345,10 @@ class EvaluationController extends Controller
                             $asset_evaluation_details->update(['qty' => $check_qty]);
                             $newAsset = $asset_evaluation_details->replicate();
                             $newAsset->save();
+<<<<<<< Updated upstream
+=======
+                            $newAsset->update(['qty' => $asset->qty]);
+>>>>>>> Stashed changes
                         }else{
                             $asset_evaluation_details->update(['iswrite_off'=>true]);
                         }
