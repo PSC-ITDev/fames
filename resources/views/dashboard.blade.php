@@ -119,27 +119,27 @@
                     {
                         label: 'Operational - Good Condition',
                         data: goodCondition,
-                        backgroundColor: '#6FC9AB' // Pastel Green
+                        backgroundColor: '#A4DBC7' // Pastel Green
                     },
                     {
                         label: 'Operational - Spare Unit',
                         data: spareUnit, // Changed from underRepair
-                        backgroundColor: '#ACC3E5' // Pastel Blue
+                        backgroundColor: '#A5D8FF' // Pastel Blue
                     },
                     {
                         label: 'Undergoing Repair',
                         data: underRepair,
-                        backgroundColor: '#F9DF80' // Soft Pastel Yellow
+                        backgroundColor: '#FFE5A5' // Soft Pastel Yellow
                     },
                     {
                         label: 'Unserviceable',
                         data: unserviceable,
-                        backgroundColor: '#292B68' // Soft Lavender
+                        backgroundColor: '#D8C4F8' // Soft Lavender
                     },
                     {
                         label: 'Write Off',
                         data: writeOff,
-                        backgroundColor: '#9C2A29' // Pastel Coral
+                        backgroundColor: '#FFB4A2' // Pastel Coral
                     }
                   ]
               },
@@ -181,13 +181,13 @@
                 labels: doughnutLabels,
                 datasets: [{
                     data: doughnutData,
-                    backgroundColor: [
-                        '#6FC9AB', // Pastel Green
-                        '#F9DF80', // Pastel Yellow
-                        '#ACC3E5', // Pastel Blue
-                        '#9C2A29', // Pastel Coral
-                        '#292B68'  // Pastel Lavender
-                    ],
+                    backgroundColor: [
+                        '#A4DBC7', // Pastel Green 
+                         '#FFE5A5', // Pastel Yellow
+                        '#A5D8FF', // Pastel Blue
+                        '#FFB4A2', // Pastel Coral
+                        '#D8C4F8'  // Pastel Lavender
+                    ],
                     borderColor: '#e5e7eb',   // Outline color
                     borderWidth: 2            // Outline thickness
                 }]
