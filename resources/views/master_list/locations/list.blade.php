@@ -13,7 +13,7 @@
     <div class="card-body">   
 
         <div class="table-responsive">
-            <table id="locationTable" class="table card-table table-vcenter table-sm">
+            <table id="locationTable" class="table card-table table-vcenter table-sm table-striped">
                 <thead>
                     <tr>
                         <th>Item</th>

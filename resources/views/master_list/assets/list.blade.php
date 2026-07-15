@@ -15,11 +15,7 @@
         </div>
       <div class="card-body">   
           <div class="table-responsive">
-<<<<<<< Updated upstream
-              <table id="assetTable" class="table card-table table-vcenter table-sm">
-=======
-              <table id="" class="table card-table table-vcenter">
->>>>>>> Stashed changes
+              <table id="assetTable" class="table card-table table-vcenter table-sm table-striped">
                   <thead>
                       <tr>
                           <th>Item</th>
@@ -67,7 +63,7 @@
 <!-- Modal -->
 <div class="modal fade " id="registerAssetModal" tabindex="-1" role="dialog"
 aria-labelledby="registerAssetModalLabel" aria-hidden="true">
- <div class="modal-dialog modal-full-width modal-dialog-centered" role="document">
+ <div class="modal-dialog  modal-xl modal-dialog-centered m2" role="document">
       
     <div class="modal-content">
       
@@ -77,7 +73,7 @@ aria-labelledby="registerAssetModalLabel" aria-hidden="true">
       </div> --}}
       <div class="modal-header">
             <h5 class="modal-title" id="registerAssetModalLabel">Register a PSC Asset </h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
           </div>
@@ -92,7 +88,7 @@ aria-labelledby="registerAssetModalLabel" aria-hidden="true">
   <!-- Modal -->
 <div class="modal fade " id="graphModal" tabindex="-1" role="dialog"
 aria-labelledby="graphModalLabel" aria-hidden="true">
- <div class="modal-dialog  modal-dialog-centered" role="document">
+ <div class="modal-dialog modal-lg  modal-dialog-centered" role="document">
       
     <div class="modal-content">
     

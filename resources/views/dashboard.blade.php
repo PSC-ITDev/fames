@@ -93,138 +93,143 @@
             order: [[2, 'desc']] 
         });
       renderCharts();
+
     });
     document.addEventListener("livewire:navigated", renderCharts);
+    // document.addEventListener("livewire:navigated", () => {
+    //     renderCharts();
+    // });
+    
       
-      function renderCharts() {
-        const barData = @json($barData);
+    function renderCharts() {
+      const barData = @json($barData);
 
-        if(barData){
-          const labels = barData.map(item => item.name);
-          const goodCondition = barData.map(item => item.statusData['Operational In Good Condition']);
-          const underRepair = barData.map(item => item.statusData['Undergoing Repair']);
-          const spareUnit = barData.map(item => item.statusData['Operational Spare Unit']);
-          const unserviceable = barData.map(item => item.statusData['Unserviceable']);
-          const writeOff = barData.map(item => item.statusData['Write Off']);
+      if(barData){
+        const labels = barData.map(item => item.name);
+        const goodCondition = barData.map(item => item.statusData['Operational In Good Condition']);
+        const underRepair = barData.map(item => item.statusData['Undergoing Repair']);
+        const spareUnit = barData.map(item => item.statusData['Operational Spare Unit']);
+        const unserviceable = barData.map(item => item.statusData['Unserviceable']);
+        const writeOff = barData.map(item => item.statusData['Write Off']);
 
-        console.log('barData:', barData);
-        const ctx = document.getElementById('barChart').getContext('2d');
+      console.log('barData:', barData);
+      const ctx = document.getElementById('barChart').getContext('2d');
 
-          new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: labels,
-                  datasets: [
-                    {
-                        label: 'Operational - Good Condition',
-                        data: goodCondition,
-                        backgroundColor: '#6FC9AB' // Pastel Green
-                    },
-                    {
-                        label: 'Operational - Spare Unit',
-                        data: spareUnit, // Changed from underRepair
-                        backgroundColor: '#ACC3E5' // Pastel Blue
-                    },
-                    {
-                        label: 'Undergoing Repair',
-                        data: underRepair,
-                        backgroundColor: '#F9DF80' // Soft Pastel Yellow
-                    },
-                    {
-                        label: 'Unserviceable',
-                        data: unserviceable,
-                        backgroundColor: '#292B68' // Soft Lavender
-                    },
-                    {
-                        label: 'Write Off',
-                        data: writeOff,
-                        backgroundColor: '#9C2A29' // Pastel Coral
-                    }
-                  ]
-              },
-              options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  scales: {
-                      x: {
-                          stacked: false
-                      },
-                      y: {
-                          beginAtZero: true,
-                          ticks: {
-                              stepSize: 5
-                          }
-                      }
-                  },
-                  plugins: {
-                      legend: {
-                          position: 'top',
-                          
-                      }
-                  }
-              }
-          });
-        } else {
-          document.getElementById('barChart').parentElement.innerHTML =
-            '<div class="text-center text-muted py-5">No data available</div>';
-        }
-
-        const data = @json($doughnutData);
-        const doughnutData = Object.values(data || {});
-        const doughnutLabels = Object.keys(data || {});
-
-        if (data) {
-          new Chart(document.getElementById('doughnutChart'), {
-            type: 'doughnut',
+        new Chart(ctx, {
+            type: 'bar',
             data: {
-                labels: doughnutLabels,
-                datasets: [{
-                    data: doughnutData,
-                    backgroundColor: [
-                        '#6FC9AB', // Pastel Green
-                        '#F9DF80', // Pastel Yellow
-                        '#ACC3E5', // Pastel Blue
-                        '#9C2A29', // Pastel Coral
-                        '#292B68'  // Pastel Lavender
-                    ],
-                    borderColor: '#e5e7eb',   // Outline color
-                    borderWidth: 2            // Outline thickness
-                }]
+                labels: labels,
+                datasets: [
+                  {
+                      label: 'Operational - Good Condition',
+                      data: goodCondition,
+                      backgroundColor: '#6FC9AB' // Pastel Green
+                  },
+                  {
+                      label: 'Operational - Spare Unit',
+                      data: spareUnit, // Changed from underRepair
+                      backgroundColor: '#ACC3E5' // Pastel Blue
+                  },
+                  {
+                      label: 'Undergoing Repair',
+                      data: underRepair,
+                      backgroundColor: '#F9DF80' // Soft Pastel Yellow
+                  },
+                  {
+                      label: 'Unserviceable',
+                      data: unserviceable,
+                      backgroundColor: '#292B68' // Soft Lavender
+                  },
+                  {
+                      label: 'Write Off',
+                      data: writeOff,
+                      backgroundColor: '#9C2A29' // Pastel Coral
+                  }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '60%',
+                scales: {
+                    x: {
+                        stacked: false
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 5
+                        }
+                    }
+                },
                 plugins: {
                     legend: {
-                        position: 'right',
-                        labels: {
-                          generateLabels: function(chart) {
-                              const data = chart.data;
-
-                              return data.labels.map((label, i) => {
-                                  const value = data.datasets[0].data[i] || 0;
-
-                                  return {
-                                      text: `(${value}) ${label} `,
-                                      fillStyle: data.datasets[0].backgroundColor[i],
-                                      hidden: false,
-                                      index: i
-                                  };
-                              });
-                          }
-                      }
-                    },
-                  
-                },
-                
+                        position: 'top',
+                        
+                    }
+                }
             }
-          });
-        } else {
-          document.getElementById('doughnutChart').parentElement.innerHTML =
-            '<div class="text-center text-muted py-5">No data available</div>';
-        }
+        });
+      } else {
+        document.getElementById('barChart').parentElement.innerHTML =
+          '<div class="text-center text-muted py-5">No data available</div>';
       }
+
+      const data = @json($doughnutData);
+      const doughnutData = Object.values(data || {});
+      const doughnutLabels = Object.keys(data || {});
+
+      if (data) {
+        new Chart(document.getElementById('doughnutChart'), {
+          type: 'doughnut',
+          data: {
+              labels: doughnutLabels,
+              datasets: [{
+                  data: doughnutData,
+                  backgroundColor: [
+                      '#6FC9AB', // Pastel Green
+                      '#F9DF80', // Pastel Yellow
+                      '#ACC3E5', // Pastel Blue
+                      '#9C2A29', // Pastel Coral
+                      '#292B68'  // Pastel Lavender
+                  ],
+                  borderColor: '#e5e7eb',   // Outline color
+                  borderWidth: 2            // Outline thickness
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '60%',
+              plugins: {
+                  legend: {
+                      position: 'right',
+                      labels: {
+                        generateLabels: function(chart) {
+                            const data = chart.data;
+
+                            return data.labels.map((label, i) => {
+                                const value = data.datasets[0].data[i] || 0;
+
+                                return {
+                                    text: `(${value}) ${label} `,
+                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                    hidden: false,
+                                    index: i
+                                };
+                            });
+                        }
+                    }
+                  },
+                
+              },
+              
+          }
+        });
+      } else {
+        document.getElementById('doughnutChart').parentElement.innerHTML =
+          '<div class="text-center text-muted py-5">No data available</div>';
+      }
+    }
   </script>
 
 

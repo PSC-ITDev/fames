@@ -82,7 +82,7 @@ class DashboardController extends Controller
         }
 
         view()->share('pageTitle', 'Dashboard');
-        return view('dashboard',compact('activities','evaluation','doughnutData','barData'));
+        return view('dashboard',compact('activities','evaluation','doughnutData','barData','user'));
 
     }
     

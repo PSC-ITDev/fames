@@ -17,7 +17,7 @@
                 <div>
                   <h5><b>Evaluation List </b></h5><br>
                 </div>
-                <table class="table card-table table-vcenter table-hover table-sm" id="table1">
+                <table class="table card-table table-vcenter table-hover table-sm table-striped" id="table1">
                     <thead>
                         <tr>
                             <th></th>

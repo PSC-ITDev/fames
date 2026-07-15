@@ -1,12 +1,44 @@
 
-    <form method="POST" action="{{ route('saveuser') }}">
+    <form method="POST" action="{{ route('saveuser') }}" enctype="multipart/form-data">
         @csrf
+
         <!-- Name -->
         <div>
 
             <label for="name">Name</label>
             <input id="name" class="mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        </div>
+
+        <div class="row mt-4">
+            <!-- Profile Picture -->
+            <div class="col-6">
+                <label for="picture">Profile Picture</label>
+                <input
+                    id="picture"
+                    type="file"
+                    name="picture"
+                    class="form-control"
+                    accept="image/png,image/jpeg,image/jpg">
+                <small class="text-muted">Accepted formats: PNG, JPG, JPEG</small>
+
+                <x-input-error :messages="$errors->get('picture')" class="mt-2" />
+            </div>
+
+            <!-- Signature -->
+            <div class="col-6">
+                <label for="signature">Signature (PNG)</label>
+                <input
+                    id="signature"
+                    type="file"
+                    name="signature"
+                    class="form-control"
+                    accept=".png,image/png">
+
+                <small class="text-muted">Please upload a transparent PNG signature.</small>
+
+                <x-input-error :messages="$errors->get('signature')" class="mt-2" />
+            </div>
         </div>
 
         <!-- Email Address -->
@@ -75,8 +107,8 @@
 
         <div class="flex items-center justify-end mt-4">
 
-            <x-primary-button class="ms-4">
+            <button class="btn btn-primary ms-4">
                 {{ __('Register') }}
-            </x-primary-button>
+            </button>
         </div>
     </form>

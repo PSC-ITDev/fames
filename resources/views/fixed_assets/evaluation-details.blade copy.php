@@ -44,7 +44,7 @@
                   <h5><b>I. Assets On Inventory: </b></h5><br>
                 </div>
                 <div >
-                    <table class="table card-table table-vcenter table-hover" id="table1">
+                    <table class="table card-table table-vcenter table-hover table-striped" id="table1">
                         <thead>
                             <tr>
                                 <th></th>
@@ -104,7 +104,7 @@
                 </div>
                 <div style="max-height: 300px;overflow-y: auto;">
                     
-                    <table class="table card-table table-vcenter" id="table2">
+                    <table class="table card-table table-vcenter table-striped" id="table2">
                         <thead>
                             <tr>
                                 <th></th>
@@ -164,7 +164,7 @@
 
             <div >
 
-                <table class="table table-vcenter text-center">
+                <table class="table table-vcenter text-center table-striped">
                     <thead>
                         <tr>
                             <th>Staff 1</th>
@@ -332,7 +332,7 @@
                     <h2>ACTIVITIES</h2>
                 </div>
                 <br>
-                <table class="table table-vcenter text-center">
+                <table class="table table-vcenter text-center table-striped">
                     <thead>
                         <tr>
                             {{-- <th></th> --}}

@@ -251,15 +251,30 @@ class MasterListController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'deptid' => ['required', 'string'],
             'role_id' => ['required', 'string'],
+            'picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'signature' => 'nullable|image|mimes:png|max:1024',
         ]);
 
+
+
+        if ($request->hasFile('picture')) {
+            $picture = $request->file('picture')->store('users/pictures', 'public');
+        }
+
+        if ($request->hasFile('signature')) {
+            $signature = $request->file('signature')->store('users/signatures', 'public');
+        }
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'deptid' => $request->deptid,
             'role_id' => $request->role_id,
+            'photo' => $picture ?? 'users/pictures/avatar.png',
+            'signature' => $signature ?? 'users/pictures/sign.png',
         ]);
+
+        
 
         // event(new Registered($user));
 
@@ -268,8 +283,57 @@ class MasterListController extends Controller
        return redirect()->route('user-list');
 
     }
-    public function updateUser(Request $request){
+    public function updateUser(Request $request,$user_id){
 
+        $user = User::find($user_id);
+
+        $request->validate([
+            'name' => ['string', 'max:255'],
+            'email' => [
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:' . User::class . ',email,' . $user->id
+            ],
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'deptid' => ['string'],
+            'role_id' => ['string'],
+            'picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'signature' => 'nullable|image|mimes:png|max:1024',
+        ]);
+
+
+
+
+        if ($request->hasFile('picture')) {
+            $picture = $request->file('picture')->store('users/pictures', 'public');
+        }else{
+            $picture = $user->picture ?? 'users/pictures/avatar.png';
+        }
+
+        if ($request->hasFile('signature')) {
+            $signature = $request->file('signature')->store('users/signatures', 'public');
+        }else{
+             $signature =$user->signature ?? 'users/pictures/sign.png';
+        }
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'deptid' => $request->deptid,
+            'role_id' => $request->role_id,
+            'photo' => $picture,
+            'signature' =>$signature,
+        ]);
+
+        if ($request->hasFile('password')) {
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+        }
+
+       return redirect()->route('user-list');
     }
     
 

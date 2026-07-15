@@ -188,3 +188,12 @@
 .table thead th, .table tbody td {
   color: black !important;
 }
+h2{
+    font-size: 24px !important;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
