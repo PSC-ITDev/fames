@@ -17,13 +17,16 @@ use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Gate;
 
 
 class MasterListController extends Controller
 {
+
     //ASSETS
     public function assetList(Request $request)
     { 
+        Gate::authorize('auditor');
         $assets = FixedAsset::with(['department','classification'])->get();
         $departments = Department::all();
         $classifications = Classification::all();
@@ -43,6 +46,7 @@ class MasterListController extends Controller
     }
     
     public function saveAsset(Request $request){
+        Gate::authorize('auditor');
         $asset = new FixedAsset();
         $asset->asset_number = $request->input('asset_no');
         // $asset->item = $request->input('item');
@@ -75,6 +79,7 @@ class MasterListController extends Controller
     // DEPARTMENTS
     public function departmentList(Request $request)
     { 
+        Gate::authorize('superadmin');
         $departments = Department::all();
 
        view()->share('pageTitle', 'Department List');
@@ -82,6 +87,7 @@ class MasterListController extends Controller
     }
     
     public function saveDepartment(Request $request){
+        Gate::authorize('superadmin');
         $department = new Department();
         $department->code = $request->input('code');
         $department->name = $request->input('name');
@@ -93,6 +99,7 @@ class MasterListController extends Controller
     }
 
     public function viewDepartment(Request $request,$deptid){
+        Gate::authorize('superadmin');
         $users = User::all();
         $department = Department::with(['hierarchy','drafter','approver','confirmer'])->find($deptid);
 
@@ -103,6 +110,7 @@ class MasterListController extends Controller
     // LOCATIONS
     public function locationList(Request $request)
     { 
+        Gate::authorize('superadmin');
         $locations = Location::all();
 
        view()->share('pageTitle', 'Location List');
@@ -110,6 +118,7 @@ class MasterListController extends Controller
     }
     
     public function saveLocation(Request $request){
+        Gate::authorize('superadmin');
         $location = new Location();
         $location->name = $request->input('name');
         $location->description = $request->input('description');
@@ -123,6 +132,7 @@ class MasterListController extends Controller
     // CLASSIFICATION
     public function classificationList(Request $request)
     { 
+        Gate::authorize('superadmin');
         $classifications = Classification::all();
 
        view()->share('pageTitle', 'Classification List');
@@ -130,6 +140,7 @@ class MasterListController extends Controller
     }
     
     public function saveClassification(Request $request){
+        Gate::authorize('superadmin');
         $classification = new Classification();
  
         $classification->name = $request->input('name');
@@ -145,6 +156,7 @@ class MasterListController extends Controller
     // CATEGORY
     public function categoryList(Request $request)
     { 
+        Gate::authorize('superadmin');
         $categories = Category::all();
 
        view()->share('pageTitle', 'Category List');
@@ -152,6 +164,7 @@ class MasterListController extends Controller
     }
     
     public function saveCategory(Request $request){
+        Gate::authorize('superadmin');
         $category = new Category();
  
         $category->name = $request->input('name');
@@ -165,6 +178,7 @@ class MasterListController extends Controller
     // HIERARCHY
     public function hierarchyList(Request $request)
     { 
+        Gate::authorize('superadmin');
         $hierarchies = ApprovalHierarchy::with(['user','approver_user','confirmer_user'])->get();
         $users = User::all();
         $departments = Department::all();
@@ -217,6 +231,7 @@ class MasterListController extends Controller
 
 
     public function saveHierarchy(Request $request,$deptid){
+        Gate::authorize('superadmin');
         
         $data = [];
         $department = Department::find($deptid);
@@ -236,6 +251,7 @@ class MasterListController extends Controller
 
     //USERS
     public function userList(Request $request){
+        Gate::authorize('auditor');
         $users = User::all();
         $roles = Role::all();
         $departments = Department::all();
@@ -245,6 +261,7 @@ class MasterListController extends Controller
     }
 
     public function saveUser(Request $request){
+        Gate::authorize('auditor');
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -284,7 +301,7 @@ class MasterListController extends Controller
 
     }
     public function updateUser(Request $request,$user_id){
-
+        Gate::authorize('auditor');
         $user = User::find($user_id);
 
         $request->validate([
@@ -340,6 +357,7 @@ class MasterListController extends Controller
     // ROLE
     public function roleList(Request $request)
     { 
+        Gate::authorize('superadmin');
         $roles = Role::all();
 
        view()->share('pageTitle', 'Role List');
@@ -347,6 +365,7 @@ class MasterListController extends Controller
     }
     
     public function saveRole(Request $request){
+        Gate::authorize('superadmin');
         $role = new Role();
  
         $role->name = $request->input('name');
