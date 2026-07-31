@@ -26,7 +26,7 @@ class MasterListController extends Controller
     //ASSETS
     public function assetList(Request $request)
     { 
-        Gate::authorize('auditor');
+        Gate::any(['auditor', 'superadmin']);
         $assets = FixedAsset::with(['department','classification'])->get();
         $departments = Department::all();
         $classifications = Classification::all();
@@ -46,7 +46,7 @@ class MasterListController extends Controller
     }
     
     public function saveAsset(Request $request){
-        Gate::authorize('auditor');
+        Gate::any(['auditor', 'superadmin']);
         $asset = new FixedAsset();
         $asset->asset_number = $request->input('asset_no');
         // $asset->item = $request->input('item');
@@ -251,7 +251,7 @@ class MasterListController extends Controller
 
     //USERS
     public function userList(Request $request){
-        Gate::authorize('auditor');
+        Gate::any(['auditor', 'superadmin']);
         $users = User::all();
         $roles = Role::all();
         $departments = Department::all();
@@ -261,7 +261,7 @@ class MasterListController extends Controller
     }
 
     public function saveUser(Request $request){
-        Gate::authorize('auditor');
+        Gate::any(['auditor', 'superadmin']);
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -301,7 +301,7 @@ class MasterListController extends Controller
 
     }
     public function updateUser(Request $request,$user_id){
-        Gate::authorize('auditor');
+        Gate::any(['auditor', 'superadmin']);
         $user = User::find($user_id);
 
         $request->validate([
