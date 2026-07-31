@@ -51,6 +51,30 @@ class AssetSeeder extends Seeder
             'role_id' => Role::where('name', 'User')->first()->id,    
             'password' => bcrypt('P@ssw0rd'),
         ],
+         [
+            'name'     => 'CAMAGANACAN, EDILI JOY O.',
+            'email'    => 'edili.camaganacan@philsinter.com.ph',
+            'role_id' => Role::where('name', 'Auditor')->first()->id,    
+            'password' => bcrypt('P@ssw0rd'),
+        ],
+         [
+            'name'     => 'MORTOLA, GAB ASHLEY Y.',
+            'email'    => 'gab.mortola@philsinter.com.ph',
+            'role_id' => Role::where('name', 'Auditor')->first()->id,    
+            'password' => bcrypt('P@ssw0rd'),
+        ],
+         [
+            'name'     => 'LIM, HONEY KHAIZA L.',
+            'email'    => 'honey.lim@philsinter.com.ph',
+            'role_id' => Role::where('name', 'Auditor')->first()->id,    
+            'password' => bcrypt('P@ssw0rd'),
+        ],
+         [
+            'name'     => 'GALAURA, LEI KATREENA G.',
+            'email'    => 'lei.galaura@philsinter.com.ph',
+            'role_id' => Role::where('name', 'Auditor')->first()->id,    
+            'password' => bcrypt('P@ssw0rd'),
+        ],
     ], ['email'], ['name']);  
 
     $this->command->info('User created.');
