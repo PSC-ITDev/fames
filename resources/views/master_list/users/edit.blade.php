@@ -6,7 +6,9 @@
         <div>
 
             <label for="name">Name</label>
-            <input id="name" class="mt-1 w-full" type="text" name="name" autofocus autocomplete="name" />
+            <input id="name" class="mt-1 w-full" type="text" name="name" autofocus autocomplete="name"
+            style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()"
+            />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 

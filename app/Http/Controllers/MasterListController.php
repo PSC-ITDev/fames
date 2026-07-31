@@ -252,8 +252,8 @@ class MasterListController extends Controller
     //USERS
     public function userList(Request $request){
         Gate::any(['auditor', 'superadmin']);
-        $users = User::all();
-        $roles = Role::all();
+        $users = User::where('role_id','>','2')->get();
+        $roles = Role::where('id','>','2')->get();
         $departments = Department::all();
 
        view()->share('pageTitle', 'User List');
