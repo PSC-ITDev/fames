@@ -1,10 +1,5 @@
 <x-app-layout>
-    <div class="text-right ">
-        
-        <button class="fs-2" onclick="printDiv('printArea')" > <i class="bi bi-printer" style="font-size: x-large;margin: 35px;"></i> </button>
-    </div>
   <div class="col-md-12">
-    
     <div class="card">
         @php   
             $approval_statuses = [
@@ -39,7 +34,6 @@
 
         @endphp
         <div id="printArea">
-            
             <div class="ribbon ribbon-top-right
                 @if($approval_status == 'Approved') ribbon-approved
                 @elseif($approval_status == 'Pending') ribbon-pending
@@ -48,7 +42,7 @@
                 @else ribbon-forApproval
                 @endif
 
-                ">
+            ">
                 <span>{{ $approval_status }}</span>
             </div>
             @if($is_owner)
@@ -66,11 +60,10 @@
 
 
             @csrf
-                                
             <div class="card-header">
             <div>
-                    <h2>Department: <b>{{$evaluation->department->name}} {{$evaluation->quarter}} {{$evaluation->year}} </b> (<b>{{$asset_count}}</b>) </h2>
-
+                    <h1 style="font-size: 1.5rem;">Department: <b>{{$evaluation->department->name}} {{$evaluation->quarter}} {{$evaluation->year}} </b> (<b>{{$asset_count}}</b>) </h1>
+                    <button onclick="printDiv('printArea')" > <i class="bi bi-printer"></i> </button>
             </div>
                 <div class="card-options">
                 <b>
@@ -332,7 +325,7 @@
                 <div>
                     <h5><b>Status</b></h5><br>
                     </div>
-                    <table class="table table-vcenter text-center uniform-table table-sm table-striped">
+                    <table class="table table-vcenter text-center uniform-table table-sm">
                         <thead>
                             <tr>
                                 <th>Submitted by:</th>
@@ -634,7 +627,7 @@
                             || 
                                 ($evaluation->approval_status == 1 && ($evaluation->draft_by2 == $current_user->id))
                         )
-                    )
+                )
                             <div  class="mr-3">
                                 <button type="button" class="btn btn-danger mt-3 reason" data-url="{{route('reject-evaluation',$evaluation->id)}}" data-bs-toggle="modal" data-bs-target="#reasonModal">
                                 Reject
@@ -661,41 +654,40 @@
 
 
                 </div>
-                <div class="no-print">
-                
-                    <br>
-                    <hr>
-                    <br>
-                    <div class="text-center">
-                        <h2><b>ACTIVITIES</b></h2>
-                    </div>
-                    <br>
-                    <table class="table table-vcenter table-sm table-striped ">
-                        <thead>
-                            <tr>
-                                
-                                <th>Date</th>
-                                <th>Performed By</th>
-                                <th>Activity</th>
-                                <th>Reason</th>
-                            </tr>
-                        </thead>
-                        <tbody >
-
-                            @foreach($evaluation->activity as $index => $act)
-                                <tr class="{{(\Illuminate\Support\Str::contains($act->activity, 'Rejected')) ? 'text-danger' : 'text-success' }}">
-                                    <td style="width: 10%;">{{$act->created_at}}</td>
-                                    <td style="width: 10%;">{{$act->performer->name}}</td>
-                                    <td style="width: 40%;">{{$act->activity}}</td>
-                                    <td style="width: 40%;">{{$act->reason}}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
+            <div>
+                
+                <br>
+                <hr>
+                <br>
+                <div class="text-center">
+                    <h2><b>ACTIVITIES</b></h2>
+                </div>
+                <br>
+                <table class="table table-vcenter table-sm">
+                    <thead>
+                        <tr>
+                            
+                            <th>Date</th>
+                            <th>Performed By</th>
+                            <th>Activity</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody >
 
+                        @foreach($evaluation->activity as $index => $act)
+                            <tr class="{{(\Illuminate\Support\Str::contains($act->activity, 'Rejected')) ? 'text-danger' : 'text-success' }}">
+                                <td style="width: 10%;">{{$act->created_at}}</td>
+                                <td style="width: 10%;">{{$act->performer->name}}</td>
+                                <td style="width: 40%;">{{$act->activity}}</td>
+                                <td style="width: 40%;">{{$act->reason}}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
         
       </form>
@@ -720,7 +712,7 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelQty" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-secondary" id="cancelQty" data-dismiss="modal">Cancel</button>
                 <button class="btn btn-primary" id="confirmQty">Confirm</button>
             </div>
 
