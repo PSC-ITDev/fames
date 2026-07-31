@@ -7,14 +7,14 @@
         <div class="form-group mb-3 ">
             <label class="form-label">Name</label>
             <div >
-                <input name="name" type="text" class="form-control live-input" aria-describedby="Name" placeholder="Name">
+                <input name="name" type="text" class="form-control live-input" aria-describedby="Name" placeholder="Name" required>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="form-group mb-3 ">
             <label class="form-label">Description</label>
-            <textarea name="description" class="form-control"  data-toggle="autosize" name="example-textarea-input" rows="5" placeholder="Description"> </textarea>
+            <textarea name="description" class="form-control"  data-toggle="autosize" rows="5" placeholder="Description" required></textarea>
            
         </div>
     </div>

@@ -8,7 +8,7 @@
             <label for="name">Name</label>
             <input id="name" class="mt-1 w-full" type="text" name="name" autofocus autocomplete="name"
             style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()"
-            />
+             required/>
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
@@ -46,7 +46,7 @@
         <!-- Email Address -->
         <div class="mt-4">
             <label for="email">Email</label>
-            <input id="email" class="block mt-1 w-full" type="email" name="email" autocomplete="username" />
+            <input id="email" class="block mt-1 w-full" type="email" name="email" autocomplete="username"  required/>
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 

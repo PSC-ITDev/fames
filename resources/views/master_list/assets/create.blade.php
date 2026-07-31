@@ -21,7 +21,7 @@
                 <div class="col-md-4 col-4">
                     <div class="form-group mb-3 ">
                         <label class="form-label">Capitalization Date</label>
-                        <input name="capitalization_date" id="calendar-simple" type="date" value="2020-06-20" class="form-control mb-2" placeholder="Select a date" />                     
+                        <input name="capitalization_date" id="calendar-simple" type="date" value="2020-06-20" class="form-control mb-2" placeholder="Select a date" required />                     
                     </div>
                 </div>
                 <div class="col-md-4 col-4">
@@ -33,7 +33,7 @@
             </div>
                 <div class="mb-3">
                 <label class="form-label">Asset Description<span class="form-label-description"></span></label>
-                <textarea name="asset_description" class="form-control"  data-toggle="autosize" name="example-textarea-input" rows="5" placeholder="Description"> </textarea>
+                <textarea name="asset_description" class="form-control"  data-toggle="autosize" rows="5"  required></textarea>
             </div>
 
             <div class="row">
@@ -41,7 +41,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">Department</label>
                         <div >
-                            <select name="department" class="form-select">
+                            <select name="department" class="form-select" required>
                                 @foreach($departments as $department)
                                     <option value="{{$department->id}}">{{$department->name}}</option>
                                 @endforeach
@@ -54,7 +54,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">Location</label>
                         <div >
-                            <select name="location_id" class="form-select">
+                            <select name="location_id" class="form-select" required>
                                 @foreach($locations as $location)
                                     <option value="{{$location->id}}">{{$location->name}}</option>
                                 @endforeach
@@ -67,7 +67,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">Classification</label>
                         <div >
-                            <select name="classification" class="form-select">
+                            <select name="classification" class="form-select" required>
                                 @foreach($classifications as $classification)
                                     <option value="{{$classification->id}}">{{$classification->name}}</option>
                                 @endforeach
@@ -86,7 +86,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">Asset Quantity</label>
                         <div >
-                            <input name="quantity" type="number" class="form-control" aria-describedby="Asset Quantity" placeholder="0">
+                            <input name="quantity" type="number" class="form-control" aria-describedby="Asset Quantity" value="1" required>
                             {{-- <small class="form-hint">We'll never share your email with anyone else.</small> --}}
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">Basic Unit of Measure (BUM)</label>
                         <div >
-                            <input name="bum" type="text" class="form-control" aria-describedby="Basic Unit of Measure" placeholder="BUM">
+                            <input name="bum" type="text" class="form-control" aria-describedby="Basic Unit of Measure" placeholder="BUM" required>
                             {{-- <small class="form-hint">We'll never share your email with anyone else.</small> --}}
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">Aquired Value</label>
                         <div >
-                            <input name="acquired_value" type="text" class="form-control" placeholder="0.00">
+                            <input name="acquired_value" type="text" class="form-control" placeholder="0.00" required>
                             <small class="form-hint">
                             
                             </small>
@@ -118,7 +118,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">End Book Value</label>
                         <div >
-                            <input name="endbookvalue" type="text" class="form-control" placeholder="0.00">
+                            <input name="endbookvalue" type="text" class="form-control" placeholder="0.00" required>
                             <small class="form-hint">
                             
                             </small>
@@ -131,7 +131,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">Salvage Value</label>
                         <div >
-                            <input name="salvagevalue" type="text" class="form-control" placeholder="0.00">
+                            <input name="salvagevalue" type="text" class="form-control" placeholder="0.00" required>
                             <small class="form-hint">
                             
                             </small>
@@ -142,7 +142,7 @@
                     <div class="form-group mb-3 ">
                         <label class="form-label">Useful Life Years</label>
                         <div >
-                            <input name="usefullifeyears" type="number" class="form-control" placeholder="1">
+                            <input name="usefullifeyears" type="number" class="form-control" placeholder="1" value="1"  required>
                             <small class="form-hint">
                             
                             </small>
