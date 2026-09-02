@@ -5,7 +5,7 @@
             $approval_statuses = [
                 0 => 'Pending',
                 10 => 'For Approval',
-                20 => 'Approved',
+                20 => 'For Confirmation',
                 30 => 'Confirmed',
                 50 => 'Rejected'
             ];
@@ -35,7 +35,7 @@
         @endphp
         <div id="printArea">
             <div class="ribbon ribbon-top-right
-                @if($approval_status == 'Approved') ribbon-approved
+                @if($approval_status == 'For Confirmation') ribbon-approved
                 @elseif($approval_status == 'Pending') ribbon-pending
                 @elseif($approval_status == 'Rejected') ribbon-rejected
                 @elseif($approval_status == 'Confirmed') ribbon-confirmed
@@ -343,7 +343,7 @@
                                 @endif
 
                                 <th class="spacer"></th>
-                                <th>Recieved by:</th>
+                                <th>Verified by:</th>
                                 @if($evaluation->confirmed_by2 && $evaluation->confirmed_by1)
                                     <th class="spacer"></th>
                                     <th></th>

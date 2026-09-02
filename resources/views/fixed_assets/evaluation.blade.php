@@ -33,7 +33,7 @@
                           $approval_statuses = [
                               0 => 'Pending',
                               10 => 'For Approval',
-                              20 => 'Approved',
+                              20 => 'For Confirmation',
                               30 => 'Confirmed',
                               50 => 'Rejected'
                           ];

@@ -181,8 +181,15 @@ class EvaluationController extends Controller
     public function evaluationList()
     {    
         $user = Auth::user();
-        if(in_array(strtolower($user->role->name),['user','approver'])){
-            $evaluations = Evaluation::withSum('details', 'qty')->orderBy('created_at', 'desc')->where('department_id',$user->deptid)->get();
+        if(strtolower($user->role->name === 'user')){
+            $evaluations = Evaluation::withSum('details', 'qty')->orderBy('created_at', 'desc')->where('created_by',$user->id)->get();
+
+        }elseif(strtolower($user->role->name) == 'approver'){
+            $evaluations = Evaluation::withSum('details', 'qty')
+            ->orderBy('created_at', 'desc')
+            ->where('department_id',$user->deptid)
+            ->get();
+        
         }elseif(strtolower($user->role->name) == 'accounting'){
             $evaluations = Evaluation::withSum('details', 'qty')
             ->orderBy('created_at', 'desc')
@@ -235,8 +242,6 @@ class EvaluationController extends Controller
         return view('fixed_assets/evaluation-details',compact('evaluation','statuses','is_approver','is_confirmer','users','user','can_edit','notdraft','is_owner','asset_count','is_accounting'));
                 
     }
-
-    
 
     public function updateEvaluationDetails(Request $request,$eval_id)
     {     
@@ -627,10 +632,6 @@ class EvaluationController extends Controller
 
     }
 
-
-
-
-
     public function splitStatus(Request $request,$eval_detail_id){
         $eval_detail = EvaluationDetail::find($eval_detail_id);
         $statuses = $request->status;
@@ -674,10 +675,6 @@ class EvaluationController extends Controller
 
         return redirect()->route('evaluation-details',$eval_detail->asset_form_id);
     }
-
-
-
-
 
     private function loggedActivity($type,$type_id,$activity,$performed_by,$reason){
         $log = new Activity();
@@ -855,7 +852,7 @@ class EvaluationController extends Controller
         $approval_statuses = [
             0 => 'Pending',
             10 => 'For Approval',
-            20 => 'Approved',
+            20 => 'For Confirmation',
             30 => 'Confirmed',
             50 => 'Rejected'
         ];
@@ -883,9 +880,6 @@ class EvaluationController extends Controller
             )
         );
     }
-
-
-
 
     public function upload(Request $request)
     {

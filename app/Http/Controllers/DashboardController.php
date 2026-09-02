@@ -25,12 +25,20 @@ class DashboardController extends Controller
         })->latest()->get();
         
   
+        if($user?->role->name === 'Auditor'){
+            $evaluation = Evaluation::with('details')
+            ->whereIn('approval_status',[30,31])
+            ->orderByDesc('year')
+            ->orderByDesc('quarter')->first();
+        }else{
+            $evaluation = Evaluation::with('details')
+            ->where('department_id',$user->deptid)
+            ->whereIn('approval_status',[30,31])
+            ->orderByDesc('year')
+            ->orderByDesc('quarter')->first();
+        }
 
-        $evaluation = Evaluation::with('details')
-        ->where('department_id',$user->deptid)
-        ->whereIn('approval_status',[30,31])
-        ->orderByDesc('year')
-        ->orderByDesc('quarter')->first();
+
         $statuses = Status::pluck('name','id');
 
         $doughnutData = null;
