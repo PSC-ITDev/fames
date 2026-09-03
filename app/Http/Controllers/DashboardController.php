@@ -60,12 +60,20 @@ class DashboardController extends Controller
             $currentYear = now()->year;
             $previousYear = now()->subYear()->year;
             $years = [$currentYear, $previousYear];
-            $data = Evaluation::whereIn('year', $years)
-                ->where('department_id',$user->deptid)
-                ->whereIn('approval_status',[30,31])
-                ->orderByDesc('year')
-                ->orderByDesc('quarter')
-                ->get();
+            if($user?->role->name === 'Auditor'){
+                $data = Evaluation::whereIn('year', $years)
+                    ->whereIn('approval_status',[30,31])
+                    ->orderByDesc('year')
+                    ->orderByDesc('quarter')
+                    ->get();
+            }else{
+                $data = Evaluation::whereIn('year', $years)
+                    ->where('department_id',$user->deptid)
+                    ->whereIn('approval_status',[30,31])
+                    ->orderByDesc('year')
+                    ->orderByDesc('quarter')
+                    ->get();
+            }
 
             $barData = $data->map(function ($evaluation) use ($statuses) {
                 $writeoffCount =  $evaluation->details->where('iswrite_off', 1)->sum('writeoff_qty');
