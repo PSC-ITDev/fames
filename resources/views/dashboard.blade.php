@@ -138,12 +138,12 @@
                   {
                       label: 'Unserviceable',
                       data: unserviceable,
-                      backgroundColor: '#292B68' // Soft Lavender
+                      backgroundColor: '#9C2A29' // Soft Lavender
                   },
                   {
                       label: 'Write Off',
                       data: writeOff,
-                      backgroundColor: '#9C2A29' // Pastel Coral
+                      backgroundColor: '#292B68' // Pastel Coral
                   }
                 ]
             },

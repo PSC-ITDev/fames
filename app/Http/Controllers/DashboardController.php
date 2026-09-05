@@ -20,22 +20,26 @@ class DashboardController extends Controller
         // return view('assets.index', compact(''));
         $user = Auth::user();
         
-        $activities = Activity::whereHas('evaluation', function ($query) use ($user){
-            $query->where('department_id',$user->deptid);
-        })->latest()->get();
+
         
   
         if($user?->role->name === 'Auditor'){
             $evaluation = Evaluation::with('details')
-            ->whereIn('approval_status',[30,31])
-            ->orderByDesc('year')
-            ->orderByDesc('quarter')->first();
+                ->whereIn('approval_status',[30,31])
+                ->orderByDesc('year')
+                ->orderByDesc('quarter')->first();
+
+            $activities = Activity::latest()->get();
         }else{
             $evaluation = Evaluation::with('details')
-            ->where('department_id',$user->deptid)
-            ->whereIn('approval_status',[30,31])
-            ->orderByDesc('year')
-            ->orderByDesc('quarter')->first();
+                ->where('department_id',$user->deptid)
+                ->whereIn('approval_status',[30,31])
+                ->orderByDesc('year')
+                ->orderByDesc('quarter')->first();
+
+            $activities = Activity::whereHas('evaluation', function ($query) use ($user){
+                    $query->where('department_id',$user->deptid);
+                })->latest()->get();
         }
 
 

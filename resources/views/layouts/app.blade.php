@@ -130,6 +130,8 @@
                 <h1 class="page-title">                 
                  {{ $pageTitle ?? "Dashboard" }}
                 </h1>
+                
+                  <button onclick="printDiv('printArea')" > <i class="bi bi-printer"></i> </button>
               </div>
             </div>
           </div>

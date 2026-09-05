@@ -15,7 +15,7 @@ use App\Models\GLAccount;
 use App\Models\User;
 use App\Models\Role;
 
-class AssetSeeder extends Seeder
+class AssetSeeder2 extends Seeder
 {
     /**
      * Run the database seeds.

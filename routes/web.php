@@ -59,6 +59,7 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         Route::get('/users-list', [MasterListController::class, 'userList'])->name('user-list');
         Route::post('/saveuser',[MasterListController::class, 'saveUser']) ->name('saveuser');
         Route::post('/updateuser/{user_id}',[MasterListController::class, 'updateUser']) ->name('updateuser');
+        Route::post('/users/reset-password', [MasterListController::class, 'resetPassword'])->name('users.reset-password');
 
         //Role
         Route::post('/saverole',[MasterListController::class, 'saveRole']) ->name('saverole');

@@ -1,5 +1,7 @@
 <x-app-layout>
   <div class="col-md-12">
+    
+
     <div class="card">
         @php   
             $approval_statuses = [
@@ -33,6 +35,7 @@
 
 
         @endphp
+        
         <div id="printArea">
             <div class="ribbon ribbon-top-right
                 @if($approval_status == 'For Confirmation') ribbon-approved
@@ -58,12 +61,11 @@
 
 
 
-
             @csrf
             <div class="card-header">
             <div>
                     <h1 style="font-size: 1.5rem;">Department: <b>{{$evaluation->department->name}} {{$evaluation->quarter}} {{$evaluation->year}} </b> (<b>{{$asset_count}}</b>) </h1>
-                    <button onclick="printDiv('printArea')" > <i class="bi bi-printer"></i> </button>
+                    
             </div>
                 <div class="card-options">
                 <b>
@@ -386,7 +388,7 @@
                                     <td>
                                     
                                         <div style="position: relative; display: inline-block;">
-                                            @if(!$notdraft) 
+                                            @if(!$notdraft && $is_owner) 
                                                 <select name="user2" class="form-select text-center">
                                                     <option value="" selected></option>
                                                     @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'user') && $u->deptid == $evaluation->department_id as $user)
@@ -427,11 +429,11 @@
                                 <td style="vertical-align: middle; position: relative; height: 100px;">
                                     
                                     <div style="position: relative; display: inline-block;">
-                                        @if(!$notdraft)
-                                            <select name="approver_user2" class="form-select text-center" required>
+                                        @if(!$notdraft && $is_owner)
+                                            <select name="approver_user1" class="form-select text-center" required>
                                                 <option value="" selected></option>
                                                 @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'approver' && $u->deptid == $evaluation->department_id) as $user)
-                                                    <option value="{{ $user->id }}" {{$evaluation->approved2?->id == $user->id ? "selected" : ""}}>
+                                                    <option value="{{ $user->id }}" {{$evaluation->approved1?->id == $user->id ? "selected" : ""}}>
                                                         {{ $user->name }}
                                                     </option>
                                                 @endforeach
@@ -466,7 +468,7 @@
                                     <td>
                                         
                                         <div style="position: relative; display: inline-block;">
-                                            @if(!$notdraft)
+                                            @if(!$notdraft && $is_owner)
                                                 <select name="approver_user2" class="form-select text-center">
                                                     <option value="" selected></option>
                                                     @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'approver') as $user)
@@ -510,7 +512,7 @@
 
                                     <td style="vertical-align: middle;height: 100px;">
                                         <div style="position: relative; display: inline-block;">
-                                            @if(!$notdraft)
+                                            @if(!$notdraft && $is_owner)
                                                 <select name="confirmer_user1" class="form-select text-center">
                                                     <option value="" selected></option>
                                                     @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'auditor') as $user)
@@ -551,7 +553,7 @@
                                     <td>
                                         
                                         <div style="position: relative; display: inline-block;">
-                                            @if(!$notdraft)
+                                            @if(!$notdraft && $is_owner)
                                                 <select name="confirmer_user2" class="form-select text-center">
                                                     <option value="" selected></option>
                                                     @foreach ($users->filter(fn($u) => strtolower($u->role?->name) == 'auditor') as $user)

@@ -353,6 +353,22 @@ class MasterListController extends Controller
        return redirect()->route('user-list');
     }
     
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return back()->with('success', 'Password reset successfully.');
+    }
+    
 
     // ROLE
     public function roleList(Request $request)
